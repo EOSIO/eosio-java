@@ -5,8 +5,6 @@ plugins {
 group 'one.block'
 version '1.0'
 
-sourceCompatibility = 1.7
-
 repositories {
     mavenCentral()
 }
