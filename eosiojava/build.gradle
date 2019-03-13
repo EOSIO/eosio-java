@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'one.block'
-version '1.0'
+version '0.1-alpha-SNAPSHOT'
 
 repositories {
     mavenCentral()
