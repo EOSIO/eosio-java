@@ -23,6 +23,15 @@ public enum EosioErrorCode {
     whitelistingError("whitelistingError"),
     malformedRequestError("malformedRequestError"),
     domainError("domainError"),
+    eosioNameError("eosioNameError"),
+    signatureProviderError("signatureProviderError"),
+    serializationError("serializationError"),
+    deserializationError("deserializationError"),
+    dataCodingError("dataCodingError"),
+    missingDataError("missingDataError"),
+    eosioKeyError("eosioKeyError"),
+    eosioSignatureError("eosioSignatureError"),
+
     // General catch all
     unexpectedError("unexpectedError");
 
