@@ -12,12 +12,50 @@ import org.jetbrains.annotations.Nullable;
 
 public class AbiEosSerializationObject {
 
-    public @Nullable String contract = null;
-    public @NotNull String name = "";
-    public @Nullable String type = "null";
-    public @NotNull String hex = "";
-    public @NotNull String json = "";
-    public @NotNull String abi = "";
+    private @Nullable String contract;
+    private @NotNull String name;
+    private @Nullable String type;
+    private @NotNull String hex = "";
+    private @NotNull String json = "";
+    private @NotNull String abi;
+
+    @Nullable
+    public String getContract() {
+        return contract;
+    }
+
+    @NotNull
+    public String getName() {
+        return name;
+    }
+
+    @Nullable
+    public String getType() {
+        return type;
+    }
+
+    @NotNull
+    public String getHex() {
+        return hex;
+    }
+
+    @NotNull
+    public String getJson() {
+        return json;
+    }
+
+    @NotNull
+    public String getAbi() {
+        return abi;
+    }
+
+    public void setHex(@NotNull String hex) {
+        this.hex = hex;
+    }
+
+    public void setJson(@NotNull String json) {
+        this.json = json;
+    }
 
     public AbiEosSerializationObject(@Nullable String contract,
             @NotNull String name, @Nullable String type,
