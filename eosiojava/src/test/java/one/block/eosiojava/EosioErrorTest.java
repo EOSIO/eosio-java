@@ -1,5 +1,7 @@
 package one.block.eosiojava;
 
+import one.block.eosiojava.error.EosioError;
+import one.block.eosiojava.error.serializationprovider.SerializationProviderError;
 import org.junit.Test;
 
 import java.io.IOError;
@@ -18,33 +20,18 @@ import static org.junit.Assert.*;
 public class EosioErrorTest {
 
     @Test
-    public void errorDescription() {
-        EosioError err = new EosioError(EosioErrorCode.parsingError, "Parsing Error!");
-        String description = err.errorDescription();
-        assertEquals("parsingError: Parsing Error!", description);
-
-        EosioError err2 = new EosioError(EosioErrorCode.parsingError, "Parsing Error!", "Parsing JSON Response", true);
-        String description2 = err2.errorDescription();
-        assertEquals("parsingError: Parsing Error!: context: Parsing JSON Response", description2);
-    }
-
-    @Test
-    public void description() {
-        EosioError err = new EosioError(EosioErrorCode.parsingError, "Parsing Error!");
-        String description = err.description();
+    public void errroMessage() {
+        EosioError err = new EosioError("Parsing Error!");
+        String description = err.getLocalizedMessage();
         assertEquals("Parsing Error!", description);
 
-        EosioError err2 = new EosioError(EosioErrorCode.parsingError, "Parsing Error!", "Parsing JSON Response", true);
-        String description2 = err2.description();
-        assertEquals("Parsing Error!", description2);
-
-        Error origError = new IOError(new IOException("File Not Found"));
-        EosioError err3 = new EosioError(EosioErrorCode.resourceRetrievalError,
+        Exception origError = new IOException("File Not Found");
+        EosioError err2 = new EosioError(
                 "Could not find resource.",
-                "Attempting to open cached resource.",
-                origError,
-                true);
-        assertEquals("Could not find resource.", err3.description());
+                origError);
+        assertEquals("Could not find resource.", err2.getLocalizedMessage());
+
+        assertEquals("File Not Found", err2.getCause().getMessage());
     }
 
     @Test
@@ -52,26 +39,13 @@ public class EosioErrorTest {
         String jsonResult = "{\n" +
                 "  \"errorType\": \"EosioError\",\n" +
                 "  \"errorInfo\": {\n" +
-                "    \"errorCode\": \"parsingError\",\n" +
-                "    \"reason\": \"Parsing Error!\",\n" +
-                "    \"contextualInfo\": \"Parsing JSON Response\"\n" +
+                "    \"errorCode\": \"SerializationProviderError\",\n" +
+                "    \"reason\": \"Serialization Provider Failure\"\n" +
                 "  }\n" +
                 "}";
-        EosioError err2 = new EosioError(EosioErrorCode.parsingError, "Parsing Error!", "Parsing JSON Response", true);
+        SerializationProviderError err2 = new SerializationProviderError("Serialization Provider Failure");
         String errJsonString = err2.asJsonString();
         assertEquals(jsonResult, errJsonString);
     }
 
-    @Test
-    public void asEosioError() {
-        EosioError err = EosioError.asEosioError(new IOException("File Not Found"));
-        assertEquals(EosioErrorCode.unexpectedError, err.errorCode);
-        assertEquals("unexpectedError: File Not Found", err.errorDescription());
-        assertEquals("File Not Found", err.description());
-
-        EosioError err2 = EosioError.asEosioError(new EosioError(EosioErrorCode.parsingError, "Parsing Error!", "Parsing JSON Response", true));
-        assertEquals(EosioErrorCode.parsingError, err2.errorCode);
-        assertEquals("parsingError: Parsing Error!: context: Parsing JSON Response", err2.errorDescription());
-        assertEquals("Parsing Error!", err2.description());
-    }
 }
