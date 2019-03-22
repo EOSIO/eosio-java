@@ -1,4 +1,4 @@
-# EOSIO SDK for Java 
+# EOSIO SDK for Java ![EOSIO Alpha](https://img.shields.io/badge/EOSIO-Alpha-blue.svg)
 
 ## Overview
 
