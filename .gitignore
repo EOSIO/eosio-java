@@ -11,9 +11,13 @@
 .idea/**/encodings.xml
 .idea/**/misc.xml
 .idea/**/vcs.xml
+local.properties
 
 # Generated files
 .idea/**/contentModel.xml
+.idea/**/caches/
+.idea/**/modules.xml
+.idea/**/runConfigurations.xml
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
