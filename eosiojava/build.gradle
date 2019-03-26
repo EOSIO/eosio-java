@@ -39,5 +39,5 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15on:1.61'
     implementation 'com.google.guava:guava:19.0'
     testCompile 'junit:junit:4.12'
-    implementation files('libs/bitcoinj-core-0.15.jar')
+    implementation 'org.bitcoinj:bitcoinj-core:0.15.1'
 }
