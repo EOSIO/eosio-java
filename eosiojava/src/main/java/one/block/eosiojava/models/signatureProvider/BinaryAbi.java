@@ -1,5 +1,8 @@
 package one.block.eosiojava.models.signatureProvider;
 
+import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * The type Binary abi.
  */
@@ -8,11 +11,15 @@ public class BinaryAbi {
     /**
      * The Account name.
      */
+    @SerializedName("account_name")
+    @NotNull
     private String accountName;
 
     /**
      * The Abi.
      */
+    @SerializedName("abi")
+    @NotNull
     private String abi;
 
     /**
@@ -21,7 +28,7 @@ public class BinaryAbi {
      * @param accountName the account name
      * @param abi the abi
      */
-    public BinaryAbi(String accountName, String abi) {
+    public BinaryAbi(@NotNull String accountName, @NotNull String abi) {
         this.accountName = accountName;
         this.abi = abi;
     }
@@ -31,6 +38,7 @@ public class BinaryAbi {
      *
      * @return the accont name
      */
+    @NotNull
     public String getAccontName() {
         return accountName;
     }
@@ -40,7 +48,7 @@ public class BinaryAbi {
      *
      * @param accountName the account name
      */
-    public void setAccontName(String accountName) {
+    public void setAccontName(@NotNull String accountName) {
         this.accountName = accountName;
     }
 
@@ -49,6 +57,7 @@ public class BinaryAbi {
      *
      * @return the abi
      */
+    @NotNull
     public String getAbi() {
         return abi;
     }
@@ -58,7 +67,7 @@ public class BinaryAbi {
      *
      * @param abi the abi
      */
-    public void setAbi(String abi) {
+    public void setAbi(@NotNull String abi) {
         this.abi = abi;
     }
 }

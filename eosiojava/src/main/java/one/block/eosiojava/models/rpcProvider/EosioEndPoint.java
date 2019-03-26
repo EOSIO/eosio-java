@@ -1,6 +1,8 @@
 package one.block.eosiojava.models.rpcProvider;
 
 import com.google.gson.annotations.SerializedName;
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,8 +21,7 @@ public class EosioEndPoint {
      * The Port.
      */
     @SerializedName("port")
-    @NotNull
-    private String port;
+    private int port;
 
     /**
      * The Host.
@@ -36,7 +37,7 @@ public class EosioEndPoint {
      * @param port the port
      * @param host the host
      */
-    public EosioEndPoint(@NotNull String protocol, @NotNull String port, @NotNull String host) {
+    public EosioEndPoint(@NotNull String protocol, int port, @NotNull String host) {
         this.protocol = protocol;
         this.port = port;
         this.host = host;
@@ -67,7 +68,7 @@ public class EosioEndPoint {
      * @return the port
      */
     @NotNull
-    public String getPort() {
+    public int getPort() {
         return port;
     }
 
@@ -76,7 +77,7 @@ public class EosioEndPoint {
      *
      * @param port the port
      */
-    public void setPort(@NotNull String port) {
+    public void setPort(int port) {
         this.port = port;
     }
 
@@ -103,7 +104,7 @@ public class EosioEndPoint {
     /**
      * Return
      */
-    public String toFULLURL() {
-        return String.format("%s://%s:%s", this.protocol, this.host, this.port);
+    public URL toURL() throws MalformedURLException {
+        return new URL(this.protocol, this.host, this.port, "");
     }
 }

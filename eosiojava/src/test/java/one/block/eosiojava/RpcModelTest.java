@@ -8,6 +8,8 @@ import static org.junit.Assert.assertNull;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import one.block.eosiojava.models.rpcProvider.EosioEndPoint;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRawAbiRequest;
@@ -339,8 +341,14 @@ public class RpcModelTest {
      */
     @Test
     public void EosioEndPointTest() {
-        EosioEndPoint endPoint = new EosioEndPoint("https", "443", "api.eosnewyork.io");
-        assertEquals("https://api.eosnewyork.io:443", endPoint.toFULLURL());
+        EosioEndPoint endPoint = new EosioEndPoint("https", 443, "api.eosnewyork.io");
+        try {
+            assertEquals("https://api.eosnewyork.io:443", endPoint.toURL().toURI().toString());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     //endregion

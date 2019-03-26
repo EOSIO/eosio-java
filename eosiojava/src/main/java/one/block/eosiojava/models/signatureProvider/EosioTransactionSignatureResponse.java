@@ -2,6 +2,7 @@ package one.block.eosiojava.models.signatureProvider;
 
 import java.util.List;
 import one.block.eosiojava.error.signatureProvider.SignatureProviderError;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -12,11 +13,13 @@ public class EosioTransactionSignatureResponse {
     /**
      * The Serialize transaction.
      */
+    @NotNull
     private String serializeTransaction;
 
     /**
      * The Signatures.
      */
+    @NotNull
     private List<String> signatures;
 
     /**
@@ -30,6 +33,7 @@ public class EosioTransactionSignatureResponse {
      *
      * @return the serialize transaction
      */
+    @NotNull
     public String getSerializeTransaction() {
         return serializeTransaction;
     }
@@ -39,6 +43,7 @@ public class EosioTransactionSignatureResponse {
      *
      * @return the signatures
      */
+    @NotNull
     public List<String> getSignatures() {
         return signatures;
     }
