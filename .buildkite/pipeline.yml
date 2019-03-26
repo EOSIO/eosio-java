@@ -11,7 +11,7 @@ steps:
       gradle test
     label: "Run Tests"
     agents:
-     - - "queue=automation-android-builder-fleet"
+     - "queue=automation-android-builder-fleet"
 
   - wait
 
