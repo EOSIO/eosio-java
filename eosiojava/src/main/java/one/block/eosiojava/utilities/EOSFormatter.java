@@ -1,26 +1,4 @@
-/*
- * Copyright (c) 2017-2019 block.one all rights reserved.
- *
- * The MIT License
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 
 package one.block.eosiojava.utilities;
 
@@ -36,9 +14,26 @@ import org.bouncycastle.crypto.digests.RIPEMD160Digest;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * This class provides a number of helper methods that can be used to convert certain objects to and
+ * from formats that are germane to EOS blockchain transactions and the PEM (Privacy Enhanced Mail)
+ * format for those objects.  It also provides methods to format a serialized transaction into a
+ * format that can be submitted to an EOS blockchain.
+ */
 public class EOSFormatter {
 
-    //EOS FORMAT PREFIXES
+    /*
+    EOS Format Prefixes - The prefixes below are all used to preface the EOS format of certain types
+    of keys and signatures.  For instance, 'EOS' is used to preface a legacy form of a public key
+    that was generated using the secp256k1 algorithm.  The prefixes and there associated objects are
+    as follows:
+    EOS - Public Key generated with secp256k1 algorithm formatted for use on EOS blockchain.
+    PUB_R1_ - Public Key generated with secp256r1 or prime256v1 algorithm formatted for use on EOS blockchain.
+    PUB_K1_ - Public Key generated with secp256k1 algorithm formatted for use on EOS blockchain.
+    PVT_R1_ - Private Key generated with secp256r1 algorithm formatted for use on EOS blockchain.
+    SIG_R1_ - Signature signed with key generated with secp256r1 algorithm.
+    SIG_K1_ - Signature signed with key generated with secp256k1 algorithm.
+     */
     private static final String PATTERN_STRING_EOS_PREFIX_EOS = "EOS";
     private static final String PATTERN_STRING_EOS_PREFIX_PUB_R1 = "PUB_R1_";
     private static final String PATTERN_STRING_EOS_PREFIX_PUB_K1 = "PUB_K1_";
@@ -62,6 +57,19 @@ public class EOSFormatter {
     private static final String PEM_FOOTER_PREFIX = "-----END EC ";
     private static final String PEM_FOOTER_SUFFIX = "-----";
 
+    //CHECKSUM RELATED
+    private static final String SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX = "R1";
+
+    //CONSTANTS USED DURING DECODING AND CHECKSUM VALIDATION
+    private static final int STANDARD_KEY_LENGTH = 32;
+    private static final int CHECKSUM_BYTES = 4;
+    private static final int FIRST_TWO_BYTES_OF_KEY = 4;
+    private static final int DATA_SEQUENCE_LENGTH_BYTE_POSITION = 2;
+
+    /*
+    Covers the PEM objects currently supported by this class (i.e. The class allows for PEM
+    formatting of public keys, private keys, and signatures).
+     */
     private enum PEMObjectType {
         PUBLICKEY("PUBLIC KEY"),
         PRIVATEKEY("PRIVATE KEY"),
@@ -170,7 +178,7 @@ public class EOSFormatter {
                                 + PATTERN_STRING_PEM_SUFFIX_PRIVATE_KEY_SECP256K1;
                 break;
             default:
-                break;
+                throw new EOSFormatterError(ErrorConstants.UNSUPPORTED_ALGORITHM);
         }
 
         /*
@@ -178,11 +186,11 @@ public class EOSFormatter {
         the second byte.  Here we take the length of the entire string, subtract 4 to remove the first two bytes, divide by 2 (i.e. two characters per byte) and replace
         the second byte in the string with the corrected length.
          */
-        if (pemFormattedPrivateKey.length() > 4) {
-            int i = (pemFormattedPrivateKey.length() - 4) / 2;
+        if (pemFormattedPrivateKey.length() > FIRST_TWO_BYTES_OF_KEY) {
+            int i = (pemFormattedPrivateKey.length() - FIRST_TWO_BYTES_OF_KEY) / 2;
             String correctedLength = Integer.toHexString(i);
-            pemFormattedPrivateKey = pemFormattedPrivateKey.substring(0, 2) + correctedLength
-                    + pemFormattedPrivateKey.substring(4);
+            pemFormattedPrivateKey = pemFormattedPrivateKey.substring(0, DATA_SEQUENCE_LENGTH_BYTE_POSITION) + correctedLength
+                    + pemFormattedPrivateKey.substring(FIRST_TWO_BYTES_OF_KEY);
         } else {
             throw new EOSFormatterError(ErrorConstants.INVALID_EOS_PRIVATE_KEY);
         }
@@ -193,6 +201,7 @@ public class EOSFormatter {
         } catch (Exception e) {
             throw new EOSFormatterError(e);
         }
+
         return pemFormattedPrivateKey;
     }
 
@@ -212,9 +221,13 @@ public class EOSFormatter {
 
     /**
      * This method converts a DER encoded private key, public key, or signature into the PEM format.
-     * Example of a PEM formatted private key: -----BEGIN EC PRIVATE KEY-----
-     * MDECAQEEIEJSCKmyR0kmxy2pgkEwkqrodn2jG9mhXRhhxgsneuBsoAoGCCqGSM49AwEH -----END EC PRIVATE
-     * KEY----- The key data between the header and footer is Base64 encoded.
+     *
+     * Example of a PEM formatted private key:
+     * -----BEGIN EC PRIVATE KEY-----
+     * MDECAQEEIEJSCKmyR0kmxy2pgkEwkqrodn2jG9mhXRhhxgsneuBsoAoGCCqGSM49AwEH
+     * -----END EC PRIVATE KEY-----
+     *
+     * The key data between the header and footer is Base64 encoded.
      *
      * @param derEncodedByteArray DER encoded byte array to convert to PEM format
      * @param pemObjectType The type of PEM object being created (i.e. Private Key, Public Key,
@@ -244,6 +257,7 @@ public class EOSFormatter {
         } catch (Exception e) {
             throw new RuntimeException(ErrorConstants.DER_TO_PEM_CONVERSION, e);
         }
+
         return pemForm.toString();
     }
 
@@ -264,13 +278,19 @@ public class EOSFormatter {
         try {
             byte[] base58Decoded = Base58.decode(strKey);
             byte[] firstCheckSum = Arrays
-                    .copyOfRange(base58Decoded, base58Decoded.length - 4, base58Decoded.length);
-            decodedKey = Arrays.copyOfRange(base58Decoded, 0, base58Decoded.length - 4);
+                    .copyOfRange(base58Decoded, base58Decoded.length - CHECKSUM_BYTES, base58Decoded.length);
+            decodedKey = Arrays.copyOfRange(base58Decoded, 0, base58Decoded.length - CHECKSUM_BYTES);
 
             switch (keyType) {
                 case SECP256R1:
-                    byte[] keyTypeByteArray = "R1".getBytes();
-                    if (!validateRipeMD160CheckSum(decodedKey, firstCheckSum, keyTypeByteArray)) {
+                    byte[] secp256r1Suffix = SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX.getBytes();
+                    if (!validateRipeMD160CheckSum(decodedKey, firstCheckSum, secp256r1Suffix)) {
+                        throw new IllegalArgumentException(ErrorConstants.BASE58_INVALID_CHECKSUM);
+                    }
+                    break;
+                case PRIME256V1:
+                    byte[] prime256v1Suffix = SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX.getBytes();
+                    if (!validateRipeMD160CheckSum(decodedKey, firstCheckSum, prime256v1Suffix)) {
                         throw new IllegalArgumentException(ErrorConstants.BASE58_INVALID_CHECKSUM);
                     }
                     break;
@@ -280,15 +300,16 @@ public class EOSFormatter {
                     }
                     break;
                 default:
-                    break;
+                    throw new EOSFormatterError(ErrorConstants.UNSUPPORTED_ALGORITHM);
+
             }
 
             // trim 0x80 out if the key size is more than 32 bytes
             // this code apply for key has more than 32 byte and non R1 key
-            if (decodedKey.length > 32 && keyType != AlgorithmEmployed.SECP256R1) {
+            if (decodedKey.length > STANDARD_KEY_LENGTH && keyType != AlgorithmEmployed.SECP256R1) {
                 // Slice out the first byte
                 decodedKey = Arrays.copyOfRange(decodedKey, 1, decodedKey.length);
-                if (decodedKey.length == 33 && decodedKey[32] == ((Integer) 1).byteValue()) {
+                if (decodedKey.length > STANDARD_KEY_LENGTH && decodedKey[STANDARD_KEY_LENGTH] == ((Integer) 1).byteValue()) {
                     // Slice out last byte
                     decodedKey = Arrays.copyOfRange(decodedKey, 0, decodedKey.length - 1);
                 }
@@ -317,7 +338,7 @@ public class EOSFormatter {
 
         byte[] keyWithType = Bytes.concat(inputKey, keyTypeByteArray);
         byte[] digestRIPEMD160 = digestRIPEMD160(keyWithType);
-        byte[] checkSumFromInputKey = Arrays.copyOfRange(digestRIPEMD160, 0, 4);
+        byte[] checkSumFromInputKey = Arrays.copyOfRange(digestRIPEMD160, 0, CHECKSUM_BYTES);
         return Arrays.equals(checkSumToValidate, checkSumFromInputKey);
     }
 
@@ -335,7 +356,7 @@ public class EOSFormatter {
         }
 
         byte[] sha256x2 = Sha256Hash.hashTwice(inputKey);
-        byte[] checkSumFromInputKey = Arrays.copyOfRange(sha256x2, 0, 4);
+        byte[] checkSumFromInputKey = Arrays.copyOfRange(sha256x2, 0, CHECKSUM_BYTES);
         return Arrays.equals(checkSumToValidate, checkSumFromInputKey);
     }
 
