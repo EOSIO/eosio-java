@@ -22,33 +22,20 @@
  * THE SOFTWARE.
  */
 
-package one.block.eosiojava.error.serializationprovider;
+package one.block.eosiojava.enums;
 
-//
-// DeserializeError
-// eosio-java
-//
-// Created by mccoole on 3/22/19
-// Copyright © 2018-2019 block.one.
-//
+public enum AlgorithmEmployed {
+    SECP256R1("secp256r1"),
+    SECP256K1("secp256k1"),
+    PRIME256V1("prime256v1");
 
-import org.jetbrains.annotations.NotNull;
+    private String str;
 
-public class DeserializeError extends SerializationProviderError {
-
-    public DeserializeError() {
+    AlgorithmEmployed(String str){
+        this.str = str;
     }
 
-    public DeserializeError(@NotNull String message) {
-        super(message);
-    }
-
-    public DeserializeError(@NotNull String message,
-            @NotNull Exception exception) {
-        super(message, exception);
-    }
-
-    public DeserializeError(@NotNull Exception exception) {
-        super(exception);
+    public String getString(){
+        return str;
     }
 }

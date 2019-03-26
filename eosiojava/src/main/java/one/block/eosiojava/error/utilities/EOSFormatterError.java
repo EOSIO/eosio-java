@@ -22,33 +22,26 @@
  * THE SOFTWARE.
  */
 
-package one.block.eosiojava.error.serializationprovider;
+package one.block.eosiojava.error.utilities;
 
-//
-// DeserializeError
-// eosio-java
-//
-// Created by mccoole on 3/22/19
-// Copyright © 2018-2019 block.one.
-//
-
+import one.block.eosiojava.error.EosioError;
 import org.jetbrains.annotations.NotNull;
 
-public class DeserializeError extends SerializationProviderError {
+public class EOSFormatterError extends EosioError {
 
-    public DeserializeError() {
+    public EOSFormatterError() {
     }
 
-    public DeserializeError(@NotNull String message) {
+    public EOSFormatterError(@NotNull String message) {
         super(message);
     }
 
-    public DeserializeError(@NotNull String message,
+    public EOSFormatterError(@NotNull String message,
             @NotNull Exception exception) {
         super(message, exception);
     }
 
-    public DeserializeError(@NotNull Exception exception) {
+    public EOSFormatterError(@NotNull Exception exception) {
         super(exception);
     }
 }
