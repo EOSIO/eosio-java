@@ -1,6 +1,7 @@
 package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
+import java.math.BigInteger;
 
 /**
  * The generic response error could be thrown from Rpc calls.
@@ -11,7 +12,7 @@ public class RPCResponseError {
      * The Code.
      */
     @SerializedName("code")
-    private int code;
+    private BigInteger code;
 
     /**
      * The Message.
@@ -30,7 +31,7 @@ public class RPCResponseError {
      *
      * @return the code
      */
-    public int getCode() {
+    public BigInteger getCode() {
         return code;
     }
 
