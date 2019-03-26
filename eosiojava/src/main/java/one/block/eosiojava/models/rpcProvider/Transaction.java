@@ -2,11 +2,13 @@ package one.block.eosiojava.models.rpcProvider;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * The Transaction class which has data of actions for each transaction.
- * It is used to carry actions data in hex and get broadcast to backend.
+ * The Transaction class which has data of actions for each transaction. It is used to carry actions
+ * data in hex and get broadcast to backend.
  */
 public class Transaction implements Serializable {
 
@@ -14,57 +16,64 @@ public class Transaction implements Serializable {
      * The Expiration which will be calculated if the value is not set
      */
     @SerializedName("expiration")
-    private Long expiration;
+    @NotNull
+    private String expiration;
 
     /**
      * The Ref block num which will be calculated if the value is not set
      */
     @SerializedName("ref_block_num")
-    private Long refBlockNum;
+    @NotNull
+    private BigInteger refBlockNum;
 
     /**
      * The Ref block prefix which will be calculated if the value is not set
      */
     @SerializedName("ref_block_prefix")
-    private String refBlockPrefix;
+    @NotNull
+    private BigInteger refBlockPrefix;
 
     /**
      * The Max net usage words.
      */
     @SerializedName("max_net_usage_words")
-    private int maxNetUsageWords;
+    @NotNull
+    private BigInteger maxNetUsageWords;
 
     /**
      * The Max cpu usage ms.
      */
     @SerializedName("max_cpu_usage_ms")
-    private int maxCpuUsageMs;
+    @NotNull
+    private BigInteger maxCpuUsageMs;
 
     /**
      * The Delay sec.
      */
     @SerializedName("delay_sec")
-    private
-    int delaySec;
+    @NotNull
+    private BigInteger delaySec;
 
     /**
      * The Context free actions.
      */
     @SerializedName("context_free_actions")
-    private List<Object> contextFreeActions;
+    @NotNull
+    private List<Action> contextFreeActions;
 
     /**
      * The Actions which have data about action of an account with hex/json data for the detail
      */
     @SerializedName("actions")
+    @NotNull
     private List<Action> actions;
 
     /**
      * The Transaction extensions.
      */
     @SerializedName("transaction_extensions")
-    private
-    List<Object> transactionExtensions;
+    @NotNull
+    private List<Object> transactionExtensions;
 
     /**
      * Instantiates a new Transaction.
@@ -79,10 +88,12 @@ public class Transaction implements Serializable {
      * @param actions the actions
      * @param transactionExtensions the transaction extensions
      */
-    public Transaction(Long expiration, Long refBlockNum, String refBlockPrefix,
-            int maxNetUsageWords,
-            int maxCpuUsageMs, int delaySec, List<Object> contextFreeActions,
-            List<Action> actions, List<Object> transactionExtensions) {
+    public Transaction(@NotNull String expiration, @NotNull BigInteger refBlockNum,
+            @NotNull BigInteger refBlockPrefix,
+            @NotNull BigInteger maxNetUsageWords,
+            @NotNull BigInteger maxCpuUsageMs, @NotNull BigInteger delaySec,
+            @NotNull List<Action> contextFreeActions,
+            @NotNull List<Action> actions, @NotNull List<Object> transactionExtensions) {
         this.expiration = expiration;
         this.refBlockNum = refBlockNum;
         this.refBlockPrefix = refBlockPrefix;
@@ -99,7 +110,8 @@ public class Transaction implements Serializable {
      *
      * @return the expiration
      */
-    public Long getExpiration() {
+    @NotNull
+    public String getExpiration() {
         return expiration;
     }
 
@@ -108,7 +120,7 @@ public class Transaction implements Serializable {
      *
      * @param expiration the expiration
      */
-    public void setExpiration(Long expiration) {
+    public void setExpiration(@NotNull String expiration) {
         this.expiration = expiration;
     }
 
@@ -117,7 +129,8 @@ public class Transaction implements Serializable {
      *
      * @return the ref block num
      */
-    public Long getRefBlockNum() {
+    @NotNull
+    public BigInteger getRefBlockNum() {
         return refBlockNum;
     }
 
@@ -126,7 +139,7 @@ public class Transaction implements Serializable {
      *
      * @param refBlockNum the ref block num
      */
-    public void setRefBlockNum(Long refBlockNum) {
+    public void setRefBlockNum(@NotNull BigInteger refBlockNum) {
         this.refBlockNum = refBlockNum;
     }
 
@@ -135,7 +148,8 @@ public class Transaction implements Serializable {
      *
      * @return the ref block prefix
      */
-    public String getRefBlockPrefix() {
+    @NotNull
+    public BigInteger getRefBlockPrefix() {
         return refBlockPrefix;
     }
 
@@ -144,7 +158,7 @@ public class Transaction implements Serializable {
      *
      * @param refBlockPrefix the ref block prefix
      */
-    public void setRefBlockPrefix(String refBlockPrefix) {
+    public void setRefBlockPrefix(@NotNull BigInteger refBlockPrefix) {
         this.refBlockPrefix = refBlockPrefix;
     }
 
@@ -153,7 +167,8 @@ public class Transaction implements Serializable {
      *
      * @return the max net usage words
      */
-    public int getMaxNetUsageWords() {
+    @NotNull
+    public BigInteger getMaxNetUsageWords() {
         return maxNetUsageWords;
     }
 
@@ -162,7 +177,7 @@ public class Transaction implements Serializable {
      *
      * @param maxNetUsageWords the max net usage words
      */
-    public void setMaxNetUsageWords(int maxNetUsageWords) {
+    public void setMaxNetUsageWords(@NotNull BigInteger maxNetUsageWords) {
         this.maxNetUsageWords = maxNetUsageWords;
     }
 
@@ -171,7 +186,8 @@ public class Transaction implements Serializable {
      *
      * @return the max cpu usage ms
      */
-    public int getMaxCpuUsageMs() {
+    @NotNull
+    public BigInteger getMaxCpuUsageMs() {
         return maxCpuUsageMs;
     }
 
@@ -180,7 +196,7 @@ public class Transaction implements Serializable {
      *
      * @param maxCpuUsageMs the max cpu usage ms
      */
-    public void setMaxCpuUsageMs(int maxCpuUsageMs) {
+    public void setMaxCpuUsageMs(@NotNull BigInteger maxCpuUsageMs) {
         this.maxCpuUsageMs = maxCpuUsageMs;
     }
 
@@ -189,7 +205,8 @@ public class Transaction implements Serializable {
      *
      * @return the delay sec
      */
-    public int getDelaySec() {
+    @NotNull
+    public BigInteger getDelaySec() {
         return delaySec;
     }
 
@@ -198,7 +215,7 @@ public class Transaction implements Serializable {
      *
      * @param delaySec the delay sec
      */
-    public void setDelaySec(int delaySec) {
+    public void setDelaySec(@NotNull BigInteger delaySec) {
         this.delaySec = delaySec;
     }
 
@@ -207,7 +224,8 @@ public class Transaction implements Serializable {
      *
      * @return the context free actions
      */
-    public List<Object> getContextFreeActions() {
+    @NotNull
+    public List<Action> getContextFreeActions() {
         return contextFreeActions;
     }
 
@@ -216,7 +234,7 @@ public class Transaction implements Serializable {
      *
      * @param contextFreeActions the context free actions
      */
-    public void setContextFreeActions(List<Object> contextFreeActions) {
+    public void setContextFreeActions(@NotNull List<Action> contextFreeActions) {
         this.contextFreeActions = contextFreeActions;
     }
 
@@ -225,6 +243,7 @@ public class Transaction implements Serializable {
      *
      * @return the actions
      */
+    @NotNull
     public List<Action> getActions() {
         return actions;
     }
@@ -234,7 +253,7 @@ public class Transaction implements Serializable {
      *
      * @param actions the actions
      */
-    public void setActions(List<Action> actions) {
+    public void setActions(@NotNull List<Action> actions) {
         this.actions = actions;
     }
 
@@ -243,6 +262,7 @@ public class Transaction implements Serializable {
      *
      * @return the transaction extensions
      */
+    @NotNull
     public List<Object> getTransactionExtensions() {
         return transactionExtensions;
     }
@@ -252,7 +272,7 @@ public class Transaction implements Serializable {
      *
      * @param transactionExtensions the transaction extensions
      */
-    public void setTransactionExtensions(List<Object> transactionExtensions) {
+    public void setTransactionExtensions(@NotNull List<Object> transactionExtensions) {
         this.transactionExtensions = transactionExtensions;
     }
 }

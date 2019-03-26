@@ -1,6 +1,7 @@
 package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
+import java.math.BigInteger;
 
 /**
  * The type Receipt.
@@ -17,13 +18,13 @@ public class Receipt {
      * The Cpu usage us.
      */
     @SerializedName("cpu_usage_us")
-    private int cpuUsageUs;
+    private BigInteger cpuUsageUs;
 
     /**
      * The Net usage words.
      */
     @SerializedName("net_usage_words")
-    private int netUsageWords;
+    private BigInteger netUsageWords;
 
     /**
      * Gets status.
@@ -39,7 +40,7 @@ public class Receipt {
      *
      * @return the cpu usage us
      */
-    public int getCpuUsageUs() {
+    public BigInteger getCpuUsageUs() {
         return cpuUsageUs;
     }
 
@@ -48,7 +49,7 @@ public class Receipt {
      *
      * @return the net usage words
      */
-    public int getNetUsageWords() {
+    public BigInteger getNetUsageWords() {
         return netUsageWords;
     }
 }

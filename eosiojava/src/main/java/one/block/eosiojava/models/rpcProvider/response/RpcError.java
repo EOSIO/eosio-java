@@ -1,18 +1,19 @@
 package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
+import java.math.BigInteger;
 import java.util.List;
 
 /**
  * The Error of RPC response error
  */
-public class Error {
+public class RpcError {
 
     /**
      * The Code.
      */
     @SerializedName("code")
-    private int code;
+    private BigInteger code;
 
     /**
      * The Name.
@@ -37,7 +38,7 @@ public class Error {
      *
      * @return the code
      */
-    public int getCode() {
+    public  BigInteger getCode() {
         return code;
     }
 

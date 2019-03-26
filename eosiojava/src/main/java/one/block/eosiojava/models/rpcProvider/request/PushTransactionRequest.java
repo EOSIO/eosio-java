@@ -1,6 +1,8 @@
 package one.block.eosiojava.models.rpcProvider.request;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The request of PushTransactionRequest RPC call.
@@ -10,22 +12,28 @@ public class PushTransactionRequest {
     /**
      * The Signatures for packTrx
      */
+    @SerializedName("signatures")
+    @NotNull
     private List<String> signatures;
 
     /**
      * The Compression.
      */
+    @SerializedName("compression")
     private int compression;
 
     /**
      * The Packaged context free data.
      */
+    @SerializedName("packed_context_free_data")
     private String packagedContextFreeData;
 
     /**
      * The Pack Transaction (Serialized Transaction).
      * <br/> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      */
+    @SerializedName("packed_trx")
+    @NotNull
     private String packTrx;
 
     /**
@@ -36,8 +44,8 @@ public class PushTransactionRequest {
      * @param packagedContextFreeData the packaged context free data
      * @param packTrx the pack trx
      */
-    public PushTransactionRequest(List<String> signatures, int compression,
-            String packagedContextFreeData, String packTrx) {
+    public PushTransactionRequest(@NotNull List<String> signatures, int compression,
+            String packagedContextFreeData, @NotNull String packTrx) {
         this.signatures = signatures;
         this.compression = compression;
         this.packagedContextFreeData = packagedContextFreeData;
@@ -49,6 +57,7 @@ public class PushTransactionRequest {
      *
      * @return the signatures
      */
+    @NotNull
     public List<String> getSignatures() {
         return signatures;
     }
@@ -58,7 +67,7 @@ public class PushTransactionRequest {
      *
      * @param signatures the signatures
      */
-    public void setSignatures(List<String> signatures) {
+    public void setSignatures(@NotNull List<String> signatures) {
         this.signatures = signatures;
     }
 
@@ -103,6 +112,7 @@ public class PushTransactionRequest {
      *
      * @return the pack trx
      */
+    @NotNull
     public String getPackTrx() {
         return packTrx;
     }
@@ -112,7 +122,7 @@ public class PushTransactionRequest {
      *
      * @param packTrx the pack trx
      */
-    public void setPackTrx(String packTrx) {
+    public void setPackTrx(@NotNull String packTrx) {
         this.packTrx = packTrx;
     }
 }

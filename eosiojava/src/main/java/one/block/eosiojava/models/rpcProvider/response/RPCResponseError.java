@@ -23,7 +23,7 @@ public class RPCResponseError {
      * The Error.
      */
     @SerializedName("error")
-    private Error error;
+    private RpcError error;
 
     /**
      * Gets code.
@@ -48,7 +48,7 @@ public class RPCResponseError {
      *
      * @return the error
      */
-    public Error getError() {
+    public RpcError getError() {
         return error;
     }
 }

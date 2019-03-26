@@ -1,6 +1,7 @@
 package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
+import java.math.BigInteger;
 
 /**
  * The response of GetInfo RPC call
@@ -23,13 +24,13 @@ public class GetInfoResponse {
      * The Head block num.
      */
     @SerializedName("head_block_num")
-    private int headBlockNum;
+    private BigInteger  headBlockNum;
 
     /**
      * The Last irreversible block num.
      */
     @SerializedName("last_irreversible_block_num")
-    private int lastIrreversibleBlockNum;
+    private BigInteger lastIrreversibleBlockNum;
 
     /**
      * The Last irreversible block id.
@@ -59,25 +60,25 @@ public class GetInfoResponse {
      * The Virtual block cpu limit.
      */
     @SerializedName("virtual_block_cpu_limit")
-    private int virtualBlockCpuLimit;
+    private BigInteger  virtualBlockCpuLimit;
 
     /**
      * The Virtual block net limit.
      */
     @SerializedName("virtual_block_net_limit")
-    private int virtualBlockNetLimit;
+    private BigInteger  virtualBlockNetLimit;
 
     /**
      * The Block cpu limit.
      */
     @SerializedName("block_cpu_limit")
-    private int blockCpuLimit;
+    private BigInteger  blockCpuLimit;
 
     /**
      * The Block net limit.
      */
     @SerializedName("block_net_limit")
-    private int blockNetLimit;
+    private BigInteger  blockNetLimit;
 
     /**
      * The Server version string.
@@ -108,7 +109,7 @@ public class GetInfoResponse {
      *
      * @return the head block num
      */
-    public int getHeadBlockNum() {
+    public BigInteger  getHeadBlockNum() {
         return headBlockNum;
     }
 
@@ -117,7 +118,7 @@ public class GetInfoResponse {
      *
      * @return the last irreversible block num
      */
-    public int getLastIrreversibleBlockNum() {
+    public BigInteger  getLastIrreversibleBlockNum() {
         return lastIrreversibleBlockNum;
     }
 
@@ -162,7 +163,7 @@ public class GetInfoResponse {
      *
      * @return the virtual block cpu limit
      */
-    public int getVirtualBlockCpuLimit() {
+    public BigInteger  getVirtualBlockCpuLimit() {
         return virtualBlockCpuLimit;
     }
 
@@ -171,7 +172,7 @@ public class GetInfoResponse {
      *
      * @return the virtual block net limit
      */
-    public int getVirtualBlockNetLimit() {
+    public BigInteger  getVirtualBlockNetLimit() {
         return virtualBlockNetLimit;
     }
 
@@ -180,7 +181,7 @@ public class GetInfoResponse {
      *
      * @return the block cpu limit
      */
-    public int getBlockCpuLimit() {
+    public BigInteger  getBlockCpuLimit() {
         return blockCpuLimit;
     }
 
@@ -189,7 +190,7 @@ public class GetInfoResponse {
      *
      * @return the block net limit
      */
-    public int getBlockNetLimit() {
+    public BigInteger  getBlockNetLimit() {
         return blockNetLimit;
     }
 

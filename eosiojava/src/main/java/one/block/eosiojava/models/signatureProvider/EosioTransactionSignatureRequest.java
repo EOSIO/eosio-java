@@ -26,7 +26,7 @@ public class EosioTransactionSignatureRequest {
     /**
      * The Abis which carry abi data from main library to signature provider
      */
-    private List<String> abis;
+    private List<BinaryAbi> abis;
 
     /**
      * The whether the serialized transaction is modifiable.
@@ -43,7 +43,7 @@ public class EosioTransactionSignatureRequest {
      * @param isModifiable the is modifiable
      */
     public EosioTransactionSignatureRequest(String serializedTransaction,
-            List<String> signingPublicKey, String chainId, List<String> abis,
+            List<String> signingPublicKey, String chainId, List<BinaryAbi> abis,
             boolean isModifiable) {
         this.serializedTransaction = serializedTransaction;
         this.signingPublicKey = signingPublicKey;
@@ -111,7 +111,7 @@ public class EosioTransactionSignatureRequest {
      *
      * @return the abis
      */
-    public List<String> getAbis() {
+    public List<BinaryAbi> getAbis() {
         return abis;
     }
 
@@ -120,7 +120,7 @@ public class EosioTransactionSignatureRequest {
      *
      * @param abis the abis
      */
-    public void setAbis(List<String> abis) {
+    public void setAbis(List<BinaryAbi> abis) {
         this.abis = abis;
     }
 

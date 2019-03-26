@@ -1,6 +1,7 @@
 package one.block.eosiojava.models.rpcProvider.request;
 
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The request class for GetBlock RPC call
@@ -12,7 +13,7 @@ public class GetBlockRequest {
      *
      * @param blockNumOrId the block num or id
      */
-    public GetBlockRequest(String blockNumOrId) {
+    public GetBlockRequest(@NotNull String blockNumOrId) {
         this.blockNumOrId = blockNumOrId;
     }
 
@@ -20,6 +21,7 @@ public class GetBlockRequest {
      * Block num or id
      */
     @SerializedName("block_num_or_id")
+    @NotNull
     private String blockNumOrId;
 
     /**
@@ -27,6 +29,7 @@ public class GetBlockRequest {
      *
      * @return the block num or id
      */
+    @NotNull
     public String getBlockNumOrId() {
         return blockNumOrId;
     }
@@ -36,7 +39,7 @@ public class GetBlockRequest {
      *
      * @param blockNumOrId the block num or id
      */
-    public void setBlockNumOrId(String blockNumOrId) {
+    public void setBlockNumOrId(@NotNull String blockNumOrId) {
         this.blockNumOrId = blockNumOrId;
     }
 }

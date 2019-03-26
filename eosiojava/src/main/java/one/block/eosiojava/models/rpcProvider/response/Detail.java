@@ -1,6 +1,7 @@
 package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
+import java.math.BigInteger;
 
 /**
  * The Error Detail of RPC response error.
@@ -23,7 +24,7 @@ public class Detail {
      * The Line number.
      */
     @SerializedName("line_number")
-    private int lineNumber;
+    private BigInteger lineNumber;
 
     /**
      * The Method.
@@ -54,7 +55,7 @@ public class Detail {
      *
      * @return the line number
      */
-    public int getLineNumber() {
+    public  BigInteger getLineNumber() {
         return lineNumber;
     }
 

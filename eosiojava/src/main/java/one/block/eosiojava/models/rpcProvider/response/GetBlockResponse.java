@@ -1,7 +1,9 @@
 package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The response of GetBlockResponse
@@ -24,10 +26,10 @@ public class GetBlockResponse {
      * The Confirmed.
      */
     @SerializedName("confirmed")
-    private long confirmed;
+    private BigInteger confirmed;
 
     /**
-     * The Previous.
+     * The Previous.x
      */
     @SerializedName("previous")
     private String previous;
@@ -48,19 +50,19 @@ public class GetBlockResponse {
      * The Schedule version.
      */
     @SerializedName("schedule_version")
-    private long scheduleVersion;
+    private BigInteger  scheduleVersion;
 
     /**
      * The New producers.
      */
     @SerializedName("new_producers")
-    private Object newProducers;
+    private String newProducers;
 
     /**
      * The Header extensions.
      */
     @SerializedName("header_extensions")
-    private List<Object> headerExtensions;
+    private List<String> headerExtensions;
 
     /**
      * The Producer signature.
@@ -72,13 +74,13 @@ public class GetBlockResponse {
      * The Transactions.
      */
     @SerializedName("transactions")
-    private List<Object> transactions;
+    private List<Map> transactions;
 
     /**
      * The Block extensions.
      */
     @SerializedName("block_extensions")
-    private List<Object> blockExtensions;
+    private List<String> blockExtensions;
 
     /**
      * The Id.
@@ -90,13 +92,13 @@ public class GetBlockResponse {
      * The Block number.
      */
     @SerializedName("block_num")
-    private long blockNum;
+    private BigInteger  blockNum;
 
     /**
      * The Ref block prefix.
      */
     @SerializedName("ref_block_prefix")
-    private long refBlockPrefix;
+    private BigInteger  refBlockPrefix;
 
     /**
      * Gets timestamp.
@@ -121,7 +123,7 @@ public class GetBlockResponse {
      *
      * @return the confirmed
      */
-    public long getConfirmed() {
+    public BigInteger  getConfirmed() {
         return confirmed;
     }
 
@@ -157,7 +159,7 @@ public class GetBlockResponse {
      *
      * @return the schedule version
      */
-    public long getScheduleVersion() {
+    public BigInteger  getScheduleVersion() {
         return scheduleVersion;
     }
 
@@ -175,7 +177,7 @@ public class GetBlockResponse {
      *
      * @return the header extensions
      */
-    public List<Object> getHeaderExtensions() {
+    public List<String> getHeaderExtensions() {
         return headerExtensions;
     }
 
@@ -193,7 +195,7 @@ public class GetBlockResponse {
      *
      * @return the transactions
      */
-    public List<Object> getTransactions() {
+    public List<Map> getTransactions() {
         return transactions;
     }
 
@@ -202,7 +204,7 @@ public class GetBlockResponse {
      *
      * @return the block extensions
      */
-    public List<Object> getBlockExtensions() {
+    public List<String> getBlockExtensions() {
         return blockExtensions;
     }
 
@@ -220,7 +222,7 @@ public class GetBlockResponse {
      *
      * @return the block num
      */
-    public long getBlockNum() {
+    public BigInteger  getBlockNum() {
         return blockNum;
     }
 
@@ -229,7 +231,7 @@ public class GetBlockResponse {
      *
      * @return the ref block prefix
      */
-    public long getRefBlockPrefix() {
+    public BigInteger  getRefBlockPrefix() {
         return refBlockPrefix;
     }
 }

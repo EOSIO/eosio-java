@@ -1,6 +1,7 @@
 package one.block.eosiojava.models.rpcProvider.request;
 
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The request class of GetRawAbi RPC call
@@ -12,7 +13,7 @@ public class GetRawAbiRequest {
      *
      * @param accountName the account name
      */
-    public GetRawAbiRequest(String accountName) {
+    public GetRawAbiRequest(@NotNull String accountName) {
         this.accountName = accountName;
     }
 
@@ -20,6 +21,7 @@ public class GetRawAbiRequest {
      * The Account name.
      */
     @SerializedName("account_name")
+    @NotNull
     private String accountName;
 
     /**
@@ -27,6 +29,7 @@ public class GetRawAbiRequest {
      *
      * @return the account name
      */
+    @NotNull
     public String getAccountName() {
         return accountName;
     }
@@ -36,7 +39,7 @@ public class GetRawAbiRequest {
      *
      * @param accountName the account name
      */
-    public void setAccountName(String accountName) {
+    public void setAccountName(@NotNull String accountName) {
         this.accountName = accountName;
     }
 }

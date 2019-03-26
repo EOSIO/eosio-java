@@ -3,6 +3,7 @@ package one.block.eosiojava.models.rpcProvider;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The Action which has data about action of an account with hex/json data for the detail
@@ -13,18 +14,21 @@ public class Action implements Serializable {
      * The Account.
      */
     @SerializedName("account")
+    @NotNull
     private String account;
 
     /**
      * The Name.
      */
     @SerializedName("name")
+    @NotNull
     private String name;
 
     /**
      * The Authorization.
      */
     @SerializedName("authorization")
+    @NotNull
     private List<Authorization> authorization;
 
     /**
@@ -34,6 +38,7 @@ public class Action implements Serializable {
      * SerializationProvider <br/> Check "Complete workflow" diagram for more information
      */
     @SerializedName("data")
+    @NotNull
     private String data;
 
     /**
@@ -44,8 +49,8 @@ public class Action implements Serializable {
      * @param authorization the authorization
      * @param data the data
      */
-    public Action(String account, String name,
-            List<Authorization> authorization, String data) {
+    public Action(@NotNull String account, @NotNull String name,
+            @NotNull List<Authorization> authorization, @NotNull String data) {
         this.account = account;
         this.name = name;
         this.authorization = authorization;
@@ -57,6 +62,7 @@ public class Action implements Serializable {
      *
      * @return the account
      */
+    @NotNull
     public String getAccount() {
         return account;
     }
@@ -66,7 +72,7 @@ public class Action implements Serializable {
      *
      * @param account the account
      */
-    public void setAccount(String account) {
+    public void setAccount(@NotNull String account) {
         this.account = account;
     }
 
@@ -75,6 +81,7 @@ public class Action implements Serializable {
      *
      * @return the name
      */
+    @NotNull
     public String getName() {
         return name;
     }
@@ -84,7 +91,7 @@ public class Action implements Serializable {
      *
      * @param name the name
      */
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         this.name = name;
     }
 
@@ -93,6 +100,7 @@ public class Action implements Serializable {
      *
      * @return the authorization
      */
+    @NotNull
     public List<Authorization> getAuthorization() {
         return authorization;
     }
@@ -103,7 +111,7 @@ public class Action implements Serializable {
      * @param authorization the authorization
      */
     public void setAuthorization(
-            List<Authorization> authorization) {
+            @NotNull List<Authorization> authorization) {
         this.authorization = authorization;
     }
 
@@ -112,6 +120,7 @@ public class Action implements Serializable {
      *
      * @return the data
      */
+    @NotNull
     public String getData() {
         return data;
     }
@@ -121,7 +130,7 @@ public class Action implements Serializable {
      *
      * @param data the data
      */
-    public void setData(String data) {
+    public void setData(@NotNull String data) {
         this.data = data;
     }
 }

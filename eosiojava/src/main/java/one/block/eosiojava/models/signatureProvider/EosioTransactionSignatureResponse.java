@@ -2,6 +2,7 @@ package one.block.eosiojava.models.signatureProvider;
 
 import java.util.List;
 import one.block.eosiojava.error.signatureProvider.SignatureProviderError;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The type Eosio transaction signature response.
@@ -21,6 +22,7 @@ public class EosioTransactionSignatureResponse {
     /**
      * The Error.
      */
+    @Nullable
     private SignatureProviderError error;
 
     /**
@@ -46,6 +48,7 @@ public class EosioTransactionSignatureResponse {
      *
      * @return the error
      */
+    @Nullable
     public SignatureProviderError getError() {
         return error;
     }
