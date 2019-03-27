@@ -1,11 +1,6 @@
+
+
 package one.block.eosiojava.interfaces;
-//
-// ISerializationProvider
-// eosio-java
-//
-// Created by mccoole on 2019-03-20
-// Copyright © 2018-2019 block.one.
-//
 
 import one.block.eosiojava.error.serializationprovider.DeserializeAbiError;
 import one.block.eosiojava.error.serializationprovider.DeserializeError;

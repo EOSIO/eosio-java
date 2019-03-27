@@ -1,12 +1,6 @@
-package one.block.eosiojava.error.serializationprovider;
 
-//
-// SerializeTransactionError
-// eosio-java
-//
-// Created by mccoole on 3/22/19
-// Copyright © 2018-2019 block.one.
-//
+
+package one.block.eosiojava.error.serializationprovider;
 
 import org.jetbrains.annotations.NotNull;
 

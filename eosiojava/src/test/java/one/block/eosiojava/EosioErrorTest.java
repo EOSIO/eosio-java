@@ -1,3 +1,5 @@
+
+
 package one.block.eosiojava;
 
 import one.block.eosiojava.error.EosioError;
@@ -8,14 +10,6 @@ import java.io.IOError;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
-
-//
-// EosioErrorTest
-// eosio-java
-//
-// Created by mccoole on 2019-03-11
-// Copyright © 2018-2019 block.one.
-//
 
 public class EosioErrorTest {
 

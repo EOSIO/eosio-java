@@ -1,11 +1,6 @@
+
+
 package one.block.eosiojava.error;
-//
-// EosioError
-// eosio-java
-//
-// Created by mccoole on 2019-03-08
-// Copyright © 2018-2019 block.one.
-//
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
