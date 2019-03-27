@@ -1,5 +1,3 @@
-
-
 package one.block.eosiojava.error;
 
 import com.google.gson.Gson;

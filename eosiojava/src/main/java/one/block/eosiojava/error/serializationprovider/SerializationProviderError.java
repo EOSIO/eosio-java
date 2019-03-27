@@ -1,5 +1,3 @@
-
-
 package one.block.eosiojava.error.serializationprovider;
 
 import one.block.eosiojava.error.EosioError;

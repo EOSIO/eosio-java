@@ -1,5 +1,3 @@
-
-
 package one.block.eosiojava.error.serializationprovider;
 
 import org.jetbrains.annotations.NotNull;

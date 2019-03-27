@@ -1,5 +1,3 @@
-
-
 package one.block.eosiojava.interfaces;
 
 import one.block.eosiojava.error.serializationprovider.DeserializeAbiError;

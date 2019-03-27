@@ -1,5 +1,3 @@
-
-
 package one.block.eosiojava.models;
 
 import org.jetbrains.annotations.NotNull;
