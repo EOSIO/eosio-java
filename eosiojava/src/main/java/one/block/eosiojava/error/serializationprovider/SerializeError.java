@@ -1,11 +1,4 @@
 package one.block.eosiojava.error.serializationprovider;
-//
-// SerializeError
-// eosio-java
-//
-// Created by mccoole on 2019-03-21
-// Copyright © 2018-2019 block.one.
-//
 
 import org.jetbrains.annotations.NotNull;
 

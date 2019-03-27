@@ -1,11 +1,4 @@
 package one.block.eosiojava.models;
-//
-// AbiEosSerializationObject
-// eosio-java
-//
-// Created by mccoole on 2019-03-20
-// Copyright © 2018-2019 block.one.
-//
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
