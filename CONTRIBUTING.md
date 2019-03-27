@@ -1,4 +1,4 @@
-# Contributing to {{friendlyName}}
+# Contributing to EOSIO SDK for Java
 
 Interested in contributing? That's awesome! Here are some guidelines to get started quickly and easily:
 
@@ -6,7 +6,7 @@ Interested in contributing? That's awesome! Here are some guidelines to get star
   - [Bug Reports](#bug-reports)
   - [Feature Requests](#feature-requests)
   - [Change Requests](#change-requests)
-- [Working on {{friendlyName}}](#working-on-friendlyname)
+- [Working on EOSIO SDK for Java](#working-on-eosio-sdk-for-java)
   - [Feature Branches](#feature-branches)
   - [Submitting Pull Requests](#submitting-pull-requests)
   - [Testing and Quality Assurance](#testing-and-quality-assurance)
@@ -16,7 +16,7 @@ Interested in contributing? That's awesome! Here are some guidelines to get star
 
 ## Reporting An Issue
 
-If you're about to raise an issue because you think you've found a problem with {{friendlyName}}, or you'd like to make a request for a new feature in the codebase, or any other reason… please read this first.
+If you're about to raise an issue because you think you've found a problem with EOSIO SDK for Java, or you'd like to make a request for a new feature in the codebase, or any other reason… please read this first.
 
 The GitHub issue tracker is the preferred channel for [bug reports](#bug-reports), [feature requests](#feature-requests), and [submitting pull requests](#submitting-pull-requests), but please respect the following restrictions:
 
@@ -34,12 +34,12 @@ Guidelines for bug reports:
    reported.
 
 1. **Check if the issue has been fixed** &mdash; look for [closed issues in the
-   current milestone](https://github.com/EOSIO/{{githubRepo}}/issues?q=is%3Aissue+is%3Aclosed) or try to reproduce it
+   current milestone](https://github.com/EOSIO/eosio-java/issues?q=is%3Aissue+is%3Aclosed) or try to reproduce it
    using the latest `develop` branch.
 
 A good bug report shouldn't leave others needing to chase you up for more information. Be sure to include the details of your environment and relevant tests that demonstrate the failure.
 
-[Report a bug](https://github.com/EOSIO/{{githubRepo}}/issues/new?title=Bug%3A)
+[Report a bug](https://github.com/EOSIO/eosio-java/issues/new?title=Bug%3A)
 
 ### Feature Requests
 
@@ -51,15 +51,15 @@ Feature requests are welcome. Before you submit one be sure to have:
 
 ### Change Requests
 
-Change requests cover both architectural and functional changes to how {{friendlyName}} works. If you have an idea for a new or different dependency, a refactor, or an improvement to a feature, etc - please be sure to:
+Change requests cover both architectural and functional changes to how EOSIO SDK for Java works. If you have an idea for a new or different dependency, a refactor, or an improvement to a feature, etc - please be sure to:
 
 1. **Use the GitHub search** and check someone else didn't get there first
 1. Take a moment to think about the best way to make a case for, and explain what you're thinking. Are you sure this shouldn't really be
    a [bug report](#bug-reports) or a [feature request](#feature-requests)?  Is it really one idea or is it many? What's the context? What problem are you solving? Why is what you are suggesting better than what's already there?
 
-## Working on {{friendlyName}}
+## Working on EOSIO SDK for Java
 
-Code contributions are welcome and encouraged! If you are looking for a good place to start, check out the [good first issue](https://github.com/EOSIO/{{githubRepo}}/labels/good%20first%20issue) label in GitHub issues.
+Code contributions are welcome and encouraged! If you are looking for a good place to start, check out the [good first issue](https://github.com/EOSIO/eosio-java/labels/good%20first%20issue) label in GitHub issues.
 
 Also, please follow these guidelines when submitting code:
 
@@ -67,8 +67,8 @@ Also, please follow these guidelines when submitting code:
 
 To get it out of the way:
 
-- **[develop](https://github.com/EOSIO/{{githubRepo}}/tree/develop)** is the development branch. All work on the next release happens here so you should generally branch off `develop`. Do **NOT** use this branch for a production site.
-- **[master](https://github.com/EOSIO/{{githubRepo}})** contains the latest release of {{friendlyName}}. This branch may be used in production. Do **NOT** use this branch to work on {{friendlyName}}'s source.
+- **[develop](https://github.com/EOSIO/eosio-java/tree/develop)** is the development branch. All work on the next release happens here so you should generally branch off `develop`. Do **NOT** use this branch for a production site.
+- **[master](https://github.com/EOSIO/eosio-java)** contains the latest release of EOSIO SDK for Java}. This branch may be used in production. Do **NOT** use this branch to work on EOSIO SDK for Java's source.
 
 ### Submitting Pull Requests
 
@@ -78,7 +78,7 @@ Pull requests are awesome. If you're looking to raise a PR for something which d
 
 Never underestimate just how useful quality assurance is. If you're looking to get involved with the code base and don't know where to start, checking out and testing a pull request is one of the most useful things you could do.
 
-Essentially, [check out the latest develop branch](#working-on-{{friendlyName}}), take it for a spin, and if you find anything odd, please follow the [bug report guidelines](#bug-reports) and let us know!
+Essentially, [check out the latest develop branch](#working-on-eosio-sdk-for-java), take it for a spin, and if you find anything odd, please follow the [bug report guidelines](#bug-reports) and let us know!
 
 ## Conduct
 
@@ -98,11 +98,11 @@ Examples of unacceptable behavior include:
 - Publishing others’ private information, such as a physical or electronic address, without explicit permission
 - Other conduct which could reasonably be considered inappropriate in a professional setting
 
+
+
 ## Contributor License & Acknowledgments
 
-This repository contains a notice of a license (MIT), and in accordance with [GitHub’s Terms of Service](https://help.github.com/articles/github-terms-of-service/), whenever you make a contribution to this project, you license your contribution under the same terms, and you agree that you have the right to license your contribution under those terms. 
-
-Whenever you make a contribution to this project, you also certify in the terms of the Developer’s Certificate of Origin set out below:
+Whenever you make a contribution to this project, you license your contribution under the same terms as set out in LICENSE, and you represent and warrant that you have the right to license your contribution under those terms.  Whenever you make a contribution to this project, you also certify in the terms of the Developer’s Certificate of Origin set out below:
 
 ```
 Developer Certificate of Origin

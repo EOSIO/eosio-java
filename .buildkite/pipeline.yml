@@ -1,0 +1,21 @@
+steps:
+  - command: |
+      gradle build
+    label: "Build Library"
+    agents:
+     - "queue=automation-android-builder-fleet"
+
+  - wait
+
+  - command: |
+      gradle test
+    label: "Run Tests"
+    agents:
+     - "queue=automation-android-builder-fleet"
+
+  - wait
+
+  - command: "echo 'Success!!'"
+    label: ":trophy: Success"
+    agents:
+     - "queue=automation-android-builder-fleet"
