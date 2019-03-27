@@ -73,7 +73,7 @@ public class Transaction implements Serializable {
      */
     @SerializedName("transaction_extensions")
     @NotNull
-    private List<Object> transactionExtensions;
+    private List<String> transactionExtensions;
 
     /**
      * Instantiates a new Transaction.
@@ -93,7 +93,7 @@ public class Transaction implements Serializable {
             @NotNull BigInteger maxNetUsageWords,
             @NotNull BigInteger maxCpuUsageMs, @NotNull BigInteger delaySec,
             @NotNull List<Action> contextFreeActions,
-            @NotNull List<Action> actions, @NotNull List<Object> transactionExtensions) {
+            @NotNull List<Action> actions, @NotNull List<String> transactionExtensions) {
         this.expiration = expiration;
         this.refBlockNum = refBlockNum;
         this.refBlockPrefix = refBlockPrefix;
@@ -263,7 +263,7 @@ public class Transaction implements Serializable {
      * @return the transaction extensions
      */
     @NotNull
-    public List<Object> getTransactionExtensions() {
+    public List<String> getTransactionExtensions() {
         return transactionExtensions;
     }
 
@@ -272,7 +272,7 @@ public class Transaction implements Serializable {
      *
      * @param transactionExtensions the transaction extensions
      */
-    public void setTransactionExtensions(@NotNull List<Object> transactionExtensions) {
+    public void setTransactionExtensions(@NotNull List<String> transactionExtensions) {
         this.transactionExtensions = transactionExtensions;
     }
 }
