@@ -490,6 +490,7 @@ public class EOSFormatter {
         byte[] digestRIPEMD160 = digestRIPEMD160(keyWithType);
         byte[] checkSumFromInputKey = Arrays.copyOfRange(digestRIPEMD160, 0, CHECKSUM_BYTES);
 
+        //This checksum returns whether the checksum comparison was invalid.
         return !Arrays.equals(checkSumToValidate, checkSumFromInputKey);
     }
 
