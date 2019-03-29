@@ -128,4 +128,22 @@ public class EOSFormatterTest {
 
     }
 
+    //SECP256R1 Public Key Test (EOS to PEM)
+    @Test
+    public void validatePEMCreationOfSecp256r1PublicKey() {
+        String eosFormattedPublicKey = "PUB_R1_5AvUuRssyb7Z2HgNHVofX5heUV5dk8Gni1BGNMzMRCGbhdhBbu";
+        String pemFormattedPublicKey = "-----BEGIN EC PUBLIC KEY-----\n"
+                + "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJVBOXmBTBSUedKnkv11sD8ZBHVmJN3aCJEk+5aArDhbYDEgZX06aHqI9mc/ZtroEf6qcHXUgBdYOT86zlAeS7A==\n"
+                + "-----END EC PUBLIC KEY-----";
+
+        try {
+            assertEquals(pemFormattedPublicKey,
+                    EOSFormatter.convertEOSPublicKeyToPEMFormat(eosFormattedPublicKey));
+        } catch (EOSFormatterError e) {
+            fail("Not expecting an EOSFormatterError to be thrown!");
+        }
+
+    }
+
+
 }

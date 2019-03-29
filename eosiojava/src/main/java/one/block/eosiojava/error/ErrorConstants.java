@@ -6,6 +6,7 @@ public class ErrorConstants {
 
     //EOSFormatter() Errors
     public static final String INVALID_EOS_PRIVATE_KEY = "The EOS private key provided is invalid!";
+    public static final String INVALID_EOS_PUBLIC_KEY = "The EOS public key provided is invalid!";
     public static final String BASE58_DECODING_ERROR = "An error occured while Base58 decoding the EOS key!";
     public static final String BASE58_EMPTY_KEY = "Input key to decode can't be empty!";
     public static final String BASE58_EMPTY_CHECKSUM_OR_KEY = "Input key, checksum and key type to validate can't be empty!";

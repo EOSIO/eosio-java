@@ -11,6 +11,9 @@ import one.block.eosiojava.error.utilities.EOSFormatterError;
 import org.bitcoinj.core.Base58;
 import org.bitcoinj.core.Sha256Hash;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,6 +62,7 @@ public class EOSFormatter {
 
     //CHECKSUM RELATED
     private static final String SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX = "R1";
+    private static final String SECP256K1_CHECKSUM_VALIDATION_SUFFIX = "K1";
 
     //CONSTANTS USED DURING DECODING AND CHECKSUM VALIDATION
     private static final int STANDARD_KEY_LENGTH = 32;
@@ -93,9 +97,115 @@ public class EOSFormatter {
         return eosFormattedPublicKey;
     }
 
-    public String convertEOSPublicKeyToPEMFormat(@NotNull String publicKeyEOS)
+    /**
+     * This method converts an EOS formatted public key to the PEM format.
+     *
+     * @param publicKeyEOS Public key in the EOS format
+     * @return PEM formatted public key as string
+     */
+    @NotNull
+    public static String convertEOSPublicKeyToPEMFormat(@NotNull String publicKeyEOS)
             throws EOSFormatterError {
         String pemFormattedPublickKey = publicKeyEOS;
+        AlgorithmEmployed algorithmEmployed;
+        String keyPrefix;
+
+        /*
+        If the private key was encrypted using the secp256R1 algorithm it will have a 'PVT_R1_' prefix
+        that needs to be removed.
+         */
+        if (pemFormattedPublickKey.contains(PATTERN_STRING_EOS_PREFIX_PUB_R1)) {
+            algorithmEmployed = AlgorithmEmployed.SECP256R1;
+            keyPrefix = PATTERN_STRING_EOS_PREFIX_PUB_R1;
+            /*
+            Split the prefix from the key and take the second half of string.  The second half contains
+            the key minus the prefix.
+             */
+            pemFormattedPublickKey = pemFormattedPublickKey
+                    .split(PATTERN_STRING_EOS_PREFIX_PUB_R1)[1];
+        } else if (pemFormattedPublickKey.contains(PATTERN_STRING_EOS_PREFIX_PUB_K1)) {
+            algorithmEmployed = AlgorithmEmployed.SECP256K1;
+            keyPrefix = PATTERN_STRING_EOS_PREFIX_PUB_K1;
+            /*
+            Split the prefix from the key and take the second half of string.  The second half contains
+            the key minus the prefix.
+             */
+            pemFormattedPublickKey = pemFormattedPublickKey
+                    .split(PATTERN_STRING_EOS_PREFIX_PUB_K1)[1];
+        } else if (pemFormattedPublickKey.contains(PATTERN_STRING_EOS_PREFIX_EOS)) {
+            algorithmEmployed = AlgorithmEmployed.SECP256K1;
+            keyPrefix = PATTERN_STRING_EOS_PREFIX_EOS;
+            /*
+            Split the prefix from the key and take the second half of string.  The second half contains
+            the key minus the prefix.
+             */
+            pemFormattedPublickKey = pemFormattedPublickKey.split(PATTERN_STRING_EOS_PREFIX_EOS)[1];
+        } else {
+            throw new EOSFormatterError(ErrorConstants.INVALID_EOS_PUBLIC_KEY);
+        }
+
+        //Base58 decode the key
+        byte[] base58DecodedPublicKey;
+        try {
+            base58DecodedPublicKey = decodePublicKey(pemFormattedPublickKey,
+                    keyPrefix);
+        } catch (Exception e) {
+            throw new EOSFormatterError(ErrorConstants.BASE58_DECODING_ERROR, e);
+        }
+
+        //Convert decoded array to string
+        pemFormattedPublickKey = Hex.toHexString(base58DecodedPublicKey);
+
+        //Decompress public key if necessary
+        if (pemFormattedPublickKey.startsWith("03") || pemFormattedPublickKey.startsWith("02")) {
+            try {
+                pemFormattedPublickKey = Hex.toHexString(
+                        decompressPublickey(Hex.decode(pemFormattedPublickKey), algorithmEmployed));
+            } catch (Exception e) {
+                throw new EOSFormatterError(e);
+            }
+        }
+
+        //Add DER header
+        switch (algorithmEmployed) {
+            case SECP256R1:
+                pemFormattedPublickKey =
+                        PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256R1 + pemFormattedPublickKey;
+                break;
+            case PRIME256V1:
+                pemFormattedPublickKey =
+                        PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256R1 + pemFormattedPublickKey;
+                break;
+            case SECP256K1:
+                pemFormattedPublickKey =
+                        PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256K1 + pemFormattedPublickKey;
+                break;
+            default:
+                throw new EOSFormatterError(ErrorConstants.UNSUPPORTED_ALGORITHM);
+        }
+
+        /*
+        Correct the sequence length value.  According to the ASN.1 specification.  For a DER encoded private key the second byte reflects the number of bytes following
+        the second byte.  Here we take the length of the entire string, subtract 4 to remove the first two bytes, divide by 2 (i.e. two characters per byte) and replace
+        the second byte in the string with the corrected length.
+         */
+        if (pemFormattedPublickKey.length() > FIRST_TWO_BYTES_OF_KEY) {
+            int i = (pemFormattedPublickKey.length() - FIRST_TWO_BYTES_OF_KEY) / 2;
+            String correctedLength = Integer.toHexString(i);
+            pemFormattedPublickKey =
+                    pemFormattedPublickKey.substring(0, DATA_SEQUENCE_LENGTH_BYTE_POSITION)
+                            + correctedLength
+                            + pemFormattedPublickKey.substring(FIRST_TWO_BYTES_OF_KEY);
+        } else {
+            throw new EOSFormatterError(ErrorConstants.INVALID_EOS_PUBLIC_KEY);
+        }
+
+        try {
+            pemFormattedPublickKey = derToPEM(Hex.decode(pemFormattedPublickKey),
+                    PEMObjectType.PUBLICKEY);
+        } catch (Exception e) {
+            throw new EOSFormatterError(e);
+        }
 
         return pemFormattedPublickKey;
     }
@@ -136,7 +246,7 @@ public class EOSFormatter {
         If the private key was encrypted using the secp256R1 algorithm it will have a 'PVT_R1_' prefix
         that needs to be removed.
          */
-        if (pemFormattedPrivateKey.matches(".*" + PATTERN_STRING_EOS_PREFIX_PVT_R1 + ".*")) {
+        if (pemFormattedPrivateKey.contains(PATTERN_STRING_EOS_PREFIX_PVT_R1)) {
             algorithmEmployed = AlgorithmEmployed.SECP256R1;
             /*
             Split the prefix from the key and take the second half of string.  The second half contains
@@ -189,8 +299,10 @@ public class EOSFormatter {
         if (pemFormattedPrivateKey.length() > FIRST_TWO_BYTES_OF_KEY) {
             int i = (pemFormattedPrivateKey.length() - FIRST_TWO_BYTES_OF_KEY) / 2;
             String correctedLength = Integer.toHexString(i);
-            pemFormattedPrivateKey = pemFormattedPrivateKey.substring(0, DATA_SEQUENCE_LENGTH_BYTE_POSITION) + correctedLength
-                    + pemFormattedPrivateKey.substring(FIRST_TWO_BYTES_OF_KEY);
+            pemFormattedPrivateKey =
+                    pemFormattedPrivateKey.substring(0, DATA_SEQUENCE_LENGTH_BYTE_POSITION)
+                            + correctedLength
+                            + pemFormattedPrivateKey.substring(FIRST_TWO_BYTES_OF_KEY);
         } else {
             throw new EOSFormatterError(ErrorConstants.INVALID_EOS_PRIVATE_KEY);
         }
@@ -220,12 +332,12 @@ public class EOSFormatter {
     }
 
     /**
-     * This method converts a DER encoded private key, public key, or signature into the PEM format.
+     * This method converts a DER encoded private key, public key, or signature into the PEM
+     * format.
      *
-     * Example of a PEM formatted private key:
-     * -----BEGIN EC PRIVATE KEY-----
-     * MDECAQEEIEJSCKmyR0kmxy2pgkEwkqrodn2jG9mhXRhhxgsneuBsoAoGCCqGSM49AwEH
-     * -----END EC PRIVATE KEY-----
+     * Example of a PEM formatted private key: -----BEGIN EC PRIVATE KEY-----
+     * MDECAQEEIEJSCKmyR0kmxy2pgkEwkqrodn2jG9mhXRhhxgsneuBsoAoGCCqGSM49AwEH -----END EC PRIVATE
+     * KEY-----
      *
      * The key data between the header and footer is Base64 encoded.
      *
@@ -278,18 +390,22 @@ public class EOSFormatter {
         try {
             byte[] base58Decoded = Base58.decode(strKey);
             byte[] firstCheckSum = Arrays
-                    .copyOfRange(base58Decoded, base58Decoded.length - CHECKSUM_BYTES, base58Decoded.length);
-            decodedKey = Arrays.copyOfRange(base58Decoded, 0, base58Decoded.length - CHECKSUM_BYTES);
+                    .copyOfRange(base58Decoded, base58Decoded.length - CHECKSUM_BYTES,
+                            base58Decoded.length);
+            decodedKey = Arrays
+                    .copyOfRange(base58Decoded, 0, base58Decoded.length - CHECKSUM_BYTES);
 
             switch (keyType) {
                 case SECP256R1:
-                    byte[] secp256r1Suffix = SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX.getBytes();
+                    byte[] secp256r1Suffix = SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX
+                            .getBytes();
                     if (!validateRipeMD160CheckSum(decodedKey, firstCheckSum, secp256r1Suffix)) {
                         throw new IllegalArgumentException(ErrorConstants.BASE58_INVALID_CHECKSUM);
                     }
                     break;
                 case PRIME256V1:
-                    byte[] prime256v1Suffix = SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX.getBytes();
+                    byte[] prime256v1Suffix = SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX
+                            .getBytes();
                     if (!validateRipeMD160CheckSum(decodedKey, firstCheckSum, prime256v1Suffix)) {
                         throw new IllegalArgumentException(ErrorConstants.BASE58_INVALID_CHECKSUM);
                     }
@@ -309,7 +425,8 @@ public class EOSFormatter {
             if (decodedKey.length > STANDARD_KEY_LENGTH && keyType != AlgorithmEmployed.SECP256R1) {
                 // Slice out the first byte
                 decodedKey = Arrays.copyOfRange(decodedKey, 1, decodedKey.length);
-                if (decodedKey.length > STANDARD_KEY_LENGTH && decodedKey[STANDARD_KEY_LENGTH] == ((Integer) 1).byteValue()) {
+                if (decodedKey.length > STANDARD_KEY_LENGTH
+                        && decodedKey[STANDARD_KEY_LENGTH] == ((Integer) 1).byteValue()) {
                     // Slice out last byte
                     decodedKey = Arrays.copyOfRange(decodedKey, 0, decodedKey.length - 1);
                 }
@@ -320,6 +437,60 @@ public class EOSFormatter {
 
         return decodedKey;
     }
+
+    /**
+     * Decoding public key
+     */
+    public static byte[] decodePublicKey(@NotNull String strKey, String keyPrefix) {
+        if (strKey.isEmpty()) {
+            throw new IllegalArgumentException("Input key to decode can't be empty.");
+        }
+
+        byte[] decodedKey = null;
+
+        try {
+            byte[] base58Decoded = Base58.decode(strKey);
+            byte[] firstCheckSum = Arrays
+                    .copyOfRange(base58Decoded, base58Decoded.length - CHECKSUM_BYTES,
+                            base58Decoded.length);
+            decodedKey = Arrays
+                    .copyOfRange(base58Decoded, 0, base58Decoded.length - CHECKSUM_BYTES);
+
+            switch (keyPrefix) {
+                case PATTERN_STRING_EOS_PREFIX_PUB_R1:
+                    if (!validateRipeMD160CheckSum(decodedKey, firstCheckSum,
+                            SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX.getBytes())) {
+                        throw new IllegalArgumentException(
+                                ErrorConstants.BASE58_INVALID_CHECKSUM);
+                    }
+                    break;
+
+                case PATTERN_STRING_EOS_PREFIX_PUB_K1:
+                    if (!validateRipeMD160CheckSum(decodedKey, firstCheckSum,
+                            SECP256K1_CHECKSUM_VALIDATION_SUFFIX.getBytes())) {
+                        throw new IllegalArgumentException(
+                                ErrorConstants.BASE58_INVALID_CHECKSUM);
+                    }
+                    break;
+
+                case PATTERN_STRING_EOS_PREFIX_EOS:
+                    if (!validateSha256x2CheckSum(decodedKey, firstCheckSum)) {
+                        throw new IllegalArgumentException(
+                                ErrorConstants.BASE58_INVALID_CHECKSUM);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+        } catch (Exception ex) {
+            throw new RuntimeException(ErrorConstants.BASE58_DECODING_ERROR);
+        }
+
+        return decodedKey;
+    }
+
 
     /**
      * Validate checksum by RipeMD160 digestion
@@ -373,5 +544,31 @@ public class EOSFormatter {
         digest.doFinal(output, 0);
         return output;
     }
+
+    /**
+     * Decompresses a public key based on the algorithm used to generate it.
+     *
+     * @param compressedPublicKey Compressed public key as byte[]
+     * @param algorithmEmployed Algorithm used during key creation
+     * @return Decompressed public key as byte[]
+     */
+    private static byte[] decompressPublickey(byte[] compressedPublicKey,
+            AlgorithmEmployed algorithmEmployed)
+            throws EOSFormatterError {
+        try {
+            ECParameterSpec parameterSpec = ECNamedCurveTable
+                    .getParameterSpec(algorithmEmployed.getString());
+            ECPoint ecPoint = parameterSpec.getCurve().decodePoint(compressedPublicKey);
+            byte[] x = ecPoint.getXCoord().getEncoded();
+            byte[] y = ecPoint.getYCoord().getEncoded();
+            if (y.length > 33) {
+                y = Arrays.copyOfRange(y, 1, y.length);
+            }
+            return Bytes.concat(new byte[]{0x04}, x, y);
+        } catch (Exception e) {
+            throw new EOSFormatterError("Problem decompressing public key!", e);
+        }
+    }
+
 
 }
