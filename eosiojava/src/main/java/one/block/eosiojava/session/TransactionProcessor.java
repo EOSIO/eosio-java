@@ -136,7 +136,7 @@ public class TransactionProcessor {
      *
      * @param actions - List of action with data
      */
-    public void prepare(List<Action> actions) {
+    public void prepare(@NotNull List<Action> actions) {
         throw new NotImplementedException();
     }
 
@@ -174,6 +174,7 @@ public class TransactionProcessor {
      *
      * @return
      */
+    @Nullable
     public String toJSON() {
         throw new NotImplementedException();
     }
@@ -184,6 +185,7 @@ public class TransactionProcessor {
      *
      * @return serialized Transaction
      */
+    @Nullable
     public String serialize() {
         // Return serialized version of the Transaction, otherwise serialize the transaction
         if (this.serializedTransaction != null && !this.serializedTransaction.isEmpty()) {
@@ -240,7 +242,7 @@ public class TransactionProcessor {
     //endregion
 
     //region getters/setters
-
+    @Nullable
     public Transaction getTransaction() {
         return transaction;
     }

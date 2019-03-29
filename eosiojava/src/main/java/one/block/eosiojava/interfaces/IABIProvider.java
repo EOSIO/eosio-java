@@ -23,7 +23,7 @@ public interface IABIProvider {
      * @throws GetAbiError the get abi error
      */
     @NotNull
-    Map<String, String> getAbis(String chainId, List<EOSIOName> accounts) throws GetAbiError;
+    Map<String, String> getAbis(@NotNull String chainId, @NotNull List<EOSIOName> accounts) throws GetAbiError;
 
     /**
      * Gets abi by EOSIOName.
@@ -37,5 +37,5 @@ public interface IABIProvider {
      * @throws GetAbiError the get abi error
      */
     @NotNull
-    String getAbi(String chainId, EOSIOName account) throws GetAbiError;
+    String getAbi(@NotNull String chainId, @NotNull EOSIOName account) throws GetAbiError;
 }
