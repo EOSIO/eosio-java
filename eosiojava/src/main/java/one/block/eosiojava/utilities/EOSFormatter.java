@@ -7,6 +7,7 @@ import java.io.CharArrayReader;
 import java.io.Reader;
 import java.util.Arrays;
 import java.util.Base64;
+import javax.annotation.Nullable;
 import one.block.eosiojava.enums.AlgorithmEmployed;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.utilities.Base58ManipulationError;
@@ -474,7 +475,8 @@ public class EOSFormatter {
      *
      * @param inputKey - input key to validate
      * @param checkSumToValidate - checksum to validate with the checksum inside input key
-     * @param keyTypeByteArray -
+     * @param keyTypeByteArray - byte[] of key type used for checksum validation (e.g. "K1".getBytes())
+     * @return This checksum returns whether the checksum comparison was invalid.
      */
     private static boolean validateRipeMD160CheckSum(@NotNull byte[] inputKey,
             @NotNull byte[] checkSumToValidate, @NotNull byte[] keyTypeByteArray) {
@@ -516,6 +518,7 @@ public class EOSFormatter {
      * @param input - input byte[]
      * @return RIPEMD160 format
      */
+    @NotNull
     private static byte[] digestRIPEMD160(@NotNull byte[] input) {
         RIPEMD160Digest digest = new RIPEMD160Digest();
         byte[] output = new byte[digest.getDigestSize()];
@@ -531,6 +534,7 @@ public class EOSFormatter {
      * @param pemKey - input PEM key
      * @return checksum
      */
+    @NotNull
     private static byte[] extractCheckSumRIPEMD160(@NotNull byte[] pemKey,
             byte[] keyTypeByteArray) {
         if (keyTypeByteArray != null) {
@@ -548,6 +552,7 @@ public class EOSFormatter {
      * @param pemKey - input pem key
      * @return checksum
      */
+    @NotNull
     private static byte[] extractCheckSumSha256x2(@NotNull byte[] pemKey) {
         byte[] sha256x2 = Sha256Hash.hashTwice(pemKey);
 
