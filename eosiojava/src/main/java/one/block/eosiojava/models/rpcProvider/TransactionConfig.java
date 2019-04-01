@@ -6,28 +6,24 @@ package one.block.eosiojava.models.rpcProvider;
 public class TransactionConfig {
 
     /**
-     * Default blocks behind to use if blocksbehind is not set
+     * Default blocks behind to use if blocksbehind is not set or instance of this class is not used
      */
-    private static final int DEFAULT_BLOCKS_BEHIND = 3;
+    public static final int DEFAULT_BLOCKS_BEHIND = 3;
+
+    /**
+     * Default expires seconds to use if expires seconds is not set or instance of this class is not used
+     */
+    public static final int DEFAULT_EXPIRES_SECONDS = 5 * 60;
 
     /**
      * The Expires seconds.
      */
-    private int expiresSeconds;
+    private int expiresSeconds = DEFAULT_EXPIRES_SECONDS;
 
     /**
      * The Blocks behind.
      */
     private int blocksBehind = DEFAULT_BLOCKS_BEHIND;
-
-    /**
-     * Gets default blocks behind.
-     *
-     * @return the default blocks behind
-     */
-    public static int getDefaultBlocksBehind() {
-        return DEFAULT_BLOCKS_BEHIND;
-    }
 
     /**
      * Gets expires seconds.

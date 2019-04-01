@@ -17,6 +17,7 @@ import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The interface Irpc provider.
@@ -40,6 +41,7 @@ public interface IRPCProvider {
      * @return the latest info/status of a chain.
      * @throws GetInfoError
      */
+    @NotNull
     GetInfoResponse getInfo() throws GetInfoError;
 
     /**
@@ -49,6 +51,7 @@ public interface IRPCProvider {
      * @return the info/status of a specific block in the request
      * @throws GetBlockError
      */
+    @NotNull
     GetBlockResponse getBlock(GetBlockRequest getBlockRequest) throws GetBlockError;
 
     /**
@@ -58,6 +61,7 @@ public interface IRPCProvider {
      * @return the serialized ABI of a smart contract in the request.
      * @throws GetRawAbiError
      */
+    @NotNull
     GetRawAbiResponse getRawAbi(GetRawAbiRequest getRawAbiRequest) throws GetRawAbiError;
 
     /**
@@ -67,6 +71,7 @@ public interface IRPCProvider {
      * @return the required keys to sign a transaction
      * @throws GetRequiredKeysError
      */
+    @NotNull
     GetRequiredKeysResponse getRequiredKeys(GetRequiredKeysRequest getRequiredKeysRequest) throws GetRequiredKeysError;
 
     /**
@@ -76,5 +81,6 @@ public interface IRPCProvider {
      * @return the push transaction response
      * @throws PushTransactionError
      */
+    @NotNull
     PushTransactionResponse pushTransaction(PushTransactionRequest pushTransactionRequest) throws PushTransactionError;
 }
