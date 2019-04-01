@@ -14,5 +14,10 @@ public class ErrorConstants {
     public static final String BASE58_INVALID_CHECKSUM = "Input key has invalid checksum!";
     public static final String DER_TO_PEM_CONVERSION = "Error converting DER encoded key to PEM format!";
     public static final String UNSUPPORTED_ALGORITHM = "Unsupported algorithm!";
-
+    public static final String INVALID_PEM_PRIVATE_KEY = "This is not a PEM formatted private key!";
+    public static final String INVALID_DER_PRIVATE_KEY = "DER format of private key is incorrect!";
+    public static final String CHECKSUM_GENERATION_ERROR = "Could not generate checksum!";
+    public static final String BASE58_ENCODING_ERROR = "Unable to Base58 encode object!";
+    public static final String PUBLIC_KEY_DECOMPRESSION_ERROR = "Problem decompressing public key!";
+    public static final String PUBLIC_KEY_COMPRESSION_ERROR = "Problem compressing public key";
 }
