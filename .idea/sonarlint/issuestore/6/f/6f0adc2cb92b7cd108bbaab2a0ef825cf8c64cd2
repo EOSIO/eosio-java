@@ -1,0 +1,20 @@
+
+Ç%squid:RedundantThrowsDeclarationCheckm"Remove the declaration of thrown exception 'one.block.eosiojava.error.utilities.EOSFormatterError', as it cannot be thrown from method's body.(û‹ã¯8ç±áÕœ-
+fsquid:S1192ÿ"GDefine a constant instead of duplicating this literal "(?i:.*" 3 times.(éã‰³8ç±áÕœ-
+‹squid:S1488n"mImmediately return this expression instead of assigning it to the temporary variable "eosFormattedPublicKey".(¯¼É8ç±áÕœ-
+„squid:S1488¢"`Immediately return this expression instead of assigning it to the temporary variable "signable".(‡´–¨ûÿÿÿÿ8ç±áÕœ-
+È%squid:RedundantThrowsDeclarationCheckŞ"Remove the declaration of thrown exception 'one.block.eosiojava.error.utilities.EOSFormatterError', as it cannot be thrown from method's body.(û‹ã¯8ç±áÕœ-
+Ysquid:S1481›":Remove this unused "serializedTransaction" local variable.(”ò©8ç±áÕœ-
+È%squid:RedundantThrowsDeclarationCheck×"Remove the declaration of thrown exception 'one.block.eosiojava.error.utilities.EOSFormatterError', as it cannot be thrown from method's body.(û‹ã¯8ç±áÕœ-
+Œsquid:S1488Ø"mImmediately return this expression instead of assigning it to the temporary variable "eosFormattedSignature".(ëø¨8ç±áÕœ-
+_squid:S1068F"<Remove this unused "PEM_HEADER_EC_PUBLIC_KEY" private field.(½ïì™ÿÿÿÿÿ8ç±áÕœ-
+fsquid:S00112ò"FDefine and throw a dedicated exception instead of using a generic one.(•ºå¬8ç±áÕœ-
+bsquid:S10684"DRemove this unused "PATTERN_STRING_EOS_PREFIX_SIG_K1" private field.(Ö“‡Õ8ç±áÕœ-
+È%squid:RedundantThrowsDeclarationCheck¡"Remove the declaration of thrown exception 'one.block.eosiojava.error.utilities.EOSFormatterError', as it cannot be thrown from method's body.(Š¢Âà8ç±áÕœ-
+fsquid:UselessImportCheck
+"6Remove this unused import 'javax.annotation.Nullable'.(—å¨Íûÿÿÿÿ8™ ¡Öœ-
+Œsquid:S1488ß"mImmediately return this expression instead of assigning it to the temporary variable "pemFormattedSignature".(Û—å 8ç±áÕœ-
+Msquid:S1172¡".Remove this unused method parameter "chainId".(Š¢Âà8ç±áÕœ-
+È%squid:RedundantThrowsDeclarationCheckš"Remove the declaration of thrown exception 'one.block.eosiojava.error.utilities.EOSFormatterError', as it cannot be thrown from method's body.(û‹ã¯8ç±áÕœ-
+bsquid:S10683"DRemove this unused "PATTERN_STRING_EOS_PREFIX_SIG_R1" private field.(‚‘Ò‰8ç±áÕœ-
+hsquid:S1854›"IRemove this useless assignment to local variable "serializedTransaction".(”ò©8ç±áÕœ-
