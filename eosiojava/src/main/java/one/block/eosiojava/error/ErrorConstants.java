@@ -20,4 +20,12 @@ public class ErrorConstants {
     public static final String BASE58_ENCODING_ERROR = "Unable to Base58 encode object!";
     public static final String PUBLIC_KEY_DECOMPRESSION_ERROR = "Problem decompressing public key!";
     public static final String PUBLIC_KEY_COMPRESSION_ERROR = "Problem compressing public key";
+
+    // ABIProviderImpl Errors
+    public static final String NO_RESPONSE_RETRIEVING_ABI = "No response retrieving ABI.";
+    public static final String MISSING_ABI_FROM_RESPONSE = "Missing ABI from GetRawAbiResponse.";
+    public static final String CALCULATED_HASH_NOT_EQUAL_RETURNED = "Calculated ABI hash does not match returned hash.";
+    public static final String REQUESTED_ACCCOUNT_NOT_EQUAL_RETURNED = "Requested account name does not match returned account name.";
+    public static final String NO_ABI_FOUND = "No ABI found for requested account name.";
+    public static final String ERROR_RETRIEVING_ABI = "Error retrieving ABI from the chain.";
 }
