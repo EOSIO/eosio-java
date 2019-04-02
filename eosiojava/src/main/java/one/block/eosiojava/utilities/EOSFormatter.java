@@ -23,6 +23,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class provides a number of helper methods that can be used to convert certain objects to and
@@ -57,7 +58,7 @@ public class EOSFormatter {
     private static final String PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256R1_UNCOMPRESSED = "3059301306072a8648ce3d020106082a8648ce3d030107034200";
     private static final String PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256K1_UNCOMPRESSED = "3056301006072a8648ce3d020106052b8104000a034200";
     private static final String PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256R1_COMPRESSED = "3039301306072a8648ce3d020106082a8648ce3d030107032200";
-    private static final String PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256K1_COMPRESSED = "3056301006072a8648ce3d020106052b8104000a032200";
+    private static final String PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256K1_COMPRESSED = "3036301006072a8648ce3d020106052b8104000a032200";
 
     //PEM FORMAT SUFFIXES
     private static final String PATTERN_STRING_PEM_SUFFIX_PRIVATE_KEY_SECP256K1 = "A00706052B8104000A";
@@ -109,9 +110,129 @@ public class EOSFormatter {
         }
     }
 
+    /**
+     * This method converts a PEM formatted public key to the EOS format.
+     *
+     * @param publicKeyPEM Public key in the PEM format
+     * @return EOS formatted public key as string
+     */
+    @NotNull
     public static String convertPEMFormattedPublicKeyToEOSFormat(@NotNull String publicKeyPEM)
             throws EOSFormatterError {
         String eosFormattedPublicKey = publicKeyPEM;
+        AlgorithmEmployed algorithmEmployed;
+        PemObject pemObject;
+        boolean isPublicKeyCompressed = false;
+
+        /*
+         Validate that key type in PEM object is 'EC PUBLIC KEY'.
+         */
+        String type;
+        try {
+            Reader reader = new CharArrayReader(eosFormattedPublicKey.toCharArray());
+            PemReader pemReader = new PemReader(reader);
+            pemObject = pemReader.readPemObject();
+            type = pemObject.getType();
+        } catch (Exception e) {
+            throw new EOSFormatterError(ErrorConstants.INVALID_PEM_PRIVATE_KEY, e);
+        }
+
+        //Perform a case-insensitive search for the 'EC PRIVATE KEY' string
+        if (type.matches("(?i:.*" + PEM_HEADER_EC_PUBLIC_KEY + ".*)")) {
+
+            //Get Base64 encoded public key from PEM object
+            eosFormattedPublicKey = Hex.toHexString(pemObject.getContent());
+
+            //Determine algorithm used to generate key
+            if (eosFormattedPublicKey
+                    .contains(PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256R1_UNCOMPRESSED)) {
+                algorithmEmployed = AlgorithmEmployed.SECP256R1;
+            } else if (eosFormattedPublicKey
+                    .contains(PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256R1_COMPRESSED)) {
+                isPublicKeyCompressed = true;
+                algorithmEmployed = AlgorithmEmployed.SECP256R1;
+            } else if (eosFormattedPublicKey
+                    .contains(PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256K1_UNCOMPRESSED)) {
+                algorithmEmployed = AlgorithmEmployed.SECP256K1;
+            } else if (eosFormattedPublicKey
+                    .contains(PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256K1_COMPRESSED)) {
+                isPublicKeyCompressed = true;
+                algorithmEmployed = AlgorithmEmployed.SECP256K1;
+            } else {
+                throw new EOSFormatterError(ErrorConstants.INVALID_DER_PRIVATE_KEY);
+            }
+
+            //Strip away the DER header
+            switch (algorithmEmployed) {
+                case SECP256R1:
+                    if (isPublicKeyCompressed) {
+                        eosFormattedPublicKey = eosFormattedPublicKey
+                                .replace(PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256R1_COMPRESSED,
+                                        "");
+                    } else {
+                        eosFormattedPublicKey = eosFormattedPublicKey
+                                .replace(
+                                        PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256R1_UNCOMPRESSED,
+                                        "");
+                    }
+                    break;
+                case SECP256K1:
+                    if (isPublicKeyCompressed) {
+                        eosFormattedPublicKey = eosFormattedPublicKey
+                                .replace(PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256K1_COMPRESSED,
+                                        "");
+                    } else {
+                        eosFormattedPublicKey = eosFormattedPublicKey
+                                .replace(
+                                        PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256K1_UNCOMPRESSED,
+                                        "");
+                    }
+                    break;
+                default:
+                    throw new EOSFormatterError(ErrorConstants.UNSUPPORTED_ALGORITHM);
+            }
+
+        /*
+        Compress the public key if necessary.
+        Compression is only necessary if the key has a value of 0x04 for the first byte, which
+        indicates it is uncompressed.
+         */
+            byte[] eosFormattedPublicKeyBytes = Hex.decode(eosFormattedPublicKey);
+            if (eosFormattedPublicKeyBytes[0] == UNCOMPRESSED_PUBLIC_KEY_BYTE_INDICATOR) {
+                try {
+                    eosFormattedPublicKey = Hex.toHexString(
+                            compressPublickey(Hex.decode(eosFormattedPublicKey),
+                                    algorithmEmployed));
+                } catch (Exception e) {
+                    throw new EOSFormatterError(e);
+                }
+            }
+
+            try {
+                //Add checksum and Base58 encode key
+                eosFormattedPublicKey = encodePublicKey(Hex.decode(eosFormattedPublicKey),
+                        algorithmEmployed);
+            } catch (Base58ManipulationError e) {
+                throw new EOSFormatterError(e);
+            }
+
+            //Add prefix
+            StringBuilder builder = new StringBuilder(eosFormattedPublicKey);
+            switch (algorithmEmployed) {
+                case SECP256K1:
+                    builder.insert(0, PATTERN_STRING_EOS_PREFIX_PUB_K1);
+                    break;
+                case SECP256R1:
+                    builder.insert(0, PATTERN_STRING_EOS_PREFIX_PUB_R1);
+                    break;
+                default:
+                    break;
+            }
+            eosFormattedPublicKey = builder.toString();
+
+        } else {
+            throw new EOSFormatterError(ErrorConstants.INVALID_PEM_PRIVATE_KEY);
+        }
 
         return eosFormattedPublicKey;
     }
@@ -582,6 +703,53 @@ public class EOSFormatter {
     }
 
     /**
+     * Encoding PEM public key to EOS format.
+     *
+     * @param pemKey -  PEM key as byte[] to encode
+     * @param keyType - Algorithm type used to create key
+     * @return - EOS format of public key
+     */
+    @NotNull
+    public static String encodePublicKey(@NotNull byte[] pemKey, @NotNull AlgorithmEmployed keyType)
+            throws Base58ManipulationError {
+        String base58Key = "";
+        if (pemKey.length == 0) {
+            throw new IllegalArgumentException(ErrorConstants.PUBLIC_KEY_IS_EMPTY);
+        }
+
+        try {
+            byte[] checkSum = null;
+            switch (keyType) {
+                case SECP256K1:
+                    checkSum = extractCheckSumRIPEMD160(pemKey,
+                            SECP256K1_CHECKSUM_VALIDATION_SUFFIX.getBytes());
+                    break;
+                case SECP256R1:
+                    checkSum = extractCheckSumRIPEMD160(pemKey,
+                            SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX.getBytes());
+                    break;
+                default:
+                    throw new Base58ManipulationError(ErrorConstants.UNSUPPORTED_ALGORITHM);
+
+            }
+            if(checkSum != null) {
+                base58Key = Base58.encode(Bytes.concat(pemKey, checkSum));
+            }else{
+                throw new Base58ManipulationError(ErrorConstants.BASE58_ENCODING_ERROR);
+            }
+
+            if (base58Key.equals("")) {
+                throw new Base58ManipulationError(ErrorConstants.BASE58_ENCODING_ERROR);
+            }
+
+        } catch (Exception ex) {
+            throw new Base58ManipulationError(ErrorConstants.BASE58_ENCODING_ERROR, ex);
+        }
+
+        return base58Key;
+    }
+
+    /**
      * Base58 decodes a public key and validates checksum.
      *
      * @param strKey Base58 encoded public key in string format.
@@ -634,7 +802,7 @@ public class EOSFormatter {
             }
 
         } catch (Exception ex) {
-            throw new Base58ManipulationError(ErrorConstants.BASE58_DECODING_ERROR,ex);
+            throw new Base58ManipulationError(ErrorConstants.BASE58_DECODING_ERROR, ex);
         }
 
         return decodedKey;
