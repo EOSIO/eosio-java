@@ -500,19 +500,19 @@ public class EOSFormatter {
                 case SECP256R1:
                     byte[] secp256r1Suffix = SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX
                             .getBytes();
-                    if (validateRipeMD160CheckSum(decodedKey, firstCheckSum, secp256r1Suffix)) {
+                    if (invalidRipeMD160CheckSum(decodedKey, firstCheckSum, secp256r1Suffix)) {
                         throw new IllegalArgumentException(ErrorConstants.BASE58_INVALID_CHECKSUM);
                     }
                     break;
                 case PRIME256V1:
                     byte[] prime256v1Suffix = SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX
                             .getBytes();
-                    if (validateRipeMD160CheckSum(decodedKey, firstCheckSum, prime256v1Suffix)) {
+                    if (invalidRipeMD160CheckSum(decodedKey, firstCheckSum, prime256v1Suffix)) {
                         throw new IllegalArgumentException(ErrorConstants.BASE58_INVALID_CHECKSUM);
                     }
                     break;
                 case SECP256K1:
-                    if (validateSha256x2CheckSum(decodedKey, firstCheckSum)) {
+                    if (invalidSha256x2CheckSum(decodedKey, firstCheckSum)) {
                         throw new IllegalArgumentException(ErrorConstants.BASE58_INVALID_CHECKSUM);
                     }
                     break;
@@ -607,7 +607,7 @@ public class EOSFormatter {
 
             switch (keyPrefix) {
                 case PATTERN_STRING_EOS_PREFIX_PUB_R1:
-                    if (validateRipeMD160CheckSum(decodedKey, firstCheckSum,
+                    if (invalidRipeMD160CheckSum(decodedKey, firstCheckSum,
                             SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX.getBytes())) {
                         throw new IllegalArgumentException(
                                 ErrorConstants.BASE58_INVALID_CHECKSUM);
@@ -615,7 +615,7 @@ public class EOSFormatter {
                     break;
 
                 case PATTERN_STRING_EOS_PREFIX_PUB_K1:
-                    if (validateRipeMD160CheckSum(decodedKey, firstCheckSum,
+                    if (invalidRipeMD160CheckSum(decodedKey, firstCheckSum,
                             SECP256K1_CHECKSUM_VALIDATION_SUFFIX.getBytes())) {
                         throw new IllegalArgumentException(
                                 ErrorConstants.BASE58_INVALID_CHECKSUM);
@@ -623,7 +623,7 @@ public class EOSFormatter {
                     break;
 
                 case PATTERN_STRING_EOS_PREFIX_EOS:
-                    if (validateSha256x2CheckSum(decodedKey, firstCheckSum)) {
+                    if (invalidSha256x2CheckSum(decodedKey, firstCheckSum)) {
                         throw new IllegalArgumentException(
                                 ErrorConstants.BASE58_INVALID_CHECKSUM);
                     }
@@ -650,7 +650,7 @@ public class EOSFormatter {
      * "K1".getBytes())
      * @return This checksum returns whether the checksum comparison was invalid.
      */
-    private static boolean validateRipeMD160CheckSum(@NotNull byte[] inputKey,
+    private static boolean invalidRipeMD160CheckSum(@NotNull byte[] inputKey,
             @NotNull byte[] checkSumToValidate, @NotNull byte[] keyTypeByteArray) {
         if (inputKey.length == 0 || checkSumToValidate.length == 0
                 || keyTypeByteArray.length == 0) {
@@ -673,7 +673,7 @@ public class EOSFormatter {
      * @param checkSumToValidate - checksum to validate with the checksum inside input key
      * @return This checksum returns whether the checksum comparison was invalid.
      */
-    private static boolean validateSha256x2CheckSum(@NotNull byte[] inputKey,
+    private static boolean invalidSha256x2CheckSum(@NotNull byte[] inputKey,
             @NotNull byte[] checkSumToValidate) {
         if (inputKey.length == 0 || checkSumToValidate.length == 0) {
             throw new IllegalArgumentException(ErrorConstants.BASE58_EMPTY_CHECKSUM_OR_KEY);
