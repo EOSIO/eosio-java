@@ -82,11 +82,11 @@ public class EOSFormatter {
     private static final int DATA_SEQUENCE_LENGTH_BYTE_POSITION = 2;
 
     //CONSTANTS USED DURING EOS ENCODING
-    private static final int EOS_SECP256K1_HEADER_BYTE = 0X80;
+    private static final int EOS_SECP256K1_HEADER_BYTE = 0x80;
 
     //CONSTANTS USED DURING EOS DECODING
-    private static final byte UNCOMPRESSED_PUBLIC_KEY_BYTE_INDICATOR = 0X04;
-    private static final byte COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_POSITIVE_Y = 0X02;
+    private static final byte UNCOMPRESSED_PUBLIC_KEY_BYTE_INDICATOR = 0x04;
+    private static final byte COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_POSITIVE_Y = 0x02;
     private static final byte COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_NEGATIVE_Y = 0x03;
 
     /*
@@ -181,11 +181,6 @@ public class EOSFormatter {
         //Add DER header
         switch (algorithmEmployed) {
             case SECP256R1:
-                pemFormattedPublickKey =
-                        PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256R1_COMPRESSED
-                                + pemFormattedPublickKey;
-                break;
-            case PRIME256V1:
                 pemFormattedPublickKey =
                         PATTERN_STRING_PEM_PREFIX_PUBLIC_KEY_SECP256R1_COMPRESSED
                                 + pemFormattedPublickKey;
