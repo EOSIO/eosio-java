@@ -115,8 +115,7 @@ public class EOSFormatter {
      *
      * @param publicKeyPEM Public key in the PEM format
      * @param requireLegacyFormOfSecp256k1Key - If the developer prefers a legacy version of a
-     * secp256k1 key that uses a double SHA256 hash to generate the checksum this should be set to
-     * true.
+     * secp256k1 key that uses a "EOS" prefix.
      * @return EOS formatted public key as string
      */
     @NotNull
@@ -690,8 +689,8 @@ public class EOSFormatter {
      *
      * @param pemKey -  PEM key as byte[] to encode
      * @param keyType - Algorithm type used to create key
-     * @param isLegacy - If the developer prefers a legacy version of a secp256k1 key that uses a
-     * double SHA256 hash to generate the checksum this should be set to true.
+     * @param isLegacy - If the developer prefers a legacy version of a secp256k1 key that uses an
+     * "EOS" prefix.
      * @return - EOS format of public key
      */
     @NotNull
