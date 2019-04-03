@@ -301,4 +301,43 @@ public class EOSFormatterTest {
 
     }
 
+    //SECP256R1 Public Key Test (EOS to PEM)
+    @Test
+    public void validatePEMCreationOfSecp256r1PublicKey() {
+        String eosFormattedPublicKey = "PUB_R1_5AvUuRssyb7Z2HgNHVofX5heUV5dk8Gni1BGNMzMRCGbhdhBbu";
+        String pemFormattedPublicKey = "-----BEGIN EC PUBLIC KEY-----\n" +
+                "MDkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDIgACJVBOXmBTBSUedKnkv11sD8ZBHVmJN3aCJEk+5aArDhY=\n" +
+                "-----END EC PUBLIC KEY-----";
+
+        try {
+            assertEquals(pemFormattedPublicKey,
+                    EOSFormatter.convertEOSPublicKeyToPEMFormat(eosFormattedPublicKey));
+        } catch (EOSFormatterError e) {
+            fail("Not expecting an EOSFormatterError to be thrown!");
+        }
+
+    }
+
+
+    //SECP256K1 Public Key Test (EOS to PEM)
+    @Test
+    public void validatePEMCreationOfSecp256k1PublicKey() {
+        String eosFormattedPublicKey = "PUB_K1_8CbY5PhQZGF2gzPKRBaNG4YzB4AwpmfnDcVZMSPZTqQMn1uFhB";
+        String pemFormattedPublicKey = "-----BEGIN EC PUBLIC KEY-----\n"
+                + "MDYwEAYHKoZIzj0CAQYFK4EEAAoDIgADtDOYTgeoDug9OfOI31ILaoR2OiGmTiKXgyu/3J8VNZ4=\n"
+                + "-----END EC PUBLIC KEY-----";
+
+        try {
+            assertEquals(pemFormattedPublicKey,
+                    EOSFormatter.convertEOSPublicKeyToPEMFormat(eosFormattedPublicKey));
+        } catch (EOSFormatterError e) {
+            fail("Not expecting an EOSFormatterError to be thrown!");
+        }
+
+    }
+
+
+
+
+
 }
