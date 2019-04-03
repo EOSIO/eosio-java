@@ -21,7 +21,6 @@ public class ErrorConstants {
     public static final String PUBLIC_KEY_DECOMPRESSION_ERROR = "Problem decompressing public key!";
     public static final String PUBLIC_KEY_COMPRESSION_ERROR = "Problem compressing public key!";
     public static final String PUBLIC_KEY_IS_EMPTY = "Input key to decode can't be empty!";
-    public static final String PUBLIC_KEY_COMPRESSION_ERROR = "Problem compressing public key";
 
     // ABIProviderImpl Errors
     public static final String NO_RESPONSE_RETRIEVING_ABI = "No response retrieving ABI.";
