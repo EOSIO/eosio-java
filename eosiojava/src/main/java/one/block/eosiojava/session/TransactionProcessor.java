@@ -390,12 +390,13 @@ public class TransactionProcessor {
     }
 
     /**
+     * Return JSON String of transaction
      *
-     * @return
+     * @return JSON String of transaction
      */
     @Nullable
     public String toJSON() {
-        return Utils.getDefaultGson().toJson(this);
+        return Utils.getDefaultGson().toJson(this.transaction);
     }
 
     /**
@@ -633,7 +634,7 @@ public class TransactionProcessor {
         // Serialize the whole transaction
         String _serializedTransaction;
         try {
-            _serializedTransaction = this.serializationProvider.serializeTransaction(this.transaction.toJSON());
+            _serializedTransaction = this.serializationProvider.serializeTransaction(this.toJSON());
             if (_serializedTransaction == null || _serializedTransaction.isEmpty()) {
                 throw new TransactionCreateSignatureRequestSerializationError(
                         ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_WORKED_BUT_EMPTY_RESULT);
