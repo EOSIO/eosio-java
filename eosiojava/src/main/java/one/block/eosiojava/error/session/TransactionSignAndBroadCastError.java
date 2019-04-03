@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionSignAndBroadCastError extends TransactionProcessorError {
 
     public TransactionSignAndBroadCastError() {
     }
 
-    public TransactionSignAndBroadCastError(String s) {
-        super(s);
+    public TransactionSignAndBroadCastError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionSignAndBroadCastError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionSignAndBroadCastError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionSignAndBroadCastError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionSignAndBroadCastError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionSignAndBroadCastError(@NotNull Exception exception) {
+        super(exception);
     }
 }

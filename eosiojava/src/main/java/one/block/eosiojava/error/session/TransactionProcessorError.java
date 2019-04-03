@@ -1,23 +1,23 @@
 package one.block.eosiojava.error.session;
 
-public class TransactionProcessorError extends Exception {
+import one.block.eosiojava.error.EosioError;
+import org.jetbrains.annotations.NotNull;
+
+public class TransactionProcessorError extends EosioError {
 
     public TransactionProcessorError() {
     }
 
-    public TransactionProcessorError(String s) {
-        super(s);
+    public TransactionProcessorError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionProcessorError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionProcessorError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionProcessorError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionProcessorError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionProcessorError(@NotNull Exception exception) {
+        super(exception);
     }
 }

@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionGetSignatureSigingError extends TransactionGetSignatureError {
 
     public TransactionGetSignatureSigingError() {
     }
 
-    public TransactionGetSignatureSigingError(String s) {
-        super(s);
+    public TransactionGetSignatureSigingError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionGetSignatureSigingError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionGetSignatureSigingError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionGetSignatureSigingError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionGetSignatureSigingError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionGetSignatureSigingError(@NotNull Exception exception) {
+        super(exception);
     }
 }

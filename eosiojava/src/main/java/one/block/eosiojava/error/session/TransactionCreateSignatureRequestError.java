@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionCreateSignatureRequestError extends TransactionProcessorError {
 
     public TransactionCreateSignatureRequestError() {
     }
 
-    public TransactionCreateSignatureRequestError(String s) {
-        super(s);
+    public TransactionCreateSignatureRequestError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionCreateSignatureRequestError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionCreateSignatureRequestError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionCreateSignatureRequestError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionCreateSignatureRequestError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionCreateSignatureRequestError(@NotNull Exception exception) {
+        super(exception);
     }
 }

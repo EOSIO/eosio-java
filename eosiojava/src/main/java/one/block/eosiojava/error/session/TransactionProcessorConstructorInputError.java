@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionProcessorConstructorInputError extends TransactionProcessorError {
 
     public TransactionProcessorConstructorInputError() {
     }
 
-    public TransactionProcessorConstructorInputError(String s) {
-        super(s);
+    public TransactionProcessorConstructorInputError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionProcessorConstructorInputError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionProcessorConstructorInputError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionProcessorConstructorInputError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionProcessorConstructorInputError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionProcessorConstructorInputError(@NotNull Exception exception) {
+        super(exception);
     }
 }

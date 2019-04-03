@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionCreateSignatureRequestRequiredKeysEmptyError extends TransactionCreateSignatureRequestError {
 
     public TransactionCreateSignatureRequestRequiredKeysEmptyError() {
     }
 
-    public TransactionCreateSignatureRequestRequiredKeysEmptyError(String s) {
-        super(s);
+    public TransactionCreateSignatureRequestRequiredKeysEmptyError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionCreateSignatureRequestRequiredKeysEmptyError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionCreateSignatureRequestRequiredKeysEmptyError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionCreateSignatureRequestRequiredKeysEmptyError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionCreateSignatureRequestRequiredKeysEmptyError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionCreateSignatureRequestRequiredKeysEmptyError(@NotNull Exception exception) {
+        super(exception);
     }
 }

@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionCreateSignatureRequestRpcError extends TransactionCreateSignatureRequestError {
 
     public TransactionCreateSignatureRequestRpcError() {
     }
 
-    public TransactionCreateSignatureRequestRpcError(String s) {
-        super(s);
+    public TransactionCreateSignatureRequestRpcError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionCreateSignatureRequestRpcError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionCreateSignatureRequestRpcError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionCreateSignatureRequestRpcError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionCreateSignatureRequestRpcError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionCreateSignatureRequestRpcError(@NotNull Exception exception) {
+        super(exception);
     }
 }

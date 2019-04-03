@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionSerializeError extends TransactionProcessorError {
 
     public TransactionSerializeError() {
     }
 
-    public TransactionSerializeError(String s) {
-        super(s);
+    public TransactionSerializeError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionSerializeError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionSerializeError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionSerializeError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionSerializeError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionSerializeError(@NotNull Exception exception) {
+        super(exception);
     }
 }

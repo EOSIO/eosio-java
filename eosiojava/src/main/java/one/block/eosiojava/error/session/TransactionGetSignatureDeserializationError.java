@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionGetSignatureDeserializationError extends TransactionGetSignatureError {
 
     public TransactionGetSignatureDeserializationError() {
     }
 
-    public TransactionGetSignatureDeserializationError(String s) {
-        super(s);
+    public TransactionGetSignatureDeserializationError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionGetSignatureDeserializationError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionGetSignatureDeserializationError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionGetSignatureDeserializationError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionGetSignatureDeserializationError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionGetSignatureDeserializationError(@NotNull Exception exception) {
+        super(exception);
     }
 }

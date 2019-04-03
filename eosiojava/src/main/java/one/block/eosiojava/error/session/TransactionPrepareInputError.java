@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionPrepareInputError extends TransactionPrepareError {
 
     public TransactionPrepareInputError() {
     }
 
-    public TransactionPrepareInputError(String s) {
-        super(s);
+    public TransactionPrepareInputError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionPrepareInputError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionPrepareInputError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionPrepareInputError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionPrepareInputError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionPrepareInputError(@NotNull Exception exception) {
+        super(exception);
     }
 }

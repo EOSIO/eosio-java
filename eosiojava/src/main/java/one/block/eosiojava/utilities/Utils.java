@@ -10,27 +10,40 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
 public class Utils {
 
+    private Utils() {}
+
     /**
      * Converting backend time to millisecond
      * <p/>
      * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
      */
-    public static long convertBackendTimeToMilli(String backendTime) throws ParseException, NullPointerException {
-        SimpleDateFormat sdf = new SimpleDateFormat(Constants.BACKEND_DATE_PATTERN);
-        sdf.setTimeZone(TimeZone.getTimeZone(Constants.BACKEND_DATE_TIME_ZONE));
+    public static long convertBackendTimeToMilli(String backendTime) throws ParseException {
+        String[] datePatterns = new String[]{
+                Constants.BACKEND_DATE_PATTERN, Constants.BACKEND_DATE_PATTERN_WITH_TIMEZONE
+        };
 
-        Date parsedDate = sdf.parse(backendTime);
-        if (parsedDate == null) {
-            throw new NullPointerException();
+        for (String datePattern : datePatterns) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
+                sdf.setTimeZone(TimeZone.getTimeZone(Constants.BACKEND_DATE_TIME_ZONE));
+                Date parsedDate = sdf.parse(backendTime);
+                return parsedDate.getTime();
+            } catch (DateTimeParseException ex) {
+                // Keep going even exception is thrown for trying different date pattern
+            } catch (DateTimeException ex) {
+                // Keep going even exception is thrown for trying different date pattern
+            }
         }
 
-        return parsedDate.getTime();
+        throw new ParseException("Unable to parse input backend time with supported date patterns!", 0);
     }
 
     /**
@@ -53,9 +66,6 @@ public class Utils {
      *
      * @param object input object
      * @param <T> - Class of the object
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     public static <T extends Serializable> T clone(T object) throws IOException, ClassNotFoundException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -68,8 +78,6 @@ public class Utils {
 
     /**
      * Getting a default GSON
-     *
-     * @return
      */
     public static Gson getDefaultGson() {
         return new GsonBuilder()

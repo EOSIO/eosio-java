@@ -214,23 +214,27 @@ public class TransactionProcessor {
         // Create new instance of Transaction or make a clone of existing Transaction.
         // Final value will be assigned to transaction object in class level.
         // The reason for that is for avoiding trash/haft way data when error happens.
-        Transaction _transaction;
+        Transaction preparingTransaction;
 
         try {
-            _transaction = this.transaction == null ? new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
-                    BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<>(), actions,
-                    new ArrayList<>()) : Utils.clone(this.transaction);
+            preparingTransaction = this.transaction == null ? new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
+                    BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), actions,
+                    new ArrayList<String>()) : Utils.clone(this.transaction);
         } catch (IOException e) {
             throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR, e);
         } catch (ClassNotFoundException e) {
             throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_CLASS_NOT_FOUND, e);
         }
 
+        if (preparingTransaction == null) {
+            throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CANT_INIT_TRANS);
+        }
+
         // Filling expiration, refBlockNum and refBlockPrefix if they are not filled yet.
         // Filling expiration
-        if (_transaction.getExpiration().isEmpty()
-                || _transaction.getRefBlockNum().equals(BigInteger.ZERO)
-                || _transaction.getRefBlockPrefix().equals(BigInteger.ZERO)) {
+        if (preparingTransaction.getExpiration().isEmpty()
+                || preparingTransaction.getRefBlockNum().equals(BigInteger.ZERO)
+                || preparingTransaction.getRefBlockPrefix().equals(BigInteger.ZERO)) {
             GetInfoResponse getInfoResponse;
             try {
                 getInfoResponse = this.rpcProvider.getInfo();
@@ -241,7 +245,7 @@ public class TransactionProcessor {
             // assign chain id for later use
             this.chainId = getInfoResponse.getChainId();
 
-            if (_transaction.getExpiration().isEmpty()) {
+            if (preparingTransaction.getExpiration().isEmpty()) {
                 String strHeadBlockTime = getInfoResponse.getHeadBlockTime();
                 long headBlockTime;
                 try {
@@ -258,12 +262,12 @@ public class TransactionProcessor {
                 }
 
                 long expirationTimeInMilliseconds = headBlockTime + expiresSeconds * 1000;
-                _transaction.setExpiration(Utils.convertMilliSecondToBackendTimeString(expirationTimeInMilliseconds));
+                preparingTransaction.setExpiration(Utils.convertMilliSecondToBackendTimeString(expirationTimeInMilliseconds));
             }
 
             // Filling refBlockNum and refBlockPrefix
-            if (_transaction.getRefBlockNum().equals(BigInteger.ZERO)
-                    || _transaction.getRefBlockPrefix().equals(BigInteger.ZERO)) {
+            if (preparingTransaction.getRefBlockNum().equals(BigInteger.ZERO)
+                    || preparingTransaction.getRefBlockPrefix().equals(BigInteger.ZERO)) {
                 BigInteger headBlockNum;
 
                 int blockBehindConfig = TransactionConfig.DEFAULT_BLOCKS_BEHIND;
@@ -288,12 +292,12 @@ public class TransactionProcessor {
                 BigInteger refBlockNum = getBlockResponse.getBlockNum().and(BigInteger.valueOf(0xffff));
                 BigInteger refBlockPrefix = getBlockResponse.getRefBlockPrefix();
 
-                _transaction.setRefBlockNum(refBlockNum);
-                _transaction.setRefBlockPrefix(refBlockPrefix);
+                preparingTransaction.setRefBlockNum(refBlockNum);
+                preparingTransaction.setRefBlockPrefix(refBlockPrefix);
             }
         }
 
-        this.transaction = _transaction;
+        this.transaction = preparingTransaction;
     }
 
     /**
@@ -335,6 +339,10 @@ public class TransactionProcessor {
      */
     @NotNull
     public PushTransactionResponse broadcast() throws TransactionBroadCastError {
+        if (this.serializedTransaction == null || this.serializedTransaction.isEmpty()) {
+            throw new TransactionBroadCastError(ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY);
+        }
+
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures, 0, "", this.serializedTransaction);
         try {
             return this.pushTransaction(pushTransactionRequest);
@@ -471,7 +479,13 @@ public class TransactionProcessor {
                 throw new TransactionCreateSignatureRequestRequiredKeysEmptyError(ErrorConstants.GET_REQUIRED_KEY_RPC_EMPTY_RESULT);
             }
 
-            this.requiredKeys = getRequiredKeysResponse.getRequiredKeys();
+            List<String> backendRequiredKeys = getRequiredKeysResponse.getRequiredKeys();
+            if (!this.availableKeys.containsAll(backendRequiredKeys)) {
+                throw new TransactionCreateSignatureRequestRequiredKeysEmptyError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_REQUIRED_KEY_NOT_SUBSET);
+            }
+
+            this.requiredKeys = backendRequiredKeys;
         } catch (GetRequiredKeysError getRequiredKeysError) {
             throw new TransactionCreateSignatureRequestRpcError(ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_REQUIRED_KEYS,
                     getRequiredKeysError);
@@ -565,6 +579,10 @@ public class TransactionProcessor {
             throw new TransactionCreateSignatureRequestError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR, e);
         } catch (ClassNotFoundException e) {
             throw new TransactionCreateSignatureRequestError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_CLASS_NOT_FOUND, e);
+        }
+
+        if (clonedTransaction == null) {
+            throw new TransactionCreateSignatureRequestError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR);
         }
 
         // Check for chain id

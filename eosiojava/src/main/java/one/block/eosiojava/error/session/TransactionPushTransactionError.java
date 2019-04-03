@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionPushTransactionError extends TransactionProcessorError {
 
     public TransactionPushTransactionError() {
     }
 
-    public TransactionPushTransactionError(String s) {
-        super(s);
+    public TransactionPushTransactionError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionPushTransactionError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionPushTransactionError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionPushTransactionError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionPushTransactionError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionPushTransactionError(@NotNull Exception exception) {
+        super(exception);
     }
 }

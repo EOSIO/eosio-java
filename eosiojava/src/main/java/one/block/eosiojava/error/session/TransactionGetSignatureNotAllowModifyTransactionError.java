@@ -1,23 +1,22 @@
 package one.block.eosiojava.error.session;
 
+import org.jetbrains.annotations.NotNull;
+
 public class TransactionGetSignatureNotAllowModifyTransactionError extends TransactionGetSignatureError {
 
     public TransactionGetSignatureNotAllowModifyTransactionError() {
     }
 
-    public TransactionGetSignatureNotAllowModifyTransactionError(String s) {
-        super(s);
+    public TransactionGetSignatureNotAllowModifyTransactionError(@NotNull String message) {
+        super(message);
     }
 
-    public TransactionGetSignatureNotAllowModifyTransactionError(String s, Throwable throwable) {
-        super(s, throwable);
+    public TransactionGetSignatureNotAllowModifyTransactionError(@NotNull String message,
+            @NotNull Exception exception) {
+        super(message, exception);
     }
 
-    public TransactionGetSignatureNotAllowModifyTransactionError(Throwable throwable) {
-        super(throwable);
-    }
-
-    public TransactionGetSignatureNotAllowModifyTransactionError(String s, Throwable throwable, boolean b, boolean b1) {
-        super(s, throwable, b, b1);
+    public TransactionGetSignatureNotAllowModifyTransactionError(@NotNull Exception exception) {
+        super(exception);
     }
 }
