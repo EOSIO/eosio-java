@@ -391,7 +391,7 @@ Test uses output of one way conversion as input for return conversion.
 
         try {
             assertEquals(eosFormattedPublicKey,
-                    EOSFormatter.convertPEMFormattedPublicKeyToEOSFormat(pemFormattedPublicKey));
+                    EOSFormatter.convertPEMFormattedPublicKeyToEOSFormat(pemFormattedPublicKey, false));
         } catch (EOSFormatterError e) {
             fail("Not expecting an EOSFormatterError to be thrown!");
         }
@@ -410,7 +410,7 @@ Test uses output of one way conversion as input for return conversion.
             String eosToPem = EOSFormatter.convertEOSPublicKeyToPEMFormat(eosFormattedPublicKey);
             assertEquals(pemFormattedPublicKey,eosToPem);
             assertEquals(eosFormattedPublicKey,
-                    EOSFormatter.convertPEMFormattedPublicKeyToEOSFormat(eosToPem));
+                    EOSFormatter.convertPEMFormattedPublicKeyToEOSFormat(eosToPem, false));
         } catch (EOSFormatterError e) {
             fail("Not expecting an EOSFormatterError to be thrown!");
         }
@@ -429,14 +429,49 @@ Test uses output of one way conversion as input for return conversion.
             String eosToPem = EOSFormatter.convertEOSPublicKeyToPEMFormat(eosFormattedPublicKey);
             assertEquals(pemFormattedPublicKey,eosToPem);
             assertEquals(eosFormattedPublicKey,
-                    EOSFormatter.convertPEMFormattedPublicKeyToEOSFormat(eosToPem));
+                    EOSFormatter.convertPEMFormattedPublicKeyToEOSFormat(eosToPem, false));
         } catch (EOSFormatterError e) {
             fail("Not expecting an EOSFormatterError to be thrown!");
         }
 
     }
 
+    //SECP256K1 Public Key Test - Roundtrip (EOS to PEM to EOS) Legacy SECP256K1
+    @Test
+    public void validateEOStoPEMtoEOSConversionOfSecp256k1PublicKeyLegacy() {
+        String eosFormattedPublicKey = "EOS5AzPqKAx4caCrRSAuyojY6rRKA3KJf4A1MY3paNVqV5eADEVm2";
 
+        try {
+            String eosToPem = EOSFormatter.convertEOSPublicKeyToPEMFormat(eosFormattedPublicKey);
+            assertEquals(eosFormattedPublicKey,
+                    EOSFormatter.convertPEMFormattedPublicKeyToEOSFormat(eosToPem, true));
+        } catch (EOSFormatterError e) {
+            fail("Not expecting an EOSFormatterError to be thrown!");
+        }
+
+    }
+
+    //SECP256K1 Public Key Test - Roundtrip (EOS to PEM to EOS) Invalid EOS throws error
+    @Test
+    public void validateEOStoPEMtoEOSConversionOfAnInvalidSecp256k1PublicKeyThrowsError() {
+        String eosFormattedPublicKey = "8CbY5PhQZGF2gzPKRBaNG4YzB4AwpmfnDcVZMSPZTqQMn1uFhB";
+        String pemFormattedPublicKey = "-----BEGIN EC PUBLIC KEY-----\n"
+                + "MDYwEAYHKoZIzj0CAQYFK4EEAAoDIgADtDOYTgeoDug9OfOI31ILaoR2OiGmTiKXgyu/3J8VNZ4=\n"
+                + "-----END EC PUBLIC KEY-----";
+
+        try {
+            String eosToPem = EOSFormatter.convertEOSPublicKeyToPEMFormat(eosFormattedPublicKey);
+            assertEquals(pemFormattedPublicKey,eosToPem);
+            assertEquals(eosFormattedPublicKey,
+                    EOSFormatter.convertPEMFormattedPublicKeyToEOSFormat(eosToPem, false));
+            fail("Expected EOSFormatterError to be thrown!");
+        } catch (EOSFormatterError e) {
+            assert(e instanceof EOSFormatterError);
+        }catch (Exception e){
+            fail("Expected EOSFormatterError to be thrown!");
+        }
+
+    }
 
 
 
