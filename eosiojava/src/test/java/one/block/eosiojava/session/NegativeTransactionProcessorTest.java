@@ -24,6 +24,8 @@ import one.block.eosiojava.error.serializationprovider.SerializeTransactionError
 import one.block.eosiojava.error.session.TransactionBroadCastError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestKeyError;
+import one.block.eosiojava.error.session.TransactionGetSignatureDeserializationError;
+import one.block.eosiojava.error.session.TransactionGetSignatureSigningError;
 import one.block.eosiojava.error.session.TransactionPrepareError;
 import one.block.eosiojava.error.session.TransactionPrepareInputError;
 import one.block.eosiojava.error.session.TransactionPrepareRpcError;
@@ -284,6 +286,129 @@ public class NegativeTransactionProcessorTest {
         processor.sign();
     }
 
+    @Test
+    public void signCallGetSignature_thenFailWithEmptySerializedTransactionError()
+            throws TransactionSignError {
+        exceptionRule.expect(TransactionSignError.class);
+        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_SIGN_TRANSACTION_TRANS_EMPTY_ERROR);
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(
+                TransactionGetSignatureSigningError.class));
+
+        // Mock RpcProvider
+        this.mockGetInfoPositively();
+        this.mockGetBlockPositively();
+        this.mockRequiredKeys(Utils.getDefaultGson().fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
+
+        // mock serialization
+        this.mockSerialize(MOCKED_ACTION_HEX);
+        this.mockSerializeTransaction(MOCKED_TRANSACTION_HEX);
+
+        // Mock signature provider
+        this.mockGetAvailableKey(Arrays.asList("Key1", "Key2"));
+
+        String mockedEmptyTransactionSignatureResponseJSON = "{"
+                + "\"serializeTransaction\": \"\","
+                + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
+                + "}";
+
+        this.mockSignTransaction(Utils.getDefaultGson()
+                .fromJson(mockedEmptyTransactionSignatureResponseJSON, EosioTransactionSignatureResponse.class));
+
+        TransactionProcessor processor = session.getTransactionProcessor();
+
+        try {
+            processor.prepare(this.defaultActions());
+        } catch (TransactionPrepareError transactionPrepareError) {
+            transactionPrepareError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare");
+        }
+
+        processor.sign();
+    }
+
+    @Test
+    public void signCallGetSignature_thenFailWithEmptySignatureError()
+            throws TransactionSignError {
+        exceptionRule.expect(TransactionSignError.class);
+        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_SIGN_TRANSACTION_SIGN_EMPTY_ERROR);
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(
+                TransactionGetSignatureSigningError.class));
+
+        // Mock RpcProvider
+        this.mockGetInfoPositively();
+        this.mockGetBlockPositively();
+        this.mockRequiredKeys(Utils.getDefaultGson().fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
+
+        // mock serialization
+        this.mockSerialize(MOCKED_ACTION_HEX);
+        this.mockSerializeTransaction(MOCKED_TRANSACTION_HEX);
+
+        // Mock signature provider
+        this.mockGetAvailableKey(Arrays.asList("Key1", "Key2"));
+
+        String mockedEmptySignaturesSignatureResponseJSON = "{"
+                + "\"serializeTransaction\": \"" + MOCKED_TRANSACTION_HEX + "\","
+                + "\"signatures\": []"
+                + "}";
+
+        this.mockSignTransaction(Utils.getDefaultGson()
+                .fromJson(mockedEmptySignaturesSignatureResponseJSON, EosioTransactionSignatureResponse.class));
+
+        TransactionProcessor processor = session.getTransactionProcessor();
+
+        try {
+            processor.prepare(this.defaultActions());
+        } catch (TransactionPrepareError transactionPrepareError) {
+            transactionPrepareError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare");
+        }
+
+        processor.sign();
+    }
+
+    @Test
+    public void signCallGetSignatureWithTransactionModified_thenFailWithDeserializeTransactionError()
+            throws TransactionSignError {
+        exceptionRule.expect(TransactionSignError.class);
+        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_ERROR);
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(
+                TransactionGetSignatureDeserializationError.class));
+
+        // Mock RpcProvider
+        this.mockGetInfoPositively();
+        this.mockGetBlockPositively();
+        this.mockRequiredKeys(Utils.getDefaultGson().fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
+
+        // mock serialization
+        this.mockSerialize(MOCKED_ACTION_HEX);
+        this.mockSerializeTransaction(MOCKED_TRANSACTION_HEX);
+
+        // Mock Deserialize Transaction to throw error
+        try {
+            when(this.mockedSerializationProvider.deserializeTransaction(any(String.class))).thenThrow(new DeserializeTransactionError());
+        } catch (DeserializeTransactionError deserializeTransactionError) {
+            deserializeTransactionError.printStackTrace();
+            fail("Exception should not be thrown here for mocking deserializeTransaction");
+        }
+
+        // Mock signature provider
+        this.mockGetAvailableKey(Arrays.asList("Key1", "Key2"));
+        this.mockSignTransaction(Utils.getDefaultGson()
+                .fromJson(mockedEosioTransactionSignatureResponseModifiedTransactionJSON, EosioTransactionSignatureResponse.class));
+
+        TransactionProcessor processor = session.getTransactionProcessor();
+        processor.setIsTransactionModificationAllowed(true);
+        
+        try {
+            processor.prepare(this.defaultActions());
+        } catch (TransactionPrepareError transactionPrepareError) {
+            transactionPrepareError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare");
+        }
+
+        processor.sign();
+    }
+
     //endregion
 
     //region negative tests for broadcast
@@ -494,6 +619,8 @@ public class NegativeTransactionProcessorTest {
 
     private static final String MOCKED_ACTION_HEX = "Mocked Action Hex";
     private static final String MOCKED_TRANSACTION_HEX = "8BC2A35CF56E6CC25F7F000000000100A6823403EA3055000000572D3CCDCD01000000000000C03400000000A8ED32322A000000000000C034000000000000A682A08601000000000004454F530000000009536F6D657468696E6700";
+    private static final String MOCKED_TRANSACTION_HEX_MODIFIED = "1ec3a35c1a706e886c51000000000100a6823403ea3055000000572d3ccdcd01000000000000c03400000000a8ed32322a000000000000c034000000000000a682a08601000000000004454f530000000009536f6d657468696e6700";
+
     private static final String mockedDeserilizedTransaction = "{\n" +
             "\"expiration\" : \"" + expectedExpiration + "\",\n" +
             "\"ref_block_num\" : " + expectedRefBlockNum + ",\n" +
@@ -523,6 +650,11 @@ public class NegativeTransactionProcessorTest {
 
     private static final String mockedEosioTransactionSignatureResponseJSON = "{"
             + "\"serializeTransaction\": \"" + MOCKED_TRANSACTION_HEX + "\","
+            + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
+            + "}";
+
+    private static final String mockedEosioTransactionSignatureResponseModifiedTransactionJSON = "{"
+            + "\"serializeTransaction\": \"" + MOCKED_TRANSACTION_HEX_MODIFIED + "\","
             + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
             + "}";
 

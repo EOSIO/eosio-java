@@ -482,6 +482,70 @@ public class TransactionProcessorTest {
         assertEquals("create", transaction.getActions().get(0).getName());
     }
 
+    @Test
+    public void testPrepareWithAllPresetTapoWithoutMockingRPC() {
+        List<Action> actions = this.defaultActions();
+        Transaction presetTransaction = new Transaction(headBlockTime, refBlockNum, refBlockPrefix,
+                BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), actions,
+                new ArrayList<String>());
+        TransactionProcessor processor = null;
+        try {
+            processor = new TransactionProcessor(
+                    this.mockedSerializationProvider,
+                    this.mockedRpcProvider,
+                    this.mockedABIProvider,
+                    this.mockedSignatureProvider,
+                    presetTransaction);
+        } catch (TransactionProcessorConstructorInputError transactionProcessorConstructorInputError) {
+            transactionProcessorConstructorInputError.printStackTrace();
+            fail("Exception should not be thrown here for initializing TransactionProcessor with preset Transaction");
+        }
+
+        assertNotNull(processor);
+        try {
+            processor.prepare(actions);
+        } catch (TransactionPrepareError transactionPrepareError) {
+            transactionPrepareError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare");
+        }
+
+        Transaction preparedTransaction = processor.getTransaction();
+        assertNotNull(preparedTransaction);
+        // All tapo is preset so the test does not need to mock getInfo and getBlock RPC call
+        assertEquals(headBlockTime, preparedTransaction.getExpiration());
+        assertEquals(refBlockNum, preparedTransaction.getRefBlockNum());
+        assertEquals(refBlockPrefix, preparedTransaction.getRefBlockPrefix());
+    }
+
+    @Test
+    public void testSerializedTransactionClearedOnPrepare() {
+        // Prepare and sign
+        this.mockDefaultSuccessData();
+        // Prepare has to be called before sign
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
+        assertNotNull(processor);
+
+        try {
+            assertTrue(processor.sign());
+            assertEquals(MOCKED_TRANSACTION_HEX, processor.getSerializedTransaction());
+            assertEquals(1, processor.getSignatures().size());
+            assertEquals(MOCKED_SIGNATURE, processor.getSignatures().get(0));
+        } catch (TransactionSignError transactionSignError) {
+            transactionSignError.printStackTrace();
+            fail("Exception should not be thrown here for calling sign");
+        }
+
+        // Call prepare again to clear serialized transaction
+        try {
+            processor.prepare(this.defaultActions());
+        } catch (TransactionPrepareError transactionPrepareError) {
+            transactionPrepareError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare");
+        }
+
+        assertEquals("", processor.getSerializedTransaction());
+    }
+
     private void mockDefaultSuccessData() {
         this.mockRPC(
                 Utils.getDefaultGson().fromJson(mockedGetInfoResponse, GetInfoResponse.class),
@@ -638,6 +702,7 @@ public class TransactionProcessorTest {
 
     private static final BigInteger headBlockNum = BigInteger.valueOf(31984402L);
     private static final String headBlockTime = "2019-04-01T22:08:40.000";
+    private static final BigInteger refBlockNum = BigInteger.valueOf(2831);
     private static final BigInteger refBlockPrefix = BigInteger.valueOf(3734378733L);
     private static final String MOCKED_ACTION_HEX = "Mocked Action Hex";
     private static final String MOCKED_TRANSACTION_HEX = "8BC2A35CF56E6CC25F7F000000000100A6823403EA3055000000572D3CCDCD01000000000000C03400000000A8ED32322A000000000000C034000000000000A682A08601000000000004454F530000000009536F6D657468696E6700";

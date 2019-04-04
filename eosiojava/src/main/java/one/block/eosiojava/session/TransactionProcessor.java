@@ -260,7 +260,7 @@ public class TransactionProcessor {
                 && !preparingTransaction.getRefBlockNum().equals(BigInteger.ZERO)
                 && !preparingTransaction.getRefBlockPrefix().equals(BigInteger.ZERO)) {
             // finish preparing if all values are preset and valid
-            this.transaction = preparingTransaction;
+            this.finishPreparing(preparingTransaction);
             return;
         }
 
@@ -340,11 +340,7 @@ public class TransactionProcessor {
             preparingTransaction.setRefBlockPrefix(refBlockPrefix);
         }
 
-        this.transaction = preparingTransaction;
-        // Clear serialized transaction if it was serialized.
-        if (!Strings.isNullOrEmpty(this.serializedTransaction)) {
-            this.serializedTransaction = "";
-        }
+        this.finishPreparing(preparingTransaction);
     }
 
     /**
@@ -722,6 +718,19 @@ public class TransactionProcessor {
         }
 
         return Utils.clone(this.transaction);
+    }
+
+    /**
+     * Called when prepare is finished
+     *
+     * @param preparingTransaction - prepared transaction from prepared
+     */
+    private void finishPreparing(Transaction preparingTransaction) {
+        this.transaction = preparingTransaction;
+        // Clear serialized transaction if it was serialized.
+        if (!Strings.isNullOrEmpty(this.serializedTransaction)) {
+            this.serializedTransaction = "";
+        }
     }
 
     //endregion
