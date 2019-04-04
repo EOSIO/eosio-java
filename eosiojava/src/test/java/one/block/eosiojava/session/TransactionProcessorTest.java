@@ -437,8 +437,49 @@ public class TransactionProcessorTest {
     }
 
     @Test
-    public void setAllowTransactionToBeModified() {
+    public void prepareWithOverrideActions() {
+        this.mockDefaultSuccessData();
+        List<Action> actions = this.defaultActions();
+        Transaction presetTransaction = new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
+                BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), actions,
+                new ArrayList<String>());
+        TransactionProcessor processor = null;
+        try {
+            processor = new TransactionProcessor(
+                    this.mockedSerializationProvider,
+                    this.mockedRpcProvider,
+                    this.mockedABIProvider,
+                    this.mockedSignatureProvider,
+                    presetTransaction);
+        } catch (TransactionProcessorConstructorInputError transactionProcessorConstructorInputError) {
+            transactionProcessorConstructorInputError.printStackTrace();
+            fail("Exception should not be thrown here for initializing TransactionProcessor with preset Transaction");
+        }
 
+        assertNotNull(processor);
+        try {
+            String jsonData = "{\n" +
+                    "\"from\": \"ken\",\n" +
+                    "\"to\": \"an\",\n" +
+                    "\"quantity\": \"1000.0000 EOS\",\n" +
+                    "\"memo\" : \"Something else\"\n" +
+                    "}";
+
+            List<Authorization> authorizations = new ArrayList<>();
+            authorizations.add(new Authorization("ken", "active"));
+            List<Action> newActions = new ArrayList<>();
+            newActions.add(new Action("eosio.create", "create", authorizations, jsonData));
+
+            processor.prepare(newActions);
+        } catch (TransactionPrepareError transactionPrepareError) {
+            transactionPrepareError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare");
+        }
+
+        Transaction transaction = processor.getTransaction();
+        assertNotNull(transaction);
+        assertEquals("eosio.create", transaction.getActions().get(0).getAccount());
+        assertEquals("create", transaction.getActions().get(0).getName());
     }
 
     private void mockDefaultSuccessData() {

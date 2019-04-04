@@ -215,7 +215,8 @@ public class TransactionProcessor {
      * <p>
      * Check Prepare() flow in "complete workflow" doc for more detail
      *
-     * @param actions - List of action with data
+     * @param actions - List of action with data. If the transaction is preset or has value and it has its own actions, that list will be
+     * override by this input list
      */
     public void prepare(@NotNull List<Action> actions) throws TransactionPrepareError {
         if (actions.isEmpty()) {
@@ -230,8 +231,8 @@ public class TransactionProcessor {
 
         try {
             preparingTransaction = this.transaction == null ? new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
-                    BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), actions,
-                    new ArrayList<String>()) : Utils.clone(this.transaction);
+                    BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), new ArrayList<Action>(),
+                    new ArrayList<String>()) : this.getDeepClone();
         } catch (IOException e) {
             throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR, e);
         } catch (ClassNotFoundException e) {
@@ -241,6 +242,9 @@ public class TransactionProcessor {
         if (preparingTransaction == null) {
             throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CANT_INIT_TRANS);
         }
+
+        // Set/Override actions from input
+        preparingTransaction.setActions(actions);
 
         long presetExpiration = 0;
 
@@ -279,7 +283,8 @@ public class TransactionProcessor {
             this.chainId = getInfoResponse.getChainId();
         } else if (!Strings.isNullOrEmpty(getInfoResponse.getChainId()) && !getInfoResponse.getChainId().equals(chainId)) {
             // Throw error if both are not empty but one does not match with another
-            throw new TransactionPrepareError(String.format(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CHAINID_NOT_MATCH, this.chainId, getInfoResponse.getChainId()));
+            throw new TransactionPrepareError(String.format(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CHAINID_NOT_MATCH, this.chainId,
+                    getInfoResponse.getChainId()));
         }
 
         if (preparingTransaction.getExpiration().isEmpty() || presetExpiration < 0) {
@@ -632,7 +637,7 @@ public class TransactionProcessor {
     private String serializeTransaction() throws TransactionCreateSignatureRequestError {
         Transaction clonedTransaction;
         try {
-            clonedTransaction = Utils.clone(this.transaction);
+            clonedTransaction = this.getDeepClone();
         } catch (IOException e) {
             throw new TransactionCreateSignatureRequestError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR, e);
         } catch (ClassNotFoundException e) {
@@ -703,6 +708,20 @@ public class TransactionProcessor {
         }
 
         return _serializedTransaction;
+    }
+
+    /**
+     * Getting deep clone of the transaction
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private Transaction getDeepClone() throws IOException, ClassNotFoundException {
+        if (this.transaction == null) {
+            return null;
+        }
+
+        return Utils.clone(this.transaction);
     }
 
     //endregion
