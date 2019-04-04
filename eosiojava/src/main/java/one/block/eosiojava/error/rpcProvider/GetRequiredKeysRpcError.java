@@ -5,21 +5,21 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Class of Error/Exception for GetRequiredKeys RPC call
  */
-public class GetRequiredKeysError extends RpcProviderError {
+public class GetRequiredKeysRpcError extends RpcProviderError {
 
-    public GetRequiredKeysError() {
+    public GetRequiredKeysRpcError() {
     }
 
-    public GetRequiredKeysError(@NotNull String message) {
+    public GetRequiredKeysRpcError(@NotNull String message) {
         super(message);
     }
 
-    public GetRequiredKeysError(@NotNull String message,
+    public GetRequiredKeysRpcError(@NotNull String message,
             @NotNull Exception exception) {
         super(message, exception);
     }
 
-    public GetRequiredKeysError(@NotNull Exception exception) {
+    public GetRequiredKeysRpcError(@NotNull Exception exception) {
         super(exception);
     }
 }

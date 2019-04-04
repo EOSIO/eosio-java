@@ -2,6 +2,9 @@ package one.block.eosiojava.error.session;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Error would come out of TransactionProcessor#CreateSignatureRequest#GetAvailableKey
+ */
 public class TransactionCreateSignatureRequestKeyError extends TransactionCreateSignatureRequestError {
 
     public TransactionCreateSignatureRequestKeyError() {

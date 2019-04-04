@@ -5,21 +5,21 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Class of Error/Exception for GetBlock RPC call
  */
-public class GetBlockError extends RpcProviderError{
+public class GetBlockRpcError extends RpcProviderError{
 
-    public GetBlockError() {
+    public GetBlockRpcError() {
     }
 
-    public GetBlockError(@NotNull String message) {
+    public GetBlockRpcError(@NotNull String message) {
         super(message);
     }
 
-    public GetBlockError(@NotNull String message,
+    public GetBlockRpcError(@NotNull String message,
             @NotNull Exception exception) {
         super(message, exception);
     }
 
-    public GetBlockError(@NotNull Exception exception) {
+    public GetBlockRpcError(@NotNull Exception exception) {
         super(exception);
     }
 }

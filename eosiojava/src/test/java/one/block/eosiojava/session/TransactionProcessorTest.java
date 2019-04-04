@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
-import one.block.eosiojava.error.rpcProvider.GetBlockError;
-import one.block.eosiojava.error.rpcProvider.GetInfoError;
-import one.block.eosiojava.error.rpcProvider.GetRequiredKeysError;
-import one.block.eosiojava.error.rpcProvider.PushTransactionError;
+import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
+import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
+import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
+import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
 import one.block.eosiojava.error.serializationprovider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationprovider.SerializeError;
 import one.block.eosiojava.error.serializationprovider.SerializeTransactionError;
@@ -382,8 +382,8 @@ public class TransactionProcessorTest {
             fail("Exception should not be thrown here for calling serialize");
         }
 
-        processor.setAllowTransactionToBeModified(true);
-        assertTrue(processor.isAllowTransactionToBeModified());
+        processor.setIsTransactionModificationAllowed(true);
+        assertTrue(processor.isTransactionModificationAllowed());
 
         try {
             PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
@@ -491,8 +491,8 @@ public class TransactionProcessorTest {
         if (getInfoResponse != null) {
             try {
                 when(mockedRpcProvider.getInfo()).thenReturn(getInfoResponse);
-            } catch (GetInfoError getInfoError) {
-                getInfoError.printStackTrace();
+            } catch (GetInfoRpcError getInfoRpcError) {
+                getInfoRpcError.printStackTrace();
                 fail("Exception should not be thrown here for mocking getInfo");
             }
         }
@@ -500,8 +500,8 @@ public class TransactionProcessorTest {
         if (getBlockResponse != null) {
             try {
                 when(mockedRpcProvider.getBlock(any(GetBlockRequest.class))).thenReturn(getBlockResponse);
-            } catch (GetBlockError getBlockError) {
-                getBlockError.printStackTrace();
+            } catch (GetBlockRpcError getBlockRpcError) {
+                getBlockRpcError.printStackTrace();
                 fail("Exception should not be thrown here for mocking getBlock");
             }
         }
@@ -509,8 +509,8 @@ public class TransactionProcessorTest {
         if (getRequiredKeysResponse != null) {
             try {
                 when(this.mockedRpcProvider.getRequiredKeys(any(GetRequiredKeysRequest.class))).thenReturn(getRequiredKeysResponse);
-            } catch (GetRequiredKeysError getRequiredKeysError) {
-                getRequiredKeysError.printStackTrace();
+            } catch (GetRequiredKeysRpcError getRequiredKeysRpcError) {
+                getRequiredKeysRpcError.printStackTrace();
                 fail("Exception should not be thrown here for mocking getRequiredKeys");
             }
         }
@@ -518,8 +518,8 @@ public class TransactionProcessorTest {
         if (pushTransactionResponse != null) {
             try {
                 when(this.mockedRpcProvider.pushTransaction(any(PushTransactionRequest.class))).thenReturn(pushTransactionResponse);
-            } catch (PushTransactionError pushTransactionError) {
-                pushTransactionError.printStackTrace();
+            } catch (PushTransactionRpcError pushTransactionRpcError) {
+                pushTransactionRpcError.printStackTrace();
                 fail("Exception should not be thrown here for mocking pushTransaction");
             }
         }

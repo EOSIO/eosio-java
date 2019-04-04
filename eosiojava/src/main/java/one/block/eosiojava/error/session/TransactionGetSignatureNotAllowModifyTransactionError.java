@@ -2,6 +2,9 @@ package one.block.eosiojava.error.session;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Error would come out of TransactionProcessor#GetSignature
+ */
 public class TransactionGetSignatureNotAllowModifyTransactionError extends TransactionGetSignatureError {
 
     public TransactionGetSignatureNotAllowModifyTransactionError() {

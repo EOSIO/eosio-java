@@ -3,6 +3,9 @@ package one.block.eosiojava.error.session;
 import one.block.eosiojava.error.EosioError;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Error would come out of TransactionProcessor
+ */
 public class TransactionProcessorError extends EosioError {
 
     public TransactionProcessorError() {

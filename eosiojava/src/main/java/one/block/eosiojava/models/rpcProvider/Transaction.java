@@ -277,13 +277,4 @@ public class Transaction implements Serializable {
     public void setTransactionExtensions(@NotNull List<String> transactionExtensions) {
         this.transactionExtensions = transactionExtensions;
     }
-
-    /**
-     * Gets json version of transaction
-     *
-     * @return JSON
-     */
-    public String toJSON() {
-        return Utils.getDefaultGson().toJson(this);
-    }
 }

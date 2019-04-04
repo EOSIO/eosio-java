@@ -14,10 +14,10 @@ import java.util.List;
 import one.block.eosiojava.error.EosioError;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
-import one.block.eosiojava.error.rpcProvider.GetBlockError;
-import one.block.eosiojava.error.rpcProvider.GetInfoError;
-import one.block.eosiojava.error.rpcProvider.GetRequiredKeysError;
-import one.block.eosiojava.error.rpcProvider.PushTransactionError;
+import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
+import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
+import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
+import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
 import one.block.eosiojava.error.serializationprovider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationprovider.SerializeError;
 import one.block.eosiojava.error.serializationprovider.SerializeTransactionError;
@@ -48,7 +48,6 @@ import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
-import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.Utils;
@@ -113,13 +112,13 @@ public class NegativeTransactionProcessorTest {
     public void prepare_thenFailWithGetInfoError() throws TransactionPrepareError {
         exceptionRule.expect(TransactionPrepareRpcError.class);
         exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_INFO);
-        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(GetInfoError.class));
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(GetInfoRpcError.class));
 
         try {
             // Mock RpcProvider to throw exception
-            when(this.mockedRpcProvider.getInfo()).thenThrow(new GetInfoError());
-        } catch (GetInfoError getInfoError) {
-            getInfoError.printStackTrace();
+            when(this.mockedRpcProvider.getInfo()).thenThrow(new GetInfoRpcError());
+        } catch (GetInfoRpcError getInfoRpcError) {
+            getInfoRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking getInfo");
         }
 
@@ -131,15 +130,15 @@ public class NegativeTransactionProcessorTest {
     public void prepare_thenFailWithGetBlockError() throws TransactionPrepareError {
         exceptionRule.expect(TransactionPrepareRpcError.class);
         exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK);
-        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(GetBlockError.class));
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(GetBlockRpcError.class));
 
         // Mock RpcProvider
         this.mockGetInfoPositively();
 
         try {
-            when(this.mockedRpcProvider.getBlock(any(GetBlockRequest.class))).thenThrow(new GetBlockError());
-        } catch (GetBlockError getBlockError) {
-            getBlockError.printStackTrace();
+            when(this.mockedRpcProvider.getBlock(any(GetBlockRequest.class))).thenThrow(new GetBlockRpcError());
+        } catch (GetBlockRpcError getBlockRpcError) {
+            getBlockRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking getBlock");
         }
 
@@ -173,14 +172,40 @@ public class NegativeTransactionProcessorTest {
         try {
             when(this.mockedRpcProvider.getInfo())
                     .thenReturn(Utils.getDefaultGson().fromJson(mockedGetInfoResponseWithWeirdDateFormat, GetInfoResponse.class));
-        } catch (GetInfoError getInfoError) {
-            getInfoError.printStackTrace();
+        } catch (GetInfoRpcError getInfoRpcError) {
+            getInfoRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking getInfo");
         }
 
         TransactionProcessor processor = session.getTransactionProcessor();
         processor.prepare(this.defaultActions());
     }
+
+    @Test
+    public void prepare_thenFailWithWrongChainId() throws TransactionPrepareError {
+        exceptionRule.expect(TransactionPrepareError.class);
+        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CHAINID_NOT_MATCH);
+
+        this.mockGetInfoPositively();
+
+        Transaction wrongChainIdTransaction = new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
+                BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), this.defaultActions(),
+                new ArrayList<String>());
+
+        TransactionProcessor processor = null;
+
+        try {
+            processor = session.getTransactionProcessor(wrongChainIdTransaction);
+            processor.setChainId("chainId2");
+        } catch (TransactionProcessorConstructorInputError transactionProcessorConstructorInputError) {
+            transactionProcessorConstructorInputError.printStackTrace();
+            fail("Exception should not be thrown here for create transaction here");
+        }
+
+        processor.setChainId("chainId2");
+        processor.prepare(this.defaultActions());
+    }
+
     //endregion
 
     //region negative tests for "sign"
@@ -276,9 +301,9 @@ public class NegativeTransactionProcessorTest {
 
         // Mock PushTransaction RPC to throw error
         try {
-            when(this.mockedRpcProvider.pushTransaction(any(PushTransactionRequest.class))).thenThrow(new PushTransactionError());
-        } catch (PushTransactionError pushTransactionError) {
-            pushTransactionError.printStackTrace();
+            when(this.mockedRpcProvider.pushTransaction(any(PushTransactionRequest.class))).thenThrow(new PushTransactionRpcError());
+        } catch (PushTransactionRpcError pushTransactionRpcError) {
+            pushTransactionRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking pushTransaction");
         }
 
@@ -316,8 +341,8 @@ public class NegativeTransactionProcessorTest {
     private void mockRequiredKeys(GetRequiredKeysResponse response) {
         try {
             when(this.mockedRpcProvider.getRequiredKeys(any(GetRequiredKeysRequest.class))).thenReturn(response);
-        } catch (GetRequiredKeysError getRequiredKeysError) {
-            getRequiredKeysError.printStackTrace();
+        } catch (GetRequiredKeysRpcError getRequiredKeysRpcError) {
+            getRequiredKeysRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking getRequiredKeys");
         }
     }
@@ -389,8 +414,8 @@ public class NegativeTransactionProcessorTest {
         try {
             when(this.mockedRpcProvider.getBlock(any(GetBlockRequest.class)))
                     .thenReturn(Utils.getDefaultGson().fromJson(mockedGetBlockResponse, GetBlockResponse.class));
-        } catch (GetBlockError getBlockError) {
-            getBlockError.printStackTrace();
+        } catch (GetBlockRpcError getBlockRpcError) {
+            getBlockRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking getBlock");
         }
     }
@@ -399,8 +424,8 @@ public class NegativeTransactionProcessorTest {
         try {
             when(this.mockedRpcProvider.getInfo())
                     .thenReturn(Utils.getDefaultGson().fromJson(mockedGetInfoResponse, GetInfoResponse.class));
-        } catch (GetInfoError getInfoError) {
-            getInfoError.printStackTrace();
+        } catch (GetInfoRpcError getInfoRpcError) {
+            getInfoRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking getInfo");
         }
     }
