@@ -184,7 +184,7 @@ public class NegativeTransactionProcessorTest {
     @Test
     public void prepare_thenFailWithWrongChainId() throws TransactionPrepareError {
         exceptionRule.expect(TransactionPrepareError.class);
-        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CHAINID_NOT_MATCH);
+        exceptionRule.expectMessage(String.format(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CHAINID_NOT_MATCH, "chainId2", "sample chain id"));
 
         this.mockGetInfoPositively();
 
