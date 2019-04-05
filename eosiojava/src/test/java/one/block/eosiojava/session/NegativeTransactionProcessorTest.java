@@ -398,7 +398,7 @@ public class NegativeTransactionProcessorTest {
 
         TransactionProcessor processor = session.getTransactionProcessor();
         processor.setIsTransactionModificationAllowed(true);
-        
+
         try {
             processor.prepare(this.defaultActions());
         } catch (TransactionPrepareError transactionPrepareError) {

@@ -295,21 +295,6 @@ public class TransactionProcessorTest {
     }
 
     @Test
-    public void setTransactionConfig() {
-        this.mockDefaultSuccessData();
-        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
-        assertNotNull(processor);
-
-        TransactionConfig config = new TransactionConfig();
-        config.setBlocksBehind(7);
-        config.setExpiresSeconds(100);
-        processor.setTransactionConfig(config);
-
-        TransactionConfig configToTest = processor.getTransactionConfig();
-        assertEquals(config, configToTest);
-    }
-
-    @Test
     public void setChainId() {
         this.mockDefaultSuccessData();
         TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
