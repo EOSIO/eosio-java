@@ -262,6 +262,9 @@ public class NegativeTransactionProcessorTest {
         this.mockGetInfoPositively();
         this.mockGetBlockPositively();
 
+        // Mock AbiProvider
+        this.mockGetAbi(EOSIOTOKENABIJSON);
+
         // mock serialization
         this.mockSerialize(MOCKED_ACTION_HEX);
         this.mockSerializeTransaction(MOCKED_TRANSACTION_HEX);
@@ -298,6 +301,9 @@ public class NegativeTransactionProcessorTest {
         this.mockGetInfoPositively();
         this.mockGetBlockPositively();
         this.mockRequiredKeys(Utils.getDefaultGson().fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
+
+        // Mock AbiProvider
+        this.mockGetAbi(EOSIOTOKENABIJSON);
 
         // mock serialization
         this.mockSerialize(MOCKED_ACTION_HEX);
@@ -339,6 +345,9 @@ public class NegativeTransactionProcessorTest {
         this.mockGetBlockPositively();
         this.mockRequiredKeys(Utils.getDefaultGson().fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
 
+        // Mock AbiProvider
+        this.mockGetAbi(EOSIOTOKENABIJSON);
+
         // mock serialization
         this.mockSerialize(MOCKED_ACTION_HEX);
         this.mockSerializeTransaction(MOCKED_TRANSACTION_HEX);
@@ -378,6 +387,9 @@ public class NegativeTransactionProcessorTest {
         this.mockGetInfoPositively();
         this.mockGetBlockPositively();
         this.mockRequiredKeys(Utils.getDefaultGson().fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
+
+        // Mock AbiProvider
+        this.mockGetAbi(EOSIOTOKENABIJSON);
 
         // mock serialization
         this.mockSerialize(MOCKED_ACTION_HEX);
