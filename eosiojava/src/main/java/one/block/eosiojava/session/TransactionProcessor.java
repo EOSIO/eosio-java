@@ -224,27 +224,12 @@ public class TransactionProcessor {
                     ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG);
         }
 
-        // Create new instance of Transaction or make a clone of existing Transaction.
-        // Final value will be assigned to transaction object in class level.
+        // Create new instance of Transaction.
+        // Final value will be assigned to transaction object in class level and override preset Transaction if it was set by constructor.
         // The reason for that is for avoiding trash/haft way data when error happens.
-        Transaction preparingTransaction;
-
-        try {
-            preparingTransaction = this.transaction == null ? new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
-                    BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), new ArrayList<Action>(),
-                    new ArrayList<String>()) : this.getDeepClone();
-        } catch (IOException e) {
-            throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR, e);
-        } catch (ClassNotFoundException e) {
-            throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_CLASS_NOT_FOUND, e);
-        }
-
-        if (preparingTransaction == null) {
-            throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CANT_INIT_TRANS);
-        }
-
-        // Set/Override actions from input
-        preparingTransaction.setActions(actions);
+        Transaction preparingTransaction = new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
+                BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), actions,
+                new ArrayList<String>());
 
         long presetExpiration = 0;
 

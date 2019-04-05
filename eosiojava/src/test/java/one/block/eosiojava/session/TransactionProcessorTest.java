@@ -468,41 +468,6 @@ public class TransactionProcessorTest {
     }
 
     @Test
-    public void testPrepareWithAllPresetTapoWithoutMockingRPC() {
-        List<Action> actions = this.defaultActions();
-        Transaction presetTransaction = new Transaction(headBlockTime, refBlockNum, refBlockPrefix,
-                BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), actions,
-                new ArrayList<String>());
-        TransactionProcessor processor = null;
-        try {
-            processor = new TransactionProcessor(
-                    this.mockedSerializationProvider,
-                    this.mockedRpcProvider,
-                    this.mockedABIProvider,
-                    this.mockedSignatureProvider,
-                    presetTransaction);
-        } catch (TransactionProcessorConstructorInputError transactionProcessorConstructorInputError) {
-            transactionProcessorConstructorInputError.printStackTrace();
-            fail("Exception should not be thrown here for initializing TransactionProcessor with preset Transaction");
-        }
-
-        assertNotNull(processor);
-        try {
-            processor.prepare(actions);
-        } catch (TransactionPrepareError transactionPrepareError) {
-            transactionPrepareError.printStackTrace();
-            fail("Exception should not be thrown here for calling prepare");
-        }
-
-        Transaction preparedTransaction = processor.getTransaction();
-        assertNotNull(preparedTransaction);
-        // All tapo is preset so the test does not need to mock getInfo and getBlock RPC call
-        assertEquals(headBlockTime, preparedTransaction.getExpiration());
-        assertEquals(refBlockNum, preparedTransaction.getRefBlockNum());
-        assertEquals(refBlockPrefix, preparedTransaction.getRefBlockPrefix());
-    }
-
-    @Test
     public void testSerializedTransactionClearedOnPrepare() {
         // Prepare and sign
         this.mockDefaultSuccessData();

@@ -81,26 +81,6 @@ public class NegativeTransactionProcessorTest {
                 this.mockedSignatureProvider);
     }
 
-    //region constructors
-
-    @Test
-    public void constructorWithPreset_thenFailWithEmptyAction() throws TransactionProcessorConstructorInputError {
-        exceptionRule.expect(TransactionProcessorConstructorInputError.class);
-        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG);
-
-        Transaction presetTransaction = new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
-                BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), new ArrayList<Action>(),
-                new ArrayList<String>());
-        new TransactionProcessor(
-                this.mockedSerializationProvider,
-                this.mockedRpcProvider,
-                this.mockedABIProvider,
-                this.mockedSignatureProvider,
-                presetTransaction);
-    }
-
-    //endregion
-
     //region negative tests for "prepare"
     @Test
     public void prepare_thenFailWithEmptyActions() throws TransactionPrepareError {
