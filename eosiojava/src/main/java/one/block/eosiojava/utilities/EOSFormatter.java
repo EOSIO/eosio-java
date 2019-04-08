@@ -438,10 +438,16 @@ public class EOSFormatter {
      * be an The ECDSA signature that is a DER encoded ASN.1 sequence of two integer fields (see
      * ECDSA-Sig-Value in rfc3279 section 2.2.3).
      *
-     * The DER encoded ECDSA signature follows the following format: Byte 1 - Sequence (Should be
-     * 30) Byte 2 - Signature length Byte 3 - R Marker (0x02) Byte 4 - R length Bytes 5 to 37 or 38
-     * - R Byte After R - S Marker (0x02) Byte After S Marker - S Length Bytes After S Length - S
-     * (always 32-33 bytes) Byte Final - Hash Type
+     * The DER encoded ECDSA signature follows the following format:
+     * Byte 1 - Sequence (Should be 30)
+     * Byte 2 - Signature length
+     * Byte 3 - R Marker (0x02)
+     * Byte 4 - R length
+     * Bytes 5 to 37 or 38- R
+     * Byte After R - S Marker (0x02)
+     * Byte After S Marker - S Length
+     * Bytes After S Length - S (always 32-33 bytes)
+     * Byte Final - Hash Type
      *
      * @param signatureDER ECDSA DER encoded signature as byte array
      * @param signableTransaction Transaction in signable format
