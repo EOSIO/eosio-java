@@ -30,7 +30,7 @@ public class ErrorConstants {
     public static final String NO_ABI_FOUND = "No ABI found for requested account name.";
     public static final String ERROR_RETRIEVING_ABI = "Error retrieving ABI from the chain.";
 
-    //region TransactionProcess errors
+    //region TransactionProcessor errors
 
     public static final String TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG = "Action list can't be empty!";
     public static final String TRANSACTION_PROCESSOR_RPC_GET_INFO = "Error happened on calling GetInfo RPC.";
