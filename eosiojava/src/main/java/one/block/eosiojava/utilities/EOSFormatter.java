@@ -2,8 +2,11 @@
 
 package one.block.eosiojava.utilities;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.google.common.primitives.Bytes;
 import java.io.CharArrayReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -15,10 +18,21 @@ import one.block.eosiojava.error.utilities.DerToPemConversionError;
 import one.block.eosiojava.error.utilities.EOSFormatterError;
 import org.bitcoinj.core.Base58;
 import org.bitcoinj.core.Sha256Hash;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.DLSequence;
+import org.bouncycastle.asn1.sec.SECNamedCurves;
+import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.asn1.x9.X9IntegerConverter;
 import org.bouncycastle.crypto.digests.RIPEMD160Digest;
+import org.bouncycastle.crypto.ec.CustomNamedCurves;
+import org.bouncycastle.crypto.params.ECDomainParameters;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.math.ec.ECAlgorithms;
+import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.math.ec.FixedPointUtil;
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -64,12 +78,12 @@ public class EOSFormatter {
     private static final String PATTERN_STRING_PEM_SUFFIX_PRIVATE_KEY_SECP256R1 = "A00A06082A8648CE3D030107";
 
     //PEM HEADERS & FOOTERS
-    private static final String PEM_HEADER_PREFIX = "-----BEGIN EC ";
-    private static final String PEM_HEADER_SUFFIX = "-----";
-    private static final String PEM_FOOTER_PREFIX = "-----END EC ";
-    private static final String PEM_FOOTER_SUFFIX = "-----";
+    private static final String PEM_HEADER_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----";
+    private static final String PEM_FOOTER_PUBLIC_KEY = "-----END PUBLIC KEY-----";
+    private static final String PEM_HEADER_PRIVATE_KEY = "-----BEGIN EC PRIVATE KEY-----";
+    private static final String PEM_FOOTER_PRIVATE_KEY = "-----END EC PRIVATE KEY-----";
     private static final String PEM_HEADER_EC_PRIVATE_KEY = "EC PRIVATE KEY";
-    private static final String PEM_HEADER_EC_PUBLIC_KEY = "EC PUBLIC KEY";
+    private static final String PEM_HEADER_EC_PUBLIC_KEY = "PUBLIC KEY";
 
     //CHECKSUM RELATED
     private static final String SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX = "R1";
@@ -90,6 +104,10 @@ public class EOSFormatter {
     private static final byte COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_POSITIVE_Y = 0x02;
     private static final byte COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_NEGATIVE_Y = 0x03;
 
+    //SIGNATURE RELATED CONSTANTS
+    private static final int VALUE_TO_ADD_TO_SIGNATURE_HEADER = 31;
+    private static final int EXPECTED_R_OR_S_LENGTH = 32;
+
     /*
     Covers the PEM objects currently supported by this class (i.e. The class allows for PEM
     formatting of public keys, private keys, and signatures).
@@ -108,6 +126,94 @@ public class EOSFormatter {
         public String getString() {
             return value;
         }
+    }
+
+    /**
+     * R1 CONST
+     */
+    private static final String CONS_R1 = "R1";
+
+    /**
+     * K1 CONST
+     */
+    private static final String CONS_K1 = "K1";
+
+    /**
+     * Const name of secp256r1 curves
+     */
+    private static final String SECP256_R1 = "secp256r1";
+
+    /**
+     * Const name of secp256k1 curves
+     */
+    private static final String SECP256_K1 = "secp256k1";
+
+    /**
+     * EC domain parameters of R1 key
+     */
+    private static final ECDomainParameters ecParamsR1;
+
+    /**
+     * EC domain parameters of K1 key
+     */
+    private static final ECDomainParameters ecParamsK1;
+
+    /**
+     * EC parameters holder of R1 key type
+     */
+    private static final X9ECParameters CURVE_PARAMS_R1 = CustomNamedCurves.getByName(SECP256_R1);
+
+    /**
+     * EC parameters holder of K1 key type
+     */
+    private static final X9ECParameters CURVE_PARAMS_K1 = CustomNamedCurves.getByName(SECP256_K1);
+
+    /**
+     * EC holder of R1 key type
+     */
+    private static final ECDomainParameters CURVE_R1;
+
+    /**
+     * Half curve value of R1 key type (to calculate low S)
+     */
+    private static final BigInteger HALF_CURVE_ORDER_R1;
+
+    /**
+     * EC holder of K1 key type
+     */
+    private static final ECDomainParameters CURVE_K1;
+
+    /**
+     * Half curve value of K1 key type (to calculate low S)
+     */
+    private static final BigInteger HALF_CURVE_ORDER_K1;
+
+
+    static {
+        X9ECParameters paramsR1 = SECNamedCurves.getByName(SECP256_R1);
+        ecParamsR1 = new ECDomainParameters(paramsR1.getCurve(), paramsR1.getG(), paramsR1.getN(),
+                paramsR1.getH());
+
+        X9ECParameters paramsK1 = SECNamedCurves.getByName(SECP256_K1);
+        ecParamsK1 = new ECDomainParameters(paramsK1.getCurve(), paramsK1.getG(), paramsK1.getN(),
+                paramsK1.getH());
+
+        // secp256r1
+        FixedPointUtil.precompute(CURVE_PARAMS_R1.getG());
+        CURVE_R1 = new ECDomainParameters(
+                CURVE_PARAMS_R1.getCurve(),
+                CURVE_PARAMS_R1.getG(),
+                CURVE_PARAMS_R1.getN(),
+                CURVE_PARAMS_R1.getH());
+        HALF_CURVE_ORDER_R1 = CURVE_PARAMS_R1.getN().shiftRight(1);
+
+        // secp256k1
+        CURVE_K1 = new ECDomainParameters(
+                CURVE_PARAMS_K1.getCurve(),
+                CURVE_PARAMS_K1.getG(),
+                CURVE_PARAMS_K1.getN(),
+                CURVE_PARAMS_K1.getH());
+        HALF_CURVE_ORDER_K1 = CURVE_PARAMS_K1.getN().shiftRight(1);
     }
 
     /**
@@ -327,14 +433,101 @@ public class EOSFormatter {
         return pemFormattedPublickKey;
     }
 
-    public static String convertPEMSignatureToEOSFormat(@NotNull String signaturePEM)
+    /**
+     * This method converts a signature to a EOS compliant form.  The signature to be converted must
+     * be an The ECDSA signature that is a DER encoded ASN.1 sequence of two integer fields (see
+     * ECDSA-Sig-Value in rfc3279 section 2.2.3).
+     *
+     * The DER encoded ECDSA signature follows the following format: Byte 1 - Sequence (Should be
+     * 30) Byte 2 - Signature length Byte 3 - R Marker (0x02) Byte 4 - R length Bytes 5 to 37 or 38
+     * - R Byte After R - S Marker (0x02) Byte After S Marker - S Length Bytes After S Length - S
+     * (always 32-33 bytes) Byte Final - Hash Type
+     *
+     * @param signatureDER ECDSA DER encoded signature as byte array
+     * @param signableTransaction Transaction in signable format
+     * @return EOS format of signature
+     */
+    @NotNull
+    public static String convertDERSignatureToEOSFormat(@NotNull byte[] signatureDER,
+            @NotNull byte[] signableTransaction, @NotNull String publicKeyPEM)
             throws EOSFormatterError {
-        String eosFormattedSignature = signaturePEM;
+        String eosFormattedSignature = "";
+        ASN1InputStream asn1InputStream = new ASN1InputStream(signatureDER);
+        try {
+            PEMProcessor publicKey = new PEMProcessor(publicKeyPEM);
+            AlgorithmEmployed algorithmEmployed = publicKey.getAlgorithm();
+            byte[] keyData = publicKey.getKeyData();
+            DLSequence sequence = (DLSequence) asn1InputStream.readObject();
+            BigInteger r = ((ASN1Integer) sequence.getObjectAt(0)).getPositiveValue();
+            BigInteger s = ((ASN1Integer) sequence.getObjectAt(1)).getPositiveValue();
+
+            s = checkAndHandleLowS(s, algorithmEmployed);
+
+            int recoverId = getRecoveryId(r, s, Sha256Hash.of(signableTransaction), keyData,
+                    algorithmEmployed);
+
+            if (recoverId < 0) {
+                throw new IllegalStateException(
+                        ErrorConstants.COULD_NOT_RECOVER_PUBLIC_KEY_FROM_SIG);
+            }
+
+            byte[] rFinalArray = r.toByteArray();
+            byte[] sFinalArray = s.toByteArray();
+
+            if (rFinalArray.length > EXPECTED_R_OR_S_LENGTH) {
+                rFinalArray = Arrays.copyOfRange(rFinalArray, 1, rFinalArray.length);
+            }
+
+            if (sFinalArray.length > EXPECTED_R_OR_S_LENGTH) {
+                sFinalArray = Arrays.copyOfRange(sFinalArray, 1, sFinalArray.length);
+            }
+
+            //Add RecoveryID + 27 + 4 to create the header byte
+            recoverId += VALUE_TO_ADD_TO_SIGNATURE_HEADER;
+            byte headerByte = ((Integer) recoverId).byteValue();
+            byte[] decodedSignature = Bytes
+                    .concat(new byte[]{headerByte}, rFinalArray, sFinalArray);
+            if (algorithmEmployed.equals(AlgorithmEmployed.SECP256K1) &&
+                    isNotCanonical(decodedSignature)) {
+                    throw new IllegalArgumentException(ErrorConstants.NON_CANONICAL_SIGNATURE);
+            }
+
+            byte[] signatureWithCheckSum;
+            String signaturePrefix;
+            switch (algorithmEmployed) {
+                case SECP256R1:
+                    signatureWithCheckSum = addCheckSumToSignature(decodedSignature,
+                            SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX.getBytes());
+                    signaturePrefix = PATTERN_STRING_EOS_PREFIX_SIG_R1;
+                    break;
+                case SECP256K1:
+                    signatureWithCheckSum = addCheckSumToSignature(decodedSignature,
+                            SECP256K1_CHECKSUM_VALIDATION_SUFFIX.getBytes());
+                    signaturePrefix = PATTERN_STRING_EOS_PREFIX_SIG_K1;
+                    break;
+                default:
+                    throw new EOSFormatterError(ErrorConstants.UNSUPPORTED_ALGORITHM);
+
+            }
+
+            eosFormattedSignature = signaturePrefix.concat(Base58.encode(signatureWithCheckSum));
+            asn1InputStream.close();
+
+
+        } catch (Exception e) {
+            throw new EOSFormatterError(ErrorConstants.SIGNATURE_FORMATTING_ERROR, e);
+        } finally {
+            try {
+                asn1InputStream.close();
+            } catch (IOException e) {
+                //TODO:Implement logger
+            }
+        }
 
         return eosFormattedSignature;
     }
 
-    public static String convertEOSSignatureToPEMFormat(@NotNull String signatureEOS)
+    public static String convertEOSSignatureToDERFormat(@NotNull String signatureEOS)
             throws EOSFormatterError {
         String pemFormattedSignature = signatureEOS;
 
@@ -553,9 +746,13 @@ public class EOSFormatter {
         StringBuilder pemForm = new StringBuilder();
         try {
             //Build Header
-            pemForm.append(PEM_HEADER_PREFIX);
-            pemForm.append(pemObjectType.getString());
-            pemForm.append(PEM_HEADER_SUFFIX);
+            if (pemObjectType.equals(PEMObjectType.PRIVATEKEY)) {
+                pemForm.append(PEM_HEADER_PRIVATE_KEY);
+            } else if (pemObjectType.equals(PEMObjectType.PUBLICKEY)) {
+                pemForm.append(PEM_HEADER_PUBLIC_KEY);
+            } else {
+                throw new DerToPemConversionError(ErrorConstants.DER_TO_PEM_CONVERSION);
+            }
             pemForm.append("\n");
 
             //Base64 Encode DER Encoded Byte Array And Add to PEM Object
@@ -565,9 +762,14 @@ public class EOSFormatter {
             pemForm.append("\n");
 
             //Build Footer
-            pemForm.append(PEM_FOOTER_PREFIX);
-            pemForm.append(pemObjectType.getString());
-            pemForm.append(PEM_FOOTER_SUFFIX);
+            if (pemObjectType.equals(PEMObjectType.PRIVATEKEY)) {
+                pemForm.append(PEM_FOOTER_PRIVATE_KEY);
+            } else if (pemObjectType.equals(PEMObjectType.PUBLICKEY)) {
+                pemForm.append(PEM_FOOTER_PUBLIC_KEY);
+            } else {
+                throw new DerToPemConversionError(ErrorConstants.DER_TO_PEM_CONVERSION);
+            }
+
         } catch (Exception e) {
             throw new DerToPemConversionError(ErrorConstants.DER_TO_PEM_CONVERSION, e);
         }
@@ -968,5 +1170,242 @@ public class EOSFormatter {
             throw new EOSFormatterError(ErrorConstants.PUBLIC_KEY_COMPRESSION_ERROR, e);
         }
     }
+
+    /**
+     * Takes the S value of an ECDSA DER encoded signature and converts it to a low value.
+     *
+     * @param s S value from signature
+     * @param keyType Algorithm used to generate private key that signed the message.
+     * @return Low S value
+     */
+    private static BigInteger checkAndHandleLowS(BigInteger s, AlgorithmEmployed keyType) {
+        if (!isLowS(s, keyType)) {
+            switch (keyType) {
+                case SECP256R1:
+                    return CURVE_R1.getN().subtract(s);
+
+                default:
+                    return CURVE_K1.getN().subtract(s);
+            }
+        }
+
+        return s;
+    }
+
+    /**
+     * Takes the S value of an ECDSA DER encoded signature and determines whether the value is low.
+     *
+     * @param s S value from signature
+     * @param keyType Algorithm used to generate private key that signed the message.
+     * @return boolean indicating whether S value is low
+     */
+    private static boolean isLowS(BigInteger s, AlgorithmEmployed keyType) {
+        int compareResult;
+
+        switch (keyType) {
+            case SECP256R1:
+                compareResult = s.compareTo(HALF_CURVE_ORDER_R1);
+                break;
+
+            default:
+                compareResult = s.compareTo(HALF_CURVE_ORDER_K1);
+        }
+
+        return compareResult == 0 || compareResult == -1;
+    }
+
+    /**
+     * Adding checksum to signature
+     *
+     * @param signature - signature to get checksum added
+     */
+    private static byte[] addCheckSumToSignature(byte[] signature, byte[] keyTypeByteArray) {
+        byte[] signatureWithKeyType = Bytes.concat(signature, keyTypeByteArray);
+        byte[] signatureRipemd160 = digestRIPEMD160(signatureWithKeyType);
+        byte[] checkSum = Arrays.copyOfRange(signatureRipemd160, 0, 4);
+        return Bytes.concat(signature, checkSum);
+    }
+
+    /**
+     * Check if the input signature is canonical
+     *
+     * @param signature - signature to check for canonical
+     * @return whether the input signature is canonical
+     */
+    private static boolean isNotCanonical(byte[] signature) {
+        return (signature[1] & ((Integer) 0x80).byteValue()) == ((Integer) 0x00).byteValue()
+                && !(signature[1] == ((Integer) 0x00).byteValue()
+                && ((signature[2] & ((Integer) 0x80).byteValue()) == ((Integer) 0x00).byteValue()))
+                && (signature[33] & ((Integer) 0x80).byteValue()) == ((Integer) 0x00).byteValue()
+                && !(signature[33] == ((Integer) 0x00).byteValue()
+                && ((signature[34] & ((Integer) 0x80).byteValue()) == ((Integer) 0x00)
+                .byteValue()));
+    }
+
+    /**
+     * Getting recovery id from R and S
+     *
+     * @param r - R in DER of Signature
+     * @param s - S in DER of Signature
+     * @param sha256HashMessage - Sha256Hash of signed message
+     * @param publicKey - public key to validate
+     * @param keyType - key type
+     * @return - Recovery id of the signature. From 0 to 3. Return -1 if find nothing.
+     */
+    private static int getRecoveryId(BigInteger r, BigInteger s, Sha256Hash sha256HashMessage,
+            byte[] publicKey, AlgorithmEmployed keyType) {
+        for (int i = 0; i < 4; i++) {
+            byte[] recoveredPublicKey = recoverPublicKeyFromSignature(i, r, s, sha256HashMessage,
+                    true, keyType);
+
+            if (Arrays.equals(publicKey, recoveredPublicKey)) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    /**
+     * * Copyright 2011 Google Inc. * Copyright 2014 Andreas Schildbach * Copyright 2014-2016 the
+     * libsecp256k1 contributors * * Licensed under the Apache License, Version 2.0 (the "License");
+     * * you may not use this file except in compliance with the License. * You may obtain a copy of
+     * the License at * *    http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by
+     * applicable law or agreed to in writing, software * distributed under the License is
+     * distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+     * express or implied. * See the License for the specific language governing permissions and *
+     * limitations under the License.
+     * <p>
+     * The method was modified to match what we need
+     *
+     * <p>Given the components of a signature and a selector value, recover and return the public
+     * key
+     * that generated the signature according to the algorithm in SEC1v2 section 4.1.6.</p>
+     *
+     * <p>The recId is an index from 0 to 3 which indicates which of the 4 possible keys is the
+     * correct one. Because
+     * the key recovery operation yields multiple potential keys, the correct key must either be
+     * stored alongside the signature, or you must be willing to try each recId in turn until you
+     * find one that outputs the key you are expecting.</p>
+     *
+     * <p>If this method returns null it means recovery was not possible and recId should be
+     * iterated.</p>
+     *
+     * <p>Given the above two points, a correct usage of this method is inside a for loop from 0 to
+     * 3, and if the
+     * output is null OR a key that is not the one you expect, you try again with the next
+     * recId.</p>
+     *
+     * @param recId Which possible key to recover.
+     * @param r the R components of the signature, wrapped.
+     * @param s the S components of the signature, wrapped.
+     * @param message Hash of the data that was signed.
+     * @param compressed Whether or not the original pubkey was compressed.
+     * @param keyType key type
+     * @return An ECKey containing only the public part, or null if recovery wasn't possible.
+     */
+    private static byte[] recoverPublicKeyFromSignature(int recId, BigInteger r, BigInteger s,
+            @NotNull Sha256Hash message, boolean compressed, AlgorithmEmployed keyType) {
+        checkArgument(recId >= 0, "recId must be positive");
+        checkArgument(r.signum() >= 0, "r must be positive");
+        checkArgument(s.signum() >= 0, "s must be positive");
+
+        // 1.0 For j from 0 to h   (h == recId here and the loop is outside this function)
+        //   1.1 Let x = r + jn
+
+        BigInteger n; // Curve order.
+        ECPoint g;
+        ECCurve.Fp curve;
+
+        switch (keyType) {
+            case SECP256R1:
+                n = ecParamsR1.getN();
+                g = ecParamsR1.getG();
+                curve = (ECCurve.Fp) ecParamsR1.getCurve();
+                break;
+
+            default:
+                n = ecParamsK1.getN();
+                g = ecParamsK1.getG();
+                curve = (ECCurve.Fp) ecParamsK1.getCurve();
+                break;
+        }
+
+        BigInteger i = BigInteger.valueOf((long) recId / 2);
+        BigInteger x = r.add(i.multiply(n));
+
+        //   1.2. Convert the integer x to an octet string X of length mlen using the conversion routine
+        //        specified in Section 2.3.7, where mlen = ⌈(log2 p)/8⌉ or mlen = ⌈m/8⌉.
+        //   1.3. Convert the octet string (16 set binary digits)||X to an elliptic curve point R using the
+        //        conversion routine specified in Section 2.3.4. If this conversion routine outputs “invalid”, then
+        //        do another iteration of Step 1.
+        //
+        // More concisely, what these points mean is to use X as a compressed public key.
+        BigInteger prime = curve.getQ();
+        if (x.compareTo(prime) >= 0) {
+            // Cannot have point co-ordinates larger than this as everything takes place modulo Q.
+            return null;
+        }
+        // Compressed keys require you to know an extra bit of data about the y-coord as there are two possibilities.
+        // So it's encoded in the recId.
+        ECPoint R = decompressKey(x, (recId & 1) == 1, keyType);
+        //   1.4. If nR != point at infinity, then do another iteration of Step 1 (callers responsibility).
+        if (!R.multiply(n).isInfinity()) {
+            return null;
+        }
+        //   1.5. Compute e from M using Steps 2 and 3 of ECDSA signature verification.
+        BigInteger e = message.toBigInteger();
+        //   1.6. For k from 1 to 2 do the following.   (loop is outside this function via iterating recId)
+        //   1.6.1. Compute a candidate public key as:
+        //               Q = mi(r) * (sR - eG)
+        //
+        // Where mi(x) is the modular multiplicative inverse. We transform this into the following:
+        //               Q = (mi(r) * s ** R) + (mi(r) * -e ** G)
+        // Where -e is the modular additive inverse of e, that is z such that z + e = 0 (mod n). In the above equation
+        // ** is point multiplication and + is point addition (the EC group operator).
+        //
+        // We can find the additive inverse by subtracting e from zero then taking the mod. For example the additive
+        // inverse of 3 modulo 11 is 8 because 3 + 8 mod 11 = 0, and -3 mod 11 = 8.
+        BigInteger eInv = BigInteger.ZERO.subtract(e).mod(n);
+        BigInteger rInv = r.modInverse(n);
+        BigInteger srInv = rInv.multiply(s).mod(n);
+        BigInteger eInvrInv = rInv.multiply(eInv).mod(n);
+        ECPoint q = ECAlgorithms.sumOfTwoMultiplies(g, eInvrInv, R, srInv);
+        return q.getEncoded(compressed);
+    }
+
+    /**
+     * * Copyright 2011 Google Inc. * Copyright 2014 Andreas Schildbach * Copyright 2014-2016 the
+     * libsecp256k1 contributors * * Licensed under the Apache License, Version 2.0 (the "License");
+     * * you may not use this file except in compliance with the License. * You may obtain a copy of
+     * the License at * *    http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by
+     * applicable law or agreed to in writing, software * distributed under the License is
+     * distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+     * express or implied. * See the License for the specific language governing permissions and *
+     * limitations under the License.
+     * <p>
+     * The method was modified to match what we need
+     * <p>
+     * Decompress a compressed public key (x co-ord and low-bit of y-coord).
+     */
+    private static ECPoint decompressKey(BigInteger xBN, boolean yBit, AlgorithmEmployed keyType) {
+        ECCurve.Fp curve;
+
+        switch (keyType) {
+            case SECP256R1:
+                curve = (ECCurve.Fp) ecParamsR1.getCurve();
+                break;
+
+            default:
+                curve = (ECCurve.Fp) ecParamsK1.getCurve();
+                break;
+        }
+
+        X9IntegerConverter x9 = new X9IntegerConverter();
+        byte[] compEnc = x9.integerToBytes(xBN, 1 + x9.getByteLength(curve));
+        compEnc[0] = (byte) (yBit ? 0x03 : 0x02);
+        return curve.decodePoint(compEnc);
+    }
+
 
 }
