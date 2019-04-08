@@ -38,7 +38,6 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_PREPARE_CHAINID_NOT_MATCH = "Provided chain id %s does not match chain id %s";
     public static final String TRANSACTION_PROCESSOR_PREPARE_CHAINID_RPC_EMPTY = "Chain id from back end is empty!";
     public static final String TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR = "Failed to parse head block time";
-    public static final String TRANSACTION_PROCESSOR_PROVIDED_EXP_TIME_PARSE_ERROR = "Failed to parse provided expiration time";
     public static final String TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR = "Error happened on cloning transaction.";
     public static final String TRANSACTION_PROCESSOR_PREPARE_CLONE_CLASS_NOT_FOUND = "Transaction class was not found";
     public static final String TRANSACTION_PROCESSOR_TRANSACTION_HAS_TO_BE_INITIALIZED = "Transaction must be initialized before this method could be called! call prepare for initialize Transaction";
@@ -61,11 +60,12 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_SIGN_CREATE_SIGN_REQUEST_ERROR = "Error happened on creating signature request for Signature Provider to sign!";
     public static final String TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR = "Error happened on pushing transaction to chain!";
     public static final String TRANSACTION_PROCESSOR_REQUIRED_KEY_NOT_SUBSET = "Required keys from back end are not available in available keys from Signature Provider.";
-    public static final String TRANSACTION_PROCESSOR_PREPARE_CANT_INIT_TRANS = "Can't initialize/clone transaction!";
     public static final String TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY = "Serialized Transaction is empty or has not been populated. Make sure to call prepare then sign before calling broadcast";
+    public static final String TRANSACTION_PROCESSOR_SIGN_BROADCAST_SERIALIZED_TRANSACTION_EMPTY = "Serialized Transaction is empty or has not been populated. Make sure to call prepare then sign before calling sign and broadcast";
     public static final String TRANSACTION_PROCESSOR_SIGN_SIGNATURE_RESPONSE_ERROR = "Error happened on the response of getSignature.";
     public static final String TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_EMPTY_ERROR = "Deserialized transaction is null or empty";
     public static final String TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY = "Can't call broadcast because Signature is empty. Make sure of calling sign before calling broadcast.";
+    public static final String TRANSACTION_PROCESSOR_SIGN_BROADCAST_SIGN_EMPTY = "Can't call sign and broadcast because Signature is empty. Make sure of calling sign before calling sign and broadcast.";
 
     //endregion
 }

@@ -104,6 +104,8 @@ public class TransactionProcessor {
 
     /**
      * Transaction instance which keep all data relating to EOS Transaction
+     * <p/>
+     * This object hold the non-serialized version of transaction
      */
     @Nullable
     private Transaction transaction;
@@ -128,7 +130,10 @@ public class TransactionProcessor {
     /**
      * Serialized version of Transaction which is keeping here for checking if signature update
      * transaction data.
-     * <p> Check getSignature() flow in "complete workflow" doc for more detail
+     * <p/>
+     *     If the transaction is updated, this object need to be cleared or up-to-date
+     * <p/>
+     *     Check getSignature() flow in "complete workflow" doc for more detail
      * about value assigned and usages
      */
     @Nullable
@@ -405,12 +410,12 @@ public class TransactionProcessor {
 
         if (this.serializedTransaction == null || this.serializedTransaction.isEmpty()) {
             throw new TransactionSignAndBroadCastError(
-                    "Transaction has not been serialized. Please check the input and flow.");
+                    ErrorConstants.TRANSACTION_PROCESSOR_SIGN_BROADCAST_SERIALIZED_TRANSACTION_EMPTY);
         }
 
         if (this.signatures.isEmpty()) {
             throw new TransactionSignAndBroadCastError(
-                    "Signature is empty or has not been signed. Please check the input and flow.");
+                    ErrorConstants.TRANSACTION_PROCESSOR_SIGN_BROADCAST_SIGN_EMPTY);
         }
 
         // Signatures and serializedTransaction are assigned and finalized in getSignature method
@@ -706,7 +711,8 @@ public class TransactionProcessor {
         String _serializedTransaction;
         try {
             String clonedTransactionToJSON = Utils.getDefaultGson().toJson(clonedTransaction);
-            _serializedTransaction = this.serializationProvider.serializeTransaction(clonedTransactionToJSON);
+            _serializedTransaction = this.serializationProvider
+                    .serializeTransaction(clonedTransactionToJSON);
             if (_serializedTransaction == null || _serializedTransaction.isEmpty()) {
                 throw new TransactionCreateSignatureRequestSerializationError(
                         ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_WORKED_BUT_EMPTY_RESULT);
