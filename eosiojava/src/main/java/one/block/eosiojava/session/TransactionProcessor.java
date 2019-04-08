@@ -109,7 +109,8 @@ public class TransactionProcessor {
     private Transaction transaction;
 
     /**
-     * Transaction instance which keep the original transaction reference after signature provider return signing result
+     * Transaction instance which keep the original transaction reference after signature provider
+     * return signing result
      *
      * Check getSignature() flow in "complete workflow" doc for more detail
      */
@@ -125,7 +126,8 @@ public class TransactionProcessor {
     private List<String> signatures = new ArrayList<>();
 
     /**
-     * Serialized version of Transaction which is keeping here for checking if signature update transaction data.
+     * Serialized version of Transaction which is keeping here for checking if signature update
+     * transaction data.
      * <p> Check getSignature() flow in "complete workflow" doc for more detail
      * about value assigned and usages
      */
@@ -135,7 +137,8 @@ public class TransactionProcessor {
     /**
      * List of available key which most likely come out from SignatureProvider.
      * <p>
-     * If this list is set, TransactionProcessor won't ask for available keys from Signature Provider and use this list.
+     * If this list is set, TransactionProcessor won't ask for available keys from Signature
+     * Provider and use this list.
      * <p> Check createSignatureRequest() flow in "complete workflow" doc for more
      * detail
      */
@@ -145,7 +148,8 @@ public class TransactionProcessor {
     /**
      * List of required keys to sign the transaction which came from getting required keys process.
      * <p>
-     * If this list is set, TransactionProcessor won't make RPC call for getRequiredKey() to get required keys and use this list.
+     * If this list is set, TransactionProcessor won't make RPC call for getRequiredKey() to get
+     * required keys and use this list.
      * <p>
      * Check createSignatureRequest() flow in "complete workflow" doc for more detail
      */
@@ -159,11 +163,12 @@ public class TransactionProcessor {
      * <p/>
      * - How many blocks behind
      */
-    @Nullable
-    private TransactionConfig transactionConfig;
+    @NotNull
+    private TransactionConfig transactionConfig = new TransactionConfig();
 
     /**
-     * Chain id which will be assigned value in prepare/createSignatureRequest and get used in createSignatureRequest
+     * Chain id which will be assigned value in prepare/createSignatureRequest and get used in
+     * createSignatureRequest
      */
     @Nullable
     private String chainId;
@@ -190,7 +195,8 @@ public class TransactionProcessor {
     }
 
     /**
-     * Constructor with all provider references from {@link TransactionSession} and preset Transaction
+     * Constructor with all provider references from {@link TransactionSession} and preset
+     * Transaction
      *
      * @param transaction - preset Transaction
      */
@@ -215,8 +221,8 @@ public class TransactionProcessor {
      * <p>
      * Check Prepare() flow in "complete workflow" doc for more detail
      *
-     * @param actions - List of action with data. If the transaction is preset or has value and it has its own actions, that list will be
-     * override by this input list
+     * @param actions - List of action with data. If the transaction is preset or has value and it
+     * has its own actions, that list will be override by this input list
      */
     public void prepare(@NotNull List<Action> actions) throws TransactionPrepareError {
         if (actions.isEmpty()) {
@@ -224,55 +230,44 @@ public class TransactionProcessor {
                     ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG);
         }
 
-        // Create new instance of Transaction.
-        // Final value will be assigned to transaction object in class level and override preset Transaction if it was set by constructor.
-        // The reason for that is for avoiding trash/haft way data when error happens.
+        /*
+         Create new instance of Transaction.
+         Final value will be assigned to transaction object in class level and override preset Transaction if it was set by constructor.
+         The reason for that is for avoiding trash/haft way data when error happens.
+        */
         Transaction preparingTransaction = new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
                 BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, new ArrayList<Action>(), actions,
                 new ArrayList<String>());
 
-        long presetExpiration = 0;
-
-        if (!preparingTransaction.getExpiration().isEmpty()) {
-            try {
-                presetExpiration = DateFormatter.convertBackendTimeToMilli(preparingTransaction.getExpiration());
-            } catch (ParseException e) {
-                throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_PROVIDED_EXP_TIME_PARSE_ERROR, e);
-            }
-        }
-
-        if (presetExpiration > 0
-                && !preparingTransaction.getRefBlockNum().equals(BigInteger.ZERO)
-                && !preparingTransaction.getRefBlockPrefix().equals(BigInteger.ZERO)) {
-            // finish preparing if all values are preset and valid
-            this.finishPreparing(preparingTransaction);
-            return;
-        }
-
-        // Filling expiration, refBlockNum and refBlockPrefix if they are not filled yet.
+        // Filling expiration, refBlockNum and refBlockPrefix
         GetInfoResponse getInfoResponse;
 
         try {
             getInfoResponse = this.rpcProvider.getInfo();
         } catch (GetInfoRpcError getInfoRpcError) {
-            throw new TransactionPrepareRpcError(ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_INFO, getInfoRpcError);
+            throw new TransactionPrepareRpcError(ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_INFO,
+                    getInfoRpcError);
         }
 
         if (Strings.isNullOrEmpty(this.chainId)) {
             if (Strings.isNullOrEmpty(getInfoResponse.getChainId())) {
                 // Throw exception if both provided chain id and RPC chain id are empty
-                throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CHAINID_RPC_EMPTY);
+                throw new TransactionPrepareError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CHAINID_RPC_EMPTY);
             }
 
             // Assign value to chain id only if chain id is not provided and rpc's chain id is fine
             this.chainId = getInfoResponse.getChainId();
-        } else if (!Strings.isNullOrEmpty(getInfoResponse.getChainId()) && !getInfoResponse.getChainId().equals(chainId)) {
+        } else if (!Strings.isNullOrEmpty(getInfoResponse.getChainId()) && !getInfoResponse
+                .getChainId().equals(chainId)) {
             // Throw error if both are not empty but one does not match with another
-            throw new TransactionPrepareError(String.format(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CHAINID_NOT_MATCH, this.chainId,
-                    getInfoResponse.getChainId()));
+            throw new TransactionPrepareError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CHAINID_NOT_MATCH,
+                            this.chainId,
+                            getInfoResponse.getChainId()));
         }
 
-        if (preparingTransaction.getExpiration().isEmpty() || presetExpiration < 0) {
+        if (preparingTransaction.getExpiration().isEmpty()) {
             String strHeadBlockTime = getInfoResponse.getHeadBlockTime();
 
             long headBlockTime;
@@ -280,68 +275,65 @@ public class TransactionProcessor {
             try {
                 headBlockTime = DateFormatter.convertBackendTimeToMilli(strHeadBlockTime);
             } catch (ParseException e) {
-                throw new TransactionPrepareError(ErrorConstants.TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR, e);
+                throw new TransactionPrepareError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR, e);
             }
 
-            int expiresSeconds = TransactionConfig.DEFAULT_EXPIRES_SECONDS;
-
-            if (this.transactionConfig != null) {
-                expiresSeconds = this.transactionConfig.getExpiresSeconds();
-            }
+            int expiresSeconds = this.transactionConfig.getExpiresSeconds();
 
             long expirationTimeInMilliseconds = headBlockTime + expiresSeconds * 1000;
-            preparingTransaction.setExpiration(DateFormatter.convertMilliSecondToBackendTimeString(expirationTimeInMilliseconds));
+            preparingTransaction.setExpiration(DateFormatter
+                    .convertMilliSecondToBackendTimeString(expirationTimeInMilliseconds));
         }
 
-        // Filling refBlockNum and refBlockPrefix if both of them are not set
-        if (preparingTransaction.getRefBlockNum().equals(BigInteger.ZERO)
-                && preparingTransaction.getRefBlockPrefix().equals(BigInteger.ZERO)) {
-            BigInteger headBlockNum;
+        // Filling refBlockNum and refBlockPrefix
 
-            int blockBehindConfig = TransactionConfig.DEFAULT_BLOCKS_BEHIND;
+        BigInteger headBlockNum;
 
-            if (this.transactionConfig != null) {
-                blockBehindConfig = this.transactionConfig.getBlocksBehind();
-            }
+        int blockBehindConfig = this.transactionConfig.getBlocksBehind();
 
-            if (getInfoResponse.getHeadBlockNum().compareTo(BigInteger.valueOf(blockBehindConfig)) > 0) {
-                headBlockNum = getInfoResponse.getHeadBlockNum().subtract(BigInteger.valueOf(blockBehindConfig));
-            } else {
-                headBlockNum = BigInteger.valueOf(blockBehindConfig);
-            }
-
-            GetBlockResponse getBlockResponse;
-            try {
-                getBlockResponse = this.rpcProvider.getBlock(new GetBlockRequest(headBlockNum.toString()));
-            } catch (GetBlockRpcError getBlockRpcError) {
-                throw new TransactionPrepareRpcError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK, getBlockRpcError);
-            }
-
-            // Restrict the refBlockNum to 32 bit unsigned value
-            BigInteger refBlockNum = getBlockResponse.getBlockNum().and(BigInteger.valueOf(0xffff));
-            BigInteger refBlockPrefix = getBlockResponse.getRefBlockPrefix();
-
-            preparingTransaction.setRefBlockNum(refBlockNum);
-            preparingTransaction.setRefBlockPrefix(refBlockPrefix);
+        if (getInfoResponse.getHeadBlockNum().compareTo(BigInteger.valueOf(blockBehindConfig))
+                > 0) {
+            headBlockNum = getInfoResponse.getHeadBlockNum()
+                    .subtract(BigInteger.valueOf(blockBehindConfig));
+        } else {
+            headBlockNum = BigInteger.valueOf(blockBehindConfig);
         }
+
+        GetBlockResponse getBlockResponse;
+        try {
+            getBlockResponse = this.rpcProvider
+                    .getBlock(new GetBlockRequest(headBlockNum.toString()));
+        } catch (GetBlockRpcError getBlockRpcError) {
+            throw new TransactionPrepareRpcError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK, getBlockRpcError);
+        }
+
+        // Restrict the refBlockNum to 32 bit unsigned value
+        BigInteger refBlockNum = getBlockResponse.getBlockNum().and(BigInteger.valueOf(0xffff));
+        BigInteger refBlockPrefix = getBlockResponse.getRefBlockPrefix();
+
+        preparingTransaction.setRefBlockNum(refBlockNum);
+        preparingTransaction.setRefBlockPrefix(refBlockPrefix);
 
         this.finishPreparing(preparingTransaction);
     }
 
     /**
-     * Sign the transaction by passing {@link EosioTransactionSignatureRequest} to signature provider
+     * Sign the transaction by passing {@link EosioTransactionSignatureRequest} to signature
+     * provider
      * <p>
      * Check sign() flow in "complete workflow" doc for more detail
      *
      * @return success or not
      */
-    @NotNull
     public boolean sign() throws TransactionSignError {
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest;
         try {
             eosioTransactionSignatureRequest = this.createSignatureRequest();
         } catch (TransactionCreateSignatureRequestError transactionCreateSignatureRequestError) {
-            throw new TransactionSignError(ErrorConstants.TRANSACTION_PROCESSOR_SIGN_CREATE_SIGN_REQUEST_ERROR,
+            throw new TransactionSignError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SIGN_CREATE_SIGN_REQUEST_ERROR,
                     transactionCreateSignatureRequestError);
         }
 
@@ -354,32 +346,39 @@ public class TransactionProcessor {
         } catch (TransactionGetSignatureError transactionGetSignatureError) {
             throw new TransactionSignError(transactionGetSignatureError);
         } catch (@Nullable SignatureProviderError signatureProviderError) {
-            throw new TransactionSignError(ErrorConstants.TRANSACTION_PROCESSOR_SIGN_SIGNATURE_RESPONSE_ERROR, signatureProviderError);
+            throw new TransactionSignError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SIGN_SIGNATURE_RESPONSE_ERROR,
+                    signatureProviderError);
         }
 
         return true;
     }
 
     /**
-     * Broadcast transaction to chain <p> Check broadcast() flow in "complete workflow" doc for more detail
+     * Broadcast transaction to chain <p> Check broadcast() flow in "complete workflow" doc for more
+     * detail
      *
      * @return broadcast result from chain
      */
     @NotNull
     public PushTransactionResponse broadcast() throws TransactionBroadCastError {
         if (this.serializedTransaction == null || this.serializedTransaction.isEmpty()) {
-            throw new TransactionBroadCastError(ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY);
+            throw new TransactionBroadCastError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY);
         }
 
         if (this.signatures.isEmpty()) {
-            throw new TransactionBroadCastEmptySignatureError(ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY);
+            throw new TransactionBroadCastEmptySignatureError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY);
         }
 
-        PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures, 0, "", this.serializedTransaction);
+        PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
+                0, "", this.serializedTransaction);
         try {
             return this.pushTransaction(pushTransactionRequest);
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
-            throw new TransactionBroadCastError(ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR,
+            throw new TransactionBroadCastError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR,
                     transactionPushTransactionError);
         }
     }
@@ -405,15 +404,18 @@ public class TransactionProcessor {
         }
 
         if (this.serializedTransaction == null || this.serializedTransaction.isEmpty()) {
-            throw new TransactionSignAndBroadCastError("Transaction has not been serialized. Please check the input and flow.");
+            throw new TransactionSignAndBroadCastError(
+                    "Transaction has not been serialized. Please check the input and flow.");
         }
 
         if (this.signatures.isEmpty()) {
-            throw new TransactionSignAndBroadCastError("Signature is empty or has not been signed. Please check the input and flow.");
+            throw new TransactionSignAndBroadCastError(
+                    "Signature is empty or has not been signed. Please check the input and flow.");
         }
 
         // Signatures and serializedTransaction are assigned and finalized in getSignature method
-        PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures, 0, "", this.serializedTransaction);
+        PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
+                0, "", this.serializedTransaction);
         try {
             return this.pushTransaction(pushTransactionRequest);
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
@@ -432,7 +434,8 @@ public class TransactionProcessor {
     }
 
     /**
-     * Getting serialized version of Transaction <p> Check serialize() flow in "complete workflow" doc for more detail
+     * Getting serialized version of Transaction <p> Check serialize() flow in "complete workflow"
+     * doc for more detail
      *
      * @return serialized Transaction
      */
@@ -446,7 +449,8 @@ public class TransactionProcessor {
         try {
             return this.serializeTransaction();
         } catch (TransactionCreateSignatureRequestError transactionCreateSignatureRequestError) {
-            throw new TransactionSerializeError(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ERROR,
+            throw new TransactionSerializeError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ERROR,
                     transactionCreateSignatureRequestError);
         }
     }
@@ -461,13 +465,16 @@ public class TransactionProcessor {
      * Check createSignatureRequest() flow in "complete workflow" doc for more detail
      */
     @NotNull
-    private EosioTransactionSignatureRequest createSignatureRequest() throws TransactionCreateSignatureRequestError {
+    private EosioTransactionSignatureRequest createSignatureRequest()
+            throws TransactionCreateSignatureRequestError {
         if (this.transaction == null) {
-            throw new TransactionCreateSignatureRequestError(ErrorConstants.TRANSACTION_PROCESSOR_TRANSACTION_HAS_TO_BE_INITIALIZED);
+            throw new TransactionCreateSignatureRequestError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_TRANSACTION_HAS_TO_BE_INITIALIZED);
         }
 
         if (this.transaction.getActions().isEmpty()) {
-            throw new TransactionCreateSignatureRequestError(ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG);
+            throw new TransactionCreateSignatureRequestError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG);
         }
 
         // Cache the serialized version of transaction to processor
@@ -492,7 +499,8 @@ public class TransactionProcessor {
             try {
                 this.availableKeys = this.signatureProvider.getAvailableKeys();
             } catch (GetAvailableKeysError getAvailableKeysError) {
-                throw new TransactionCreateSignatureRequestKeyError(ErrorConstants.TRANSACTION_PROCESSOR_GET_AVAILABLE_KEY_ERROR,
+                throw new TransactionCreateSignatureRequestKeyError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_GET_AVAILABLE_KEY_ERROR,
                         getAvailableKeysError);
             }
 
@@ -509,8 +517,10 @@ public class TransactionProcessor {
                             new GetRequiredKeysRequest(
                                     this.availableKeys,
                                     this.transaction));
-            if (getRequiredKeysResponse.getRequiredKeys() == null || getRequiredKeysResponse.getRequiredKeys().isEmpty()) {
-                throw new TransactionCreateSignatureRequestRequiredKeysEmptyError(ErrorConstants.GET_REQUIRED_KEY_RPC_EMPTY_RESULT);
+            if (getRequiredKeysResponse.getRequiredKeys() == null || getRequiredKeysResponse
+                    .getRequiredKeys().isEmpty()) {
+                throw new TransactionCreateSignatureRequestRequiredKeysEmptyError(
+                        ErrorConstants.GET_REQUIRED_KEY_RPC_EMPTY_RESULT);
             }
 
             List<String> backendRequiredKeys = getRequiredKeysResponse.getRequiredKeys();
@@ -521,7 +531,8 @@ public class TransactionProcessor {
 
             this.requiredKeys = backendRequiredKeys;
         } catch (GetRequiredKeysRpcError getRequiredKeysRpcError) {
-            throw new TransactionCreateSignatureRequestRpcError(ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_REQUIRED_KEYS,
+            throw new TransactionCreateSignatureRequestRpcError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_REQUIRED_KEYS,
                     getRequiredKeysRpcError);
         }
 
@@ -538,7 +549,8 @@ public class TransactionProcessor {
      * @return Response from Signature provider
      */
     @NotNull
-    private EosioTransactionSignatureResponse getSignature(EosioTransactionSignatureRequest eosioTransactionSignatureRequest)
+    private EosioTransactionSignatureResponse getSignature(
+            EosioTransactionSignatureRequest eosioTransactionSignatureRequest)
             throws TransactionGetSignatureError {
         EosioTransactionSignatureResponse eosioTransactionSignatureResponse;
         try {
@@ -548,38 +560,46 @@ public class TransactionProcessor {
                 throw eosioTransactionSignatureResponse.getError();
             }
         } catch (SignatureProviderError signatureProviderError) {
-            throw new TransactionGetSignatureSigningError(ErrorConstants.TRANSACTION_PROCESSOR_SIGN_TRANSACTION_ERROR,
+            throw new TransactionGetSignatureSigningError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SIGN_TRANSACTION_ERROR,
                     signatureProviderError);
         }
 
         if (Strings.isNullOrEmpty(eosioTransactionSignatureResponse.getSerializeTransaction())) {
-            throw new TransactionGetSignatureSigningError(ErrorConstants.TRANSACTION_PROCESSOR_SIGN_TRANSACTION_TRANS_EMPTY_ERROR);
+            throw new TransactionGetSignatureSigningError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SIGN_TRANSACTION_TRANS_EMPTY_ERROR);
         }
 
         if (eosioTransactionSignatureResponse.getSignatures().isEmpty()) {
-            throw new TransactionGetSignatureSigningError(ErrorConstants.TRANSACTION_PROCESSOR_SIGN_TRANSACTION_SIGN_EMPTY_ERROR);
+            throw new TransactionGetSignatureSigningError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SIGN_TRANSACTION_SIGN_EMPTY_ERROR);
         }
 
         // Set current transaction to original transaction
         this.originalTransaction = this.transaction;
 
         if (this.serializedTransaction != null
-                && !this.serializedTransaction.equals(eosioTransactionSignatureResponse.getSerializeTransaction())) {
+                && !this.serializedTransaction
+                .equals(eosioTransactionSignatureResponse.getSerializeTransaction())) {
             // Throw error if transaction is modified but it has not been allowed to do that
             if (!this.isTransactionModificationAllowed) {
-                throw new TransactionGetSignatureNotAllowModifyTransactionError(ErrorConstants.TRANSACTION_IS_NOT_ALLOWED_TOBE_MODIFIED);
+                throw new TransactionGetSignatureNotAllowModifyTransactionError(
+                        ErrorConstants.TRANSACTION_IS_NOT_ALLOWED_TOBE_MODIFIED);
             }
 
             // Deserialize and update new transaction to the current transaction if it was updated and is allowed
             String transactionJSON;
             try {
                 transactionJSON = this.serializationProvider
-                        .deserializeTransaction(eosioTransactionSignatureResponse.getSerializeTransaction());
+                        .deserializeTransaction(
+                                eosioTransactionSignatureResponse.getSerializeTransaction());
                 if (transactionJSON == null || transactionJSON.isEmpty()) {
-                    throw new DeserializeTransactionError(ErrorConstants.TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_EMPTY_ERROR);
+                    throw new DeserializeTransactionError(
+                            ErrorConstants.TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_EMPTY_ERROR);
                 }
             } catch (DeserializeTransactionError deserializeTransactionError) {
-                throw new TransactionGetSignatureDeserializationError(ErrorConstants.TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_ERROR,
+                throw new TransactionGetSignatureDeserializationError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_ERROR,
                         deserializeTransactionError);
             }
 
@@ -601,11 +621,14 @@ public class TransactionProcessor {
      * @return Response from chain
      */
     @NotNull
-    private PushTransactionResponse pushTransaction(PushTransactionRequest pushTransactionRequest) throws TransactionPushTransactionError {
+    private PushTransactionResponse pushTransaction(PushTransactionRequest pushTransactionRequest)
+            throws TransactionPushTransactionError {
         try {
             return this.rpcProvider.pushTransaction(pushTransactionRequest);
         } catch (PushTransactionRpcError pushTransactionRpcError) {
-            throw new TransactionPushTransactionError(ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION, pushTransactionRpcError);
+            throw new TransactionPushTransactionError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
+                    pushTransactionRpcError);
         }
     }
 
@@ -620,13 +643,16 @@ public class TransactionProcessor {
         try {
             clonedTransaction = this.getDeepClone();
         } catch (IOException e) {
-            throw new TransactionCreateSignatureRequestError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR, e);
+            throw new TransactionCreateSignatureRequestError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR, e);
         } catch (ClassNotFoundException e) {
-            throw new TransactionCreateSignatureRequestError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_CLASS_NOT_FOUND, e);
+            throw new TransactionCreateSignatureRequestError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_CLASS_NOT_FOUND, e);
         }
 
         if (clonedTransaction == null) {
-            throw new TransactionCreateSignatureRequestError(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR);
+            throw new TransactionCreateSignatureRequestError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR);
         }
 
         // Check for chain id
@@ -636,20 +662,24 @@ public class TransactionProcessor {
                 GetInfoResponse getInfoResponse = this.rpcProvider.getInfo();
                 this.chainId = getInfoResponse.getChainId();
             } catch (GetInfoRpcError getInfoRpcError) {
-                throw new TransactionCreateSignatureRequestRpcError(ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_INFO, getInfoRpcError);
+                throw new TransactionCreateSignatureRequestRpcError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_INFO, getInfoRpcError);
             }
         }
 
         for (Action action : clonedTransaction.getActions()) {
             String actionAbiJSON;
             try {
-                actionAbiJSON = this.abiProvider.getAbi(this.chainId, new EOSIOName(action.getAccount()));
+                actionAbiJSON = this.abiProvider
+                        .getAbi(this.chainId, new EOSIOName(action.getAccount()));
             } catch (GetAbiError getAbiError) {
                 throw new TransactionCreateSignatureRequestAbiError(
-                        String.format(ErrorConstants.TRANSACTION_PROCESSOR_GET_ABI_ERROR, action.getAccount()), getAbiError);
+                        String.format(ErrorConstants.TRANSACTION_PROCESSOR_GET_ABI_ERROR,
+                                action.getAccount()), getAbiError);
             }
 
-            AbiEosSerializationObject actionAbiEosSerializationObject = new AbiEosSerializationObject(action.getAccount(), action.getName(),
+            AbiEosSerializationObject actionAbiEosSerializationObject = new AbiEosSerializationObject(
+                    action.getAccount(), action.getName(),
                     null, actionAbiJSON);
             actionAbiEosSerializationObject.setHex("");
 
@@ -664,7 +694,8 @@ public class TransactionProcessor {
                 }
             } catch (SerializeError serializeError) {
                 throw new TransactionCreateSignatureRequestSerializationError(
-                        String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR, action.getAccount()), serializeError);
+                        String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
+                                action.getAccount()), serializeError);
             }
 
             // !!! Set serialization result to data field of the action
@@ -684,7 +715,8 @@ public class TransactionProcessor {
             }
 
         } catch (SerializeTransactionError serializeTransactionError) {
-            throw new TransactionCreateSignatureRequestSerializationError(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_ERROR,
+            throw new TransactionCreateSignatureRequestSerializationError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_ERROR,
                     serializeTransactionError);
         }
 
@@ -693,9 +725,6 @@ public class TransactionProcessor {
 
     /**
      * Getting deep clone of the transaction
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
      */
     private Transaction getDeepClone() throws IOException, ClassNotFoundException {
         if (this.transaction == null) {
@@ -741,17 +770,18 @@ public class TransactionProcessor {
         return serializedTransaction;
     }
 
-    @Nullable
+    @NotNull
     public TransactionConfig getTransactionConfig() {
         return transactionConfig;
     }
 
-    public void setTransactionConfig(@Nullable TransactionConfig transactionConfig) {
+    public void setTransactionConfig(@NotNull TransactionConfig transactionConfig) {
         this.transactionConfig = transactionConfig;
     }
 
     /**
-     * Sets chain id value. If the value has not set yet, then the code will call getInfo in Rpc provider to get it.
+     * Sets chain id value. If the value has not set yet, then the code will call getInfo in Rpc
+     * provider to get it.
      */
     public void setChainId(@Nullable String chainId) {
         this.chainId = chainId;
@@ -762,7 +792,8 @@ public class TransactionProcessor {
      * <p>
      * List of available key which most likely come out from SignatureProvider.
      * <p>
-     * If this list is set, TransactionProcessor won't ask for available keys from Signature Provider and use this list
+     * If this list is set, TransactionProcessor won't ask for available keys from Signature
+     * Provider and use this list
      * <p>
      * Check createSignatureRequest() flow in "complete workflow" doc for more detail
      *
@@ -777,7 +808,8 @@ public class TransactionProcessor {
      * <p>
      * List of required keys to sign the transaction which came from getting required keys process.
      * <p>
-     * If this list is set, TransactionProcessor won't make RPC call for getRequiredKey() to get required keys and use this list
+     * If this list is set, TransactionProcessor won't make RPC call for getRequiredKey() to get
+     * required keys and use this list
      * <p>
      * Check createSignatureRequest() flow in "complete workflow" doc for more detail
      *
@@ -795,9 +827,11 @@ public class TransactionProcessor {
     }
 
     /**
-     * True: The transaction could be modified and updated to current transaction by Signature provider.
+     * True: The transaction could be modified and updated to current transaction by Signature
+     * provider.
      * <p/>
-     * False: No modification. {@link TransactionGetSignatureNotAllowModifyTransactionError} will be thrown if transaction is modified.
+     * False: No modification. {@link TransactionGetSignatureNotAllowModifyTransactionError} will be
+     * thrown if transaction is modified.
      */
     public void setIsTransactionModificationAllowed(boolean isTransactionModificationAllowed) {
         this.isTransactionModificationAllowed = isTransactionModificationAllowed;

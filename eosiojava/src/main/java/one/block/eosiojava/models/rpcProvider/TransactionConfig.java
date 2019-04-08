@@ -8,12 +8,12 @@ public class TransactionConfig {
     /**
      * Default blocks behind to use if blocksbehind is not set or instance of this class is not used
      */
-    public static final int DEFAULT_BLOCKS_BEHIND = 3;
+    private static final int DEFAULT_BLOCKS_BEHIND = 3;
 
     /**
      * Default expires seconds to use if expires seconds is not set or instance of this class is not used
      */
-    public static final int DEFAULT_EXPIRES_SECONDS = 5 * 60;
+    private static final int DEFAULT_EXPIRES_SECONDS = 5 * 60;
 
     /**
      * The Expires seconds.

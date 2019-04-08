@@ -572,7 +572,8 @@ public class NegativeTransactionProcessorTest {
     // Expectation
     // headBlockTime + default 5 minutes
     private static final String expectedExpiration = "2019-04-01T22:13:40.000";
-    private static final BigInteger expectedRefBlockNum = headBlockNum.subtract(BigInteger.valueOf(TransactionConfig.DEFAULT_BLOCKS_BEHIND))
+    private static TransactionConfig transactionConfig = new TransactionConfig();
+    private static final BigInteger expectedRefBlockNum = headBlockNum.subtract(BigInteger.valueOf(transactionConfig.getBlocksBehind()))
             .and(BigInteger.valueOf(0xffff));
 
     private static final String mockedGetInfoResponse = "{\n"
