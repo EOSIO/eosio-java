@@ -702,13 +702,11 @@ public class TransactionProcessor {
             action.setData(actionAbiEosSerializationObject.getHex());
         }
 
-        // Actions serialization is done without error then assign the cloned version back to original
-        this.transaction = clonedTransaction;
-
         // Serialize the whole transaction
         String _serializedTransaction;
         try {
-            _serializedTransaction = this.serializationProvider.serializeTransaction(this.toJSON());
+            String clonedTransactionToJSON = Utils.getDefaultGson().toJson(clonedTransaction);
+            _serializedTransaction = this.serializationProvider.serializeTransaction(clonedTransactionToJSON);
             if (_serializedTransaction == null || _serializedTransaction.isEmpty()) {
                 throw new TransactionCreateSignatureRequestSerializationError(
                         ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_WORKED_BUT_EMPTY_RESULT);
