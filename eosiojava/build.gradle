@@ -18,6 +18,6 @@ dependencies {
     // This works on android and non-android but is necessary to keep us to 1.7 targets.
     implementation 'com.google.guava:guava:27.1-android'
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:+'
+    testCompile 'org.mockito:mockito-core:2.26.0'
     implementation 'org.bitcoinj:bitcoinj-core:0.15.1'
 }

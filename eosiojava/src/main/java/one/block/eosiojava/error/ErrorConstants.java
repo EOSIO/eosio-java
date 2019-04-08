@@ -30,4 +30,42 @@ public class ErrorConstants {
     public static final String NO_ABI_FOUND = "No ABI found for requested account name.";
     public static final String ERROR_RETRIEVING_ABI = "Error retrieving ABI from the chain.";
 
+    //region TransactionProcessor errors
+
+    public static final String TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG = "Action list can't be empty!";
+    public static final String TRANSACTION_PROCESSOR_RPC_GET_INFO = "Error happened on calling GetInfo RPC.";
+    public static final String TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK = "Error happened on calling GetBlock RPC.";
+    public static final String TRANSACTION_PROCESSOR_PREPARE_CHAINID_NOT_MATCH = "Provided chain id %s does not match chain id %s";
+    public static final String TRANSACTION_PROCESSOR_PREPARE_CHAINID_RPC_EMPTY = "Chain id from back end is empty!";
+    public static final String TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR = "Failed to parse head block time";
+    public static final String TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR = "Error happened on cloning transaction.";
+    public static final String TRANSACTION_PROCESSOR_PREPARE_CLONE_CLASS_NOT_FOUND = "Transaction class was not found";
+    public static final String TRANSACTION_PROCESSOR_TRANSACTION_HAS_TO_BE_INITIALIZED = "Transaction must be initialized before this method could be called! call prepare for initialize Transaction";
+    public static final String TRANSACTION_PROCESSOR_GET_ABI_ERROR = "Error happened on getting abi for contract [%s]";
+    public static final String TRANSACTION_PROCESSOR_SERIALIZE_ACTION_WORKED_BUT_EMPTY_RESULT = "Serialization of action worked fine but got back empty result!";
+    public static final String TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_WORKED_BUT_EMPTY_RESULT = "Serialization of transaction worked fine but got back empty result!";
+    public static final String TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR = "Error happened on serializing action [%s]";
+    public static final String TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_ERROR = "Error happened on serializing transaction";
+    public static final String TRANSACTION_PROCESSOR_GET_AVAILABLE_KEY_ERROR = "Error happened on getAvailableKeys from SignatureProvider!";
+    public static final String TRANSACTION_PROCESSOR_GET_AVAILABLE_KEY_EMPTY = "Signature provider return no available key";
+    public static final String TRANSACTION_PROCESSOR_RPC_GET_REQUIRED_KEYS = "Error happened on calling getRequiredKeys RPC call.";
+    public static final String GET_REQUIRED_KEY_RPC_EMPTY_RESULT = "GetRequiredKeys RPC returned no required keys";
+    public static final String TRANSACTION_PROCESSOR_SIGN_TRANSACTION_ERROR = "Error happened on calling sign transaction of Signature provider";
+    public static final String TRANSACTION_PROCESSOR_SIGN_TRANSACTION_TRANS_EMPTY_ERROR = "Serialized transaction come back empty from Signature Provider";
+    public static final String TRANSACTION_PROCESSOR_SIGN_TRANSACTION_SIGN_EMPTY_ERROR = "Signatures come back empty from Signature Provider";
+    public static final String TRANSACTION_IS_NOT_ALLOWED_TOBE_MODIFIED = "The transaction is not allowed to be modified but was modified by signature provider!";
+    public static final String TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_ERROR = "Error happened on calling deserializeTransaction to refresh transaction object with new values";
+    public static final String TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION = "Error happened on calling pushTransaction RPC call";
+    public static final String TRANSACTION_PROCESSOR_SERIALIZE_ERROR = "Error happened on calling serializeTransaction";
+    public static final String TRANSACTION_PROCESSOR_SIGN_CREATE_SIGN_REQUEST_ERROR = "Error happened on creating signature request for Signature Provider to sign!";
+    public static final String TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR = "Error happened on pushing transaction to chain!";
+    public static final String TRANSACTION_PROCESSOR_REQUIRED_KEY_NOT_SUBSET = "Required keys from back end are not available in available keys from Signature Provider.";
+    public static final String TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY = "Serialized Transaction is empty or has not been populated. Make sure to call prepare then sign before calling broadcast";
+    public static final String TRANSACTION_PROCESSOR_SIGN_BROADCAST_SERIALIZED_TRANSACTION_EMPTY = "Serialized Transaction is empty or has not been populated. Make sure to call prepare then sign before calling sign and broadcast";
+    public static final String TRANSACTION_PROCESSOR_SIGN_SIGNATURE_RESPONSE_ERROR = "Error happened on the response of getSignature.";
+    public static final String TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_EMPTY_ERROR = "Deserialized transaction is null or empty";
+    public static final String TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY = "Can't call broadcast because Signature is empty. Make sure of calling sign before calling broadcast.";
+    public static final String TRANSACTION_PROCESSOR_SIGN_BROADCAST_SIGN_EMPTY = "Can't call sign and broadcast because Signature is empty. Make sure of calling sign before calling sign and broadcast.";
+
+    //endregion
 }
