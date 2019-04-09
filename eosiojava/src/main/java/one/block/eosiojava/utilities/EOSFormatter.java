@@ -227,9 +227,8 @@ public class EOSFormatter {
          Validate that key type in PEM object is 'EC PUBLIC KEY'.
          */
         String type;
-        try {
-            Reader reader = new CharArrayReader(eosFormattedPublicKey.toCharArray());
-            PemReader pemReader = new PemReader(reader);
+        try (Reader reader = new CharArrayReader(eosFormattedPublicKey.toCharArray());
+                PemReader pemReader = new PemReader(reader);) {
             pemObject = pemReader.readPemObject();
             type = pemObject.getType();
         } catch (Exception e) {
@@ -429,16 +428,10 @@ public class EOSFormatter {
      * be an The ECDSA signature that is a DER encoded ASN.1 sequence of two integer fields (see
      * ECDSA-Sig-Value in rfc3279 section 2.2.3).
      *
-     * The DER encoded ECDSA signature follows the following format:
-     * Byte 1 - Sequence (Should be 30)
-     * Byte 2 - Signature length
-     * Byte 3 - R Marker (0x02)
-     * Byte 4 - R length
-     * Bytes 5 to 37 or 38- R
-     * Byte After R - S Marker (0x02)
-     * Byte After S Marker - S Length
-     * Bytes After S Length - S (always 32-33 bytes)
-     * Byte Final - Hash Type
+     * The DER encoded ECDSA signature follows the following format: Byte 1 - Sequence (Should be
+     * 30) Byte 2 - Signature length Byte 3 - R Marker (0x02) Byte 4 - R length Bytes 5 to 37 or 38-
+     * R Byte After R - S Marker (0x02) Byte After S Marker - S Length Bytes After S Length - S
+     * (always 32-33 bytes) Byte Final - Hash Type
      *
      * @param signatureDER ECDSA DER encoded signature as byte array
      * @param signableTransaction Transaction in signable format
@@ -524,26 +517,19 @@ public class EOSFormatter {
             throw new EOSFormatterError(ErrorConstants.SIGNATURE_FORMATTING_ERROR, e);
         }
 
-
         return eosFormattedSignature;
     }
 
     /**
      * This method converts a signature to a EOS compliant form.  The signature to be converted must
      * be an The ECDSA signature that is a DER encoded ASN.1 sequence of two integer fields (see
-     * ECDSA-Sig-Value in rfc3279 section 2.2.3).  This method should be used when only the R and
-     * S values of the signature are available.
+     * ECDSA-Sig-Value in rfc3279 section 2.2.3).  This method should be used when only the R and S
+     * values of the signature are available.
      *
-     * The DER encoded ECDSA signature follows the following format:
-     * Byte 1 - Sequence (Should be 30)
-     * Byte 2 - Signature length
-     * Byte 3 - R Marker (0x02)
-     * Byte 4 - R length
-     * Bytes 5 to 37 or 38- R
-     * Byte After R - S Marker (0x02)
-     * Byte After S Marker - S Length
-     * Bytes After S Length - S (always 32-33 bytes)
-     * Byte Final - Hash Type
+     * The DER encoded ECDSA signature follows the following format: Byte 1 - Sequence (Should be
+     * 30) Byte 2 - Signature length Byte 3 - R Marker (0x02) Byte 4 - R length Bytes 5 to 37 or 38-
+     * R Byte After R - S Marker (0x02) Byte After S Marker - S Length Bytes After S Length - S
+     * (always 32-33 bytes) Byte Final - Hash Type
      *
      * @param signatureR R value as BigInteger in string format
      * @param signatureS S value as BigInteger in string format
@@ -552,7 +538,8 @@ public class EOSFormatter {
      * @return EOS format of signature
      */
     @NotNull
-    public static String convertRawRandSofSignatureToEOSFormat(@NotNull String signatureR, String signatureS,
+    public static String convertRawRandSofSignatureToEOSFormat(@NotNull String signatureR,
+            String signatureS,
             @NotNull byte[] signableTransaction, @NotNull String publicKeyPEM)
             throws EOSFormatterError {
         String eosFormattedSignature = "";
@@ -593,7 +580,6 @@ public class EOSFormatter {
                 throw new IllegalStateException(
                         ErrorConstants.COULD_NOT_RECOVER_PUBLIC_KEY_FROM_SIG);
             }
-
 
             //Add RecoveryID + 27 + 4 to create the header byte
             recoverId += VALUE_TO_ADD_TO_SIGNATURE_HEADER;
@@ -658,9 +644,8 @@ public class EOSFormatter {
          Validate that key type in PEM object is 'EC PRIVATE KEY'.
          */
         String type;
-        try {
-            Reader reader = new CharArrayReader(eosFormattedPrivateKey.toCharArray());
-            PemReader pemReader = new PemReader(reader);
+        try (Reader reader = new CharArrayReader(eosFormattedPrivateKey.toCharArray());
+                PemReader pemReader = new PemReader(reader);) {
             pemObject = pemReader.readPemObject();
             type = pemObject.getType();
         } catch (Exception e) {
@@ -836,10 +821,9 @@ public class EOSFormatter {
      * This method converts a DER encoded private key, public key, or signature into the PEM
      * format.
      *
-     * Example of a PEM formatted private key:
-     * -----BEGIN EC PRIVATE KEY-----
-     * MDECAQEEIEJSCKmyR0kmxy2pgkEwkqrodn2jG9mhXRhhxgsneuBsoAoGCCqGSM49AwEH
-     * -----END EC PRIVATE KEY-----
+     * Example of a PEM formatted private key: -----BEGIN EC PRIVATE KEY-----
+     * MDECAQEEIEJSCKmyR0kmxy2pgkEwkqrodn2jG9mhXRhhxgsneuBsoAoGCCqGSM49AwEH -----END EC PRIVATE
+     * KEY-----
      *
      * The key data between the header and footer is Base64 encoded.
      *
@@ -1393,22 +1377,19 @@ public class EOSFormatter {
      * The method was modified to match what we need
      *
      * <p>Given the components of a signature and a selector value, recover and return the public
-     * key
-     * that generated the signature according to the algorithm in SEC1v2 section 4.1.6.</p>
+     * key that generated the signature according to the algorithm in SEC1v2 section 4.1.6.</p>
      *
      * <p>The recId is an index from 0 to 3 which indicates which of the 4 possible keys is the
-     * correct one. Because
-     * the key recovery operation yields multiple potential keys, the correct key must either be
-     * stored alongside the signature, or you must be willing to try each recId in turn until you
-     * find one that outputs the key you are expecting.</p>
+     * correct one. Because the key recovery operation yields multiple potential keys, the correct
+     * key must either be stored alongside the signature, or you must be willing to try each recId
+     * in turn until you find one that outputs the key you are expecting.</p>
      *
      * <p>If this method returns null it means recovery was not possible and recId should be
      * iterated.</p>
      *
      * <p>Given the above two points, a correct usage of this method is inside a for loop from 0 to
-     * 3, and if the
-     * output is null OR a key that is not the one you expect, you try again with the next
-     * recId.</p>
+     * 3, and if the output is null OR a key that is not the one you expect, you try again with the
+     * next recId.</p>
      *
      * @param recId Which possible key to recover.
      * @param r the R components of the signature, wrapped.
@@ -1517,7 +1498,8 @@ public class EOSFormatter {
 
         X9IntegerConverter x9 = new X9IntegerConverter();
         byte[] compEnc = x9.integerToBytes(xBN, 1 + x9.getByteLength(curve));
-        compEnc[0] = (byte) (yBit ? COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_NEGATIVE_Y : COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_POSITIVE_Y);
+        compEnc[0] = (byte) (yBit ? COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_NEGATIVE_Y
+                : COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_POSITIVE_Y);
         return curve.decodePoint(compEnc);
     }
 

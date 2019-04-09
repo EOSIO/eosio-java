@@ -43,6 +43,4 @@ public class ErrorConstants {
     public static final String KEY_DATA_NOT_FOUND = "Key data not found in PEM object!";
     public static final String INVALID_PEM_OBJECT = "Cannot read PEM object!";
 
-
-
 }

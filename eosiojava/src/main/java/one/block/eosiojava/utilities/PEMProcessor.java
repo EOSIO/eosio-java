@@ -33,50 +33,62 @@ public class PEMProcessor {
     private static final int PRIVATE_KEY_START_INDEX = 2;
 
     private PemObject pemObject;
-    private Reader reader;
+    private String pemObjectString;
 
     public PEMProcessor(String pemObject) throws PEMProcessorError {
-
-        try {
-            reader = new CharArrayReader(pemObject.toCharArray());
-            PemReader pemReader = new PemReader(reader);
+        this.pemObjectString = pemObject;
+        try (Reader reader = new CharArrayReader(this.pemObjectString.toCharArray());
+                PemReader pemReader = new PemReader(reader);) {
             this.pemObject = pemReader.readPemObject();
-            if(this.pemObject == null) throw new PEMProcessorError(ErrorConstants.INVALID_PEM_OBJECT);
+            if (this.pemObject == null) {
+                throw new PEMProcessorError(ErrorConstants.INVALID_PEM_OBJECT);
+            }
+
         } catch (Exception e) {
             throw new PEMProcessorError(ErrorConstants.ERROR_PARSING_PEM_OBJECT, e);
         }
 
     }
 
+    /**
+     * Gets the PEM Object key type (i.e. PRIVATE KEY, PUBLIC KEY).
+     *
+     * @return key type as string
+     */
     @NotNull
     public String getType() {
         return pemObject.getType();
     }
 
+    /**
+     * Gets the DER encoded format of the key from its PEM format.
+     *
+     * @return DER format of key as string
+     */
     @NotNull
     public String getDERFormat() {
         return Hex.toHexString(pemObject.getContent());
     }
 
+    /**
+     * Gets the algorithm used to generate the key from its PEM format.
+     *
+     * @return The algorithm used to generate the key.
+     * @throws {@link PEMProcessorError}
+     */
     @NotNull
     public AlgorithmEmployed getAlgorithm() throws PEMProcessorError {
-        PEMParser pemParser;
-        Object pemObject2 = null;
-        try {
-            reader.reset();
-            pemParser = new PEMParser(reader);
-            pemObject2 = pemParser.readObject();
-        } catch (IOException e) {
-            throw new PEMProcessorError(ErrorConstants.ERROR_READING_PEM_OBJECT, e);
-        }
+
+        Object pemObjectParsed = parsePEMObject();
 
         String oid;
-        if(pemObject2 instanceof SubjectPublicKeyInfo){
-            oid = ((SubjectPublicKeyInfo) pemObject2).getAlgorithm().getParameters().toString();
-        }else if(pemObject2 instanceof PEMKeyPair) {
-            oid = ((PEMKeyPair) pemObject2).getPrivateKeyInfo().getPrivateKeyAlgorithm()
+        if (pemObjectParsed instanceof SubjectPublicKeyInfo) {
+            oid = ((SubjectPublicKeyInfo) pemObjectParsed).getAlgorithm().getParameters()
+                    .toString();
+        } else if (pemObjectParsed instanceof PEMKeyPair) {
+            oid = ((PEMKeyPair) pemObjectParsed).getPrivateKeyInfo().getPrivateKeyAlgorithm()
                     .getParameters().toString();
-        }else{
+        } else {
             throw new PEMProcessorError(ErrorConstants.DER_TO_PEM_CONVERSION);
         }
 
@@ -89,41 +101,60 @@ public class PEMProcessor {
         }
     }
 
+    /**
+     * Gets the key as a byte array from its PEM format.
+     *
+     * @return key as byte[]
+     * @throws {@link PEMProcessorError}
+     */
     @NotNull
     public byte[] getKeyData() throws PEMProcessorError {
-        try {
-            PEMParser pemParser;
-            Object pemObject2 = null;
 
-            reader.reset();
-            pemParser = new PEMParser(reader);
-            pemObject2 = pemParser.readObject();
+        Object pemObjectParsed = parsePEMObject();
 
+        if (pemObjectParsed instanceof SubjectPublicKeyInfo) {
+            return ((SubjectPublicKeyInfo) pemObjectParsed).getPublicKeyData().getBytes();
+        } else if (pemObjectParsed instanceof PEMKeyPair) {
 
-            if(pemObject2 instanceof SubjectPublicKeyInfo){
-                return ((SubjectPublicKeyInfo) pemObject2).getPublicKeyData().getBytes();
-            }else if(pemObject2 instanceof PEMKeyPair) {
-
-                DLSequence sequence;
-                try (ASN1InputStream asn1InputStream = new ASN1InputStream(
-                        Hex.decode(this.getDERFormat()))) {
-                    sequence = (DLSequence) asn1InputStream.readObject();
-                }
-                for(Object obj: sequence){
-                    if(obj instanceof DEROctetString){
-                        byte[] key = ((DEROctetString) obj).getEncoded();
-                        return Arrays.copyOfRange(key,PRIVATE_KEY_START_INDEX, key.length);
-                    }
-                }
-                throw new PEMProcessorError(ErrorConstants.KEY_DATA_NOT_FOUND);
-
-            }else{
-                throw new PEMProcessorError(ErrorConstants.DER_TO_PEM_CONVERSION);
+            DLSequence sequence;
+            try (ASN1InputStream asn1InputStream = new ASN1InputStream(
+                    Hex.decode(this.getDERFormat()))) {
+                sequence = (DLSequence) asn1InputStream.readObject();
+            } catch (IOException e) {
+                throw new PEMProcessorError(e);
             }
+            for (Object obj : sequence) {
+                if (obj instanceof DEROctetString) {
+                    byte[] key = new byte[0];
+                    try {
+                        key = ((DEROctetString) obj).getEncoded();
+                    } catch (IOException e) {
+                        throw new PEMProcessorError(e);
+                    }
+                    return Arrays.copyOfRange(key, PRIVATE_KEY_START_INDEX, key.length);
+                }
+            }
+            throw new PEMProcessorError(ErrorConstants.KEY_DATA_NOT_FOUND);
 
+        } else {
+            throw new PEMProcessorError(ErrorConstants.DER_TO_PEM_CONVERSION);
+        }
+
+    }
+
+    /**
+     * Parses PEM object.
+     *
+     * @return Parsed PEM object as Object.
+     * @throws {@link PEMProcessorError}
+     */
+    @NotNull
+    private Object parsePEMObject() throws PEMProcessorError {
+        try (Reader reader = new CharArrayReader(this.pemObjectString.toCharArray());
+                PEMParser pemParser = new PEMParser(reader);) {
+            return pemParser.readObject();
         } catch (IOException e) {
             throw new PEMProcessorError(ErrorConstants.ERROR_READING_PEM_OBJECT, e);
         }
-
     }
 }
