@@ -1,14 +1,16 @@
 package one.block.eosiojava.models.rpcProvider;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
+import one.block.eosiojava.utilities.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The Transaction class which has data of actions for each transaction. It is used to carry actions
- * data in hex and get broadcast to backend.
+ * The Transaction class which has data of actions for each transaction. It is used to carry actions data in hex and get broadcast to
+ * backend.
  */
 public class Transaction implements Serializable {
 
