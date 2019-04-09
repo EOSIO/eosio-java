@@ -40,5 +40,9 @@ public class ErrorConstants {
     //PEMProcessor Errors
     public static final String ERROR_READING_PEM_OBJECT = "Error reading PEM object!";
     public static final String ERROR_PARSING_PEM_OBJECT = "Error parsing PEM object!";
+    public static final String KEY_DATA_NOT_FOUND = "Key data not found in PEM object!";
+    public static final String INVALID_PEM_OBJECT = "Cannot read PEM object!";
+
+
 
 }

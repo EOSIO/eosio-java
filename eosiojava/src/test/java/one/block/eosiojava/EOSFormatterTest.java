@@ -6,7 +6,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.CharArrayReader;
+import java.io.IOException;
 import java.io.Reader;
+import one.block.eosiojava.enums.AlgorithmEmployed;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.utilities.EOSFormatterError;
 import one.block.eosiojava.error.utilities.PEMProcessorError;
@@ -521,27 +523,50 @@ Test uses output of one way conversion as input for return conversion.
         }
     }
 
-    //TODO: Change to K1 Test
+    /*
+    Validate signature using a r and s, signable transaction, and public key used to sign the transaction.
+    Convert the signature to EOS format.
+     */
+
     @Test
-    public void validatePEMProcessor() {
-        String derEncodedSignatureI = "303c021c7eeb0b2596f74344b3d7b046ea0bd17c4461fc277658ce93509f1674021c4f5dbfb30d994664da80528847a767f0194876b068e5958161797991";
-        //String derEncodedSignatureII = "303e021d0080f20b82d407ae663f010f4990f12073631d653ea1d65dc75ebd4293021d00880db667ef51aea8e7c9bb012496c7c9ece3bc5829b82b692b9211c3";
-        //String eosFormattedSignature = "";
-        String privateKey = "PVT_R1_g6vV9tiGqN3LkhD53pVUbxDn76PuVeR6XfmJzrnLR3PbGWLys";
-        String publicKey = "PUB_R1_6Aze12hAmj1qWeXpdxsbMMP29NZ7EJhnuNJmDoBgx9xjmyZ8n8";
-        String signableTransaction = "687fa513e18843ad3e820744f4ffcf93b1354036d80737db8dc444fe4b15ad17528cab5c770a54cebec1000000000100a6823403ea3055000000572d3ccdcd01000000000000c03400000000a8ed323236000000000000c034000000000000a682102700000000000004454f530000000015426f6e757320666f7220676f6f64206a6f62212121000000000000000000000000000000000000000000000000000000000000000000";
-        String derEncodedSignature = "304502202b180ef7236a62ff1e3fd741c3d5ba00cf3d3114a7e038a0730a2f45d1551219022100da335c840a4f42c051c12fed3d7d012bb083c7150c0eb691cac9ad9e898a75f3";
-        String eosFormattedSignature = "SIG_R1_KaPKLBn1FnnYDf4E5zmnj7qQWWcN5REJFnadzLUyDp7TEVMAmD1CT15SyGmwdreoYTWSbJzWXayPdsHwLySWviiJoA7W4p";
+    public void validateEOSSignatureCreationWithSECP256K1GeneratedPublicKey() {
+        String publicKey = "-----BEGIN PUBLIC KEY-----\nMDYwEAYHKoZIzj0CAQYFK4EEAAoDIgADtDOYTgeoDug9OfOI31ILaoR2OiGmTiKXgyu/3J8VNZ4=\n-----END PUBLIC KEY-----";
+        String signableTransaction = "687fa513e18843ad3e820744f4ffcf93b1354036d80737db8dc444fe4b15ad1714b9ab5cfb639ca4996b000000000100a6823403ea3055000000572d3ccdcd01000000000000c03400000000a8ed323225000000000000c034000000000000a682e80300000000000004454f5300000000046d656d6f000000000000000000000000000000000000000000000000000000000000000000";
+        String rValue = "44170566286458861279997966394284345283382417819099318029887909824085364215455";
+        String sValue = "5239695698990405032795389787700069207189254668737611240009161346294735197523";
+        String eosFormattedSignature = "SIG_K1_KhXKyTi1h2D3LiX8bp4bhfjNQSaF61keisC6VcoHP16jbtHE4sAAzPTXHVAn3hPLUcvnMgG9bf5bZPvmpHBmQCA83VSz6Z";
 
         try {
-            String pemPublicKey = EOSFormatter.convertEOSPublicKeyToPEMFormat(publicKey);
-            String pemPrivateKey = EOSFormatter.convertEOSPrivateKeyToPEMFormat(privateKey);
-            assertEquals(eosFormattedSignature, EOSFormatter.convertDERSignatureToEOSFormat(Hex.decode(derEncodedSignature),Hex.decode(signableTransaction), pemPublicKey ));
+            assertEquals(eosFormattedSignature, EOSFormatter.convertRawRandSofSignatureToEOSFormat(rValue, sValue,Hex.decode(signableTransaction), publicKey ));
         } catch (EOSFormatterError e) {
             fail("Not expecting an EOSFormatterError to be thrown!");
         }
 
     }
 
+    /*
+    Verify failed validation of signature using a incorrect r and s, valid signable transaction, and valid public key used to sign the transaction.
+    Changed r and s values slightly from positive test.
+     */
+
+    @Test
+    public void eosSECP256K1SignatureValidationFailsWithIncorrectRorSvalue() {
+        String publicKey = "-----BEGIN PUBLIC KEY-----\nMDYwEAYHKoZIzj0CAQYFK4EEAAoDIgADtDOYTgeoDug9OfOI31ILaoR2OiGmTiKXgyu/3J8VNZ4=\n-----END PUBLIC KEY-----";
+        String signableTransaction = "687fa513e18843ad3e820744f4ffcf93b1354036d80737db8dc444fe4b15ad1714b9ab5cfb639ca4996b000000000100a6823403ea3055000000572d3ccdcd01000000000000c03400000000a8ed323225000000000000c034000000000000a682e80300000000000004454f5300000000046d656d6f000000000000000000000000000000000000000000000000000000000000000000";
+        String rValue = "44170566286458861279997966394284345283382417819099318029887909824085364215450";
+        String sValue = "5239695698990405032795389787700069207189254668737611240009161346294735197520";
+        String eosFormattedSignature = "SIG_K1_KhXKyTi1h2D3LiX8bp4bhfjNQSaF61keisC6VcoHP16jbtHE4sAAzPTXHVAn3hPLUcvnMgG9bf5bZPvmpHBmQCA83VSz6Z";
+
+        try {
+            assertEquals(eosFormattedSignature, EOSFormatter.convertRawRandSofSignatureToEOSFormat(rValue, sValue,Hex.decode(signableTransaction), publicKey ));
+            fail("Expected EOSFormatterError to be thrown!");
+        } catch (EOSFormatterError e) {
+            assert(e instanceof EOSFormatterError);
+            assertEquals("Invalid point compression", e.getCause().getMessage());
+        }catch (Exception e){
+            fail("Expected EOSFormatterError to be thrown!");
+        }
+
+    }
 
 }

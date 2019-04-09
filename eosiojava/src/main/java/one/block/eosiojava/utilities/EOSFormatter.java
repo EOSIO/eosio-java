@@ -6,7 +6,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.primitives.Bytes;
 import java.io.CharArrayReader;
-import java.io.IOException;
 import java.io.Reader;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -16,6 +15,7 @@ import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.utilities.Base58ManipulationError;
 import one.block.eosiojava.error.utilities.DerToPemConversionError;
 import one.block.eosiojava.error.utilities.EOSFormatterError;
+import one.block.eosiojava.error.utilities.LowSVerificationError;
 import org.bitcoinj.core.Base58;
 import org.bitcoinj.core.Sha256Hash;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -107,6 +107,7 @@ public class EOSFormatter {
     //SIGNATURE RELATED CONSTANTS
     private static final int VALUE_TO_ADD_TO_SIGNATURE_HEADER = 31;
     private static final int EXPECTED_R_OR_S_LENGTH = 32;
+    private static final int NUMBER_OF_POSSIBLE_PUBLIC_KEYS = 4;
 
     /*
     Covers the PEM objects currently supported by this class (i.e. The class allows for PEM
@@ -127,16 +128,6 @@ public class EOSFormatter {
             return value;
         }
     }
-
-    /**
-     * R1 CONST
-     */
-    private static final String CONS_R1 = "R1";
-
-    /**
-     * K1 CONST
-     */
-    private static final String CONS_K1 = "K1";
 
     /**
      * Const name of secp256r1 curves
@@ -458,8 +449,9 @@ public class EOSFormatter {
             @NotNull byte[] signableTransaction, @NotNull String publicKeyPEM)
             throws EOSFormatterError {
         String eosFormattedSignature = "";
-        ASN1InputStream asn1InputStream = new ASN1InputStream(signatureDER);
-        try {
+
+        try (ASN1InputStream asn1InputStream = new ASN1InputStream(signatureDER)) {
+
             PEMProcessor publicKey = new PEMProcessor(publicKeyPEM);
             AlgorithmEmployed algorithmEmployed = publicKey.getAlgorithm();
             byte[] keyData = publicKey.getKeyData();
@@ -469,14 +461,10 @@ public class EOSFormatter {
 
             s = checkAndHandleLowS(s, algorithmEmployed);
 
-            int recoverId = getRecoveryId(r, s, Sha256Hash.of(signableTransaction), keyData,
-                    algorithmEmployed);
-
-            if (recoverId < 0) {
-                throw new IllegalStateException(
-                        ErrorConstants.COULD_NOT_RECOVER_PUBLIC_KEY_FROM_SIG);
-            }
-
+            /*
+            Chop of the sign bit of R and S if necessary because the signature should be exactly 65 bytes after
+            recID is added.
+            */
             byte[] rFinalArray = r.toByteArray();
             byte[] sFinalArray = s.toByteArray();
 
@@ -488,16 +476,29 @@ public class EOSFormatter {
                 sFinalArray = Arrays.copyOfRange(sFinalArray, 1, sFinalArray.length);
             }
 
+            /*
+            Get recovery ID.  This is the index of the public key (0-3) that represents the
+            expected public key used to sign the transaction.
+             */
+            int recoverId = getRecoveryId(r, s, Sha256Hash.of(signableTransaction), keyData,
+                    algorithmEmployed);
+
+            if (recoverId < 0) {
+                throw new IllegalStateException(
+                        ErrorConstants.COULD_NOT_RECOVER_PUBLIC_KEY_FROM_SIG);
+            }
+
             //Add RecoveryID + 27 + 4 to create the header byte
             recoverId += VALUE_TO_ADD_TO_SIGNATURE_HEADER;
             byte headerByte = ((Integer) recoverId).byteValue();
             byte[] decodedSignature = Bytes
                     .concat(new byte[]{headerByte}, rFinalArray, sFinalArray);
             if (algorithmEmployed.equals(AlgorithmEmployed.SECP256K1) &&
-                    isNotCanonical(decodedSignature)) {
-                    throw new IllegalArgumentException(ErrorConstants.NON_CANONICAL_SIGNATURE);
+                    !isCanonical(decodedSignature)) {
+                throw new IllegalArgumentException(ErrorConstants.NON_CANONICAL_SIGNATURE);
             }
 
+            //Add checksum to signature
             byte[] signatureWithCheckSum;
             String signaturePrefix;
             switch (algorithmEmployed) {
@@ -516,18 +517,118 @@ public class EOSFormatter {
 
             }
 
+            //Base58 encode signature and add pertinent EOS prefix
             eosFormattedSignature = signaturePrefix.concat(Base58.encode(signatureWithCheckSum));
-            asn1InputStream.close();
-
 
         } catch (Exception e) {
             throw new EOSFormatterError(ErrorConstants.SIGNATURE_FORMATTING_ERROR, e);
-        } finally {
-            try {
-                asn1InputStream.close();
-            } catch (IOException e) {
-                //TODO:Implement logger
+        }
+
+
+        return eosFormattedSignature;
+    }
+
+    /**
+     * This method converts a signature to a EOS compliant form.  The signature to be converted must
+     * be an The ECDSA signature that is a DER encoded ASN.1 sequence of two integer fields (see
+     * ECDSA-Sig-Value in rfc3279 section 2.2.3).  This method should be used when only the R and
+     * S values of the signature are available.
+     *
+     * The DER encoded ECDSA signature follows the following format:
+     * Byte 1 - Sequence (Should be 30)
+     * Byte 2 - Signature length
+     * Byte 3 - R Marker (0x02)
+     * Byte 4 - R length
+     * Bytes 5 to 37 or 38- R
+     * Byte After R - S Marker (0x02)
+     * Byte After S Marker - S Length
+     * Bytes After S Length - S (always 32-33 bytes)
+     * Byte Final - Hash Type
+     *
+     * @param signatureR R value as BigInteger in string format
+     * @param signatureS S value as BigInteger in string format
+     * @param signableTransaction Transaction in signable format
+     * @param publicKeyPEM Public Key used to sign in PEM format
+     * @return EOS format of signature
+     */
+    @NotNull
+    public static String convertRawRandSofSignatureToEOSFormat(@NotNull String signatureR, String signatureS,
+            @NotNull byte[] signableTransaction, @NotNull String publicKeyPEM)
+            throws EOSFormatterError {
+        String eosFormattedSignature = "";
+
+        try {
+            PEMProcessor publicKey = new PEMProcessor(publicKeyPEM);
+            AlgorithmEmployed algorithmEmployed = publicKey.getAlgorithm();
+            byte[] keyData = publicKey.getKeyData();
+
+            BigInteger r = new BigInteger(signatureR);
+            BigInteger s = new BigInteger(signatureS);
+
+            s = checkAndHandleLowS(s, algorithmEmployed);
+
+            /*
+            Chop of the sign bit of R and S if necessary because the signature should be exactly 65 bytes after
+            recID is added.
+            */
+            byte[] rFinalArray = r.toByteArray();
+            byte[] sFinalArray = s.toByteArray();
+
+            if (rFinalArray.length > EXPECTED_R_OR_S_LENGTH) {
+                rFinalArray = Arrays.copyOfRange(rFinalArray, 1, rFinalArray.length);
             }
+
+            if (sFinalArray.length > EXPECTED_R_OR_S_LENGTH) {
+                sFinalArray = Arrays.copyOfRange(sFinalArray, 1, sFinalArray.length);
+            }
+
+            /*
+            Get recovery ID.  This is the index of the public key (0-3) that represents the
+            expected public key used to sign the transaction.
+             */
+            int recoverId = getRecoveryId(r, s, Sha256Hash.of(signableTransaction), keyData,
+                    algorithmEmployed);
+
+            if (recoverId < 0) {
+                throw new IllegalStateException(
+                        ErrorConstants.COULD_NOT_RECOVER_PUBLIC_KEY_FROM_SIG);
+            }
+
+
+            //Add RecoveryID + 27 + 4 to create the header byte
+            recoverId += VALUE_TO_ADD_TO_SIGNATURE_HEADER;
+            byte headerByte = ((Integer) recoverId).byteValue();
+            byte[] decodedSignature = Bytes
+                    .concat(new byte[]{headerByte}, rFinalArray, sFinalArray);
+            if (algorithmEmployed.equals(AlgorithmEmployed.SECP256K1) &&
+                    !isCanonical(decodedSignature)) {
+                throw new IllegalArgumentException(ErrorConstants.NON_CANONICAL_SIGNATURE);
+            }
+
+            //Add checksum to signature
+            byte[] signatureWithCheckSum;
+            String signaturePrefix;
+            switch (algorithmEmployed) {
+                case SECP256R1:
+                    signatureWithCheckSum = addCheckSumToSignature(decodedSignature,
+                            SECP256R1_AND_PRIME256V1_CHECKSUM_VALIDATION_SUFFIX.getBytes());
+                    signaturePrefix = PATTERN_STRING_EOS_PREFIX_SIG_R1;
+                    break;
+                case SECP256K1:
+                    signatureWithCheckSum = addCheckSumToSignature(decodedSignature,
+                            SECP256K1_CHECKSUM_VALIDATION_SUFFIX.getBytes());
+                    signaturePrefix = PATTERN_STRING_EOS_PREFIX_SIG_K1;
+                    break;
+                default:
+                    throw new EOSFormatterError(ErrorConstants.UNSUPPORTED_ALGORITHM);
+
+            }
+
+            //Base58 encode signature and add pertinent EOS prefix
+            eosFormattedSignature = signaturePrefix.concat(Base58.encode(signatureWithCheckSum));
+
+        } catch (Exception e) {
+            throw new EOSFormatterError(ErrorConstants.SIGNATURE_FORMATTING_ERROR, e);
         }
 
         return eosFormattedSignature;
@@ -735,9 +836,10 @@ public class EOSFormatter {
      * This method converts a DER encoded private key, public key, or signature into the PEM
      * format.
      *
-     * Example of a PEM formatted private key: -----BEGIN EC PRIVATE KEY-----
-     * MDECAQEEIEJSCKmyR0kmxy2pgkEwkqrodn2jG9mhXRhhxgsneuBsoAoGCCqGSM49AwEH -----END EC PRIVATE
-     * KEY-----
+     * Example of a PEM formatted private key:
+     * -----BEGIN EC PRIVATE KEY-----
+     * MDECAQEEIEJSCKmyR0kmxy2pgkEwkqrodn2jG9mhXRhhxgsneuBsoAoGCCqGSM49AwEH
+     * -----END EC PRIVATE KEY-----
      *
      * The key data between the header and footer is Base64 encoded.
      *
@@ -1184,7 +1286,8 @@ public class EOSFormatter {
      * @param keyType Algorithm used to generate private key that signed the message.
      * @return Low S value
      */
-    private static BigInteger checkAndHandleLowS(BigInteger s, AlgorithmEmployed keyType) {
+    private static BigInteger checkAndHandleLowS(BigInteger s, AlgorithmEmployed keyType)
+            throws LowSVerificationError {
         if (!isLowS(s, keyType)) {
             switch (keyType) {
                 case SECP256R1:
@@ -1205,7 +1308,8 @@ public class EOSFormatter {
      * @param keyType Algorithm used to generate private key that signed the message.
      * @return boolean indicating whether S value is low
      */
-    private static boolean isLowS(BigInteger s, AlgorithmEmployed keyType) {
+    private static boolean isLowS(BigInteger s, AlgorithmEmployed keyType)
+            throws LowSVerificationError {
         int compareResult;
 
         switch (keyType) {
@@ -1213,8 +1317,12 @@ public class EOSFormatter {
                 compareResult = s.compareTo(HALF_CURVE_ORDER_R1);
                 break;
 
-            default:
+            case SECP256K1:
                 compareResult = s.compareTo(HALF_CURVE_ORDER_K1);
+                break;
+
+            default:
+                throw new LowSVerificationError(ErrorConstants.UNSUPPORTED_ALGORITHM);
         }
 
         return compareResult == 0 || compareResult == -1;
@@ -1228,7 +1336,7 @@ public class EOSFormatter {
     private static byte[] addCheckSumToSignature(byte[] signature, byte[] keyTypeByteArray) {
         byte[] signatureWithKeyType = Bytes.concat(signature, keyTypeByteArray);
         byte[] signatureRipemd160 = digestRIPEMD160(signatureWithKeyType);
-        byte[] checkSum = Arrays.copyOfRange(signatureRipemd160, 0, 4);
+        byte[] checkSum = Arrays.copyOfRange(signatureRipemd160, 0, CHECKSUM_BYTES);
         return Bytes.concat(signature, checkSum);
     }
 
@@ -1238,7 +1346,7 @@ public class EOSFormatter {
      * @param signature - signature to check for canonical
      * @return whether the input signature is canonical
      */
-    private static boolean isNotCanonical(byte[] signature) {
+    private static boolean isCanonical(byte[] signature) {
         return (signature[1] & ((Integer) 0x80).byteValue()) == ((Integer) 0x00).byteValue()
                 && !(signature[1] == ((Integer) 0x00).byteValue()
                 && ((signature[2] & ((Integer) 0x80).byteValue()) == ((Integer) 0x00).byteValue()))
@@ -1260,7 +1368,7 @@ public class EOSFormatter {
      */
     private static int getRecoveryId(BigInteger r, BigInteger s, Sha256Hash sha256HashMessage,
             byte[] publicKey, AlgorithmEmployed keyType) {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < NUMBER_OF_POSSIBLE_PUBLIC_KEYS; i++) {
             byte[] recoveredPublicKey = recoverPublicKeyFromSignature(i, r, s, sha256HashMessage,
                     true, keyType);
 
@@ -1409,7 +1517,7 @@ public class EOSFormatter {
 
         X9IntegerConverter x9 = new X9IntegerConverter();
         byte[] compEnc = x9.integerToBytes(xBN, 1 + x9.getByteLength(curve));
-        compEnc[0] = (byte) (yBit ? 0x03 : 0x02);
+        compEnc[0] = (byte) (yBit ? COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_NEGATIVE_Y : COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_POSITIVE_Y);
         return curve.decodePoint(compEnc);
     }
 
