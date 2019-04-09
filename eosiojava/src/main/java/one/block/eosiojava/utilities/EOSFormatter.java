@@ -473,7 +473,7 @@ public class EOSFormatter {
             Get recovery ID.  This is the index of the public key (0-3) that represents the
             expected public key used to sign the transaction.
              */
-            int recoverId = getRecoveryId(r, s, Sha256Hash.of(signableTransaction), keyData,
+            int recoverId = getRecoveryId(new BigInteger(rFinalArray), new BigInteger(sFinalArray), Sha256Hash.of(signableTransaction), keyData,
                     algorithmEmployed);
 
             if (recoverId < 0) {
@@ -573,7 +573,7 @@ public class EOSFormatter {
             Get recovery ID.  This is the index of the public key (0-3) that represents the
             expected public key used to sign the transaction.
              */
-            int recoverId = getRecoveryId(r, s, Sha256Hash.of(signableTransaction), keyData,
+            int recoverId = getRecoveryId(new BigInteger(rFinalArray), new BigInteger(sFinalArray), Sha256Hash.of(signableTransaction), keyData,
                     algorithmEmployed);
 
             if (recoverId < 0) {
