@@ -1,14 +1,15 @@
 package one.block.eosiojava.session;
 
+import one.block.eosiojava.error.session.TransactionProcessorConstructorInputError;
 import one.block.eosiojava.interfaces.IABIProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
+import one.block.eosiojava.models.rpcProvider.Transaction;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Transaction Session class has a factory role for creating {@link TransactionProcessor} object
- * from providers instances
+ * Transaction Session class has a factory role for creating {@link TransactionProcessor} object from providers instances
  */
 public class TransactionSession {
 
@@ -42,6 +43,17 @@ public class TransactionSession {
     public TransactionProcessor getTransactionProcessor() {
         return new TransactionProcessor(this.serializationProvider, this.rpcProvider,
                 this.abiProvider, this.signatureProvider);
+    }
+
+    /**
+     * Create and return a new instance of TransactionProcessor with preset transaction
+     *
+     * @param transaction - preset transaction
+     * @return new instance of TransactionProcessor
+     */
+    public TransactionProcessor getTransactionProcessor(Transaction transaction) throws TransactionProcessorConstructorInputError {
+        return new TransactionProcessor(this.serializationProvider, this.rpcProvider,
+                this.abiProvider, this.signatureProvider, transaction);
     }
 
     //region getters

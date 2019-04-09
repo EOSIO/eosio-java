@@ -6,21 +6,21 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Class of Error/Exception for GetRawAbi RPC call
  */
-public class GetRawAbiError extends EosioError {
+public class GetRawAbiRpcError extends EosioError {
 
-    public GetRawAbiError() {
+    public GetRawAbiRpcError() {
     }
 
-    public GetRawAbiError(@NotNull String message) {
+    public GetRawAbiRpcError(@NotNull String message) {
         super(message);
     }
 
-    public GetRawAbiError(@NotNull String message,
+    public GetRawAbiRpcError(@NotNull String message,
             @NotNull Exception exception) {
         super(message, exception);
     }
 
-    public GetRawAbiError(@NotNull Exception exception) {
+    public GetRawAbiRpcError(@NotNull Exception exception) {
         super(exception);
     }
 }
