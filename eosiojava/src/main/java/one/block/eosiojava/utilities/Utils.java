@@ -9,6 +9,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+/**
+ * This class provides generic utility methods
+ */
 public class Utils {
 
     private Utils() {}

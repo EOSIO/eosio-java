@@ -8,6 +8,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+/**
+ * This class provides utility methods to handle date time objects with supported date time patterns in {@link Constants}
+ */
 public class DateFormatter {
 
     private DateFormatter() {}
