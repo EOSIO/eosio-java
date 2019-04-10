@@ -4,6 +4,10 @@ package one.block.eosiojava.error;
 
 public class ErrorConstants {
 
+    private ErrorConstants(){
+
+    }
+
     //EOSFormatter() Errors
     public static final String INVALID_EOS_PRIVATE_KEY = "The EOS private key provided is invalid!";
     public static final String INVALID_EOS_PUBLIC_KEY = "The EOS public key provided is invalid!";
@@ -26,6 +30,9 @@ public class ErrorConstants {
     public static final String INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Length of the signable transaction must be larger than %s";
     public static final String INVALID_INPUT_SIGNABLE_TRANS_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Signable signature has to have this structure: chainId (64 characters) + serialized transaction + 32 bytes of 0!";
     public static final String EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE_ERROR = "Something went wrong when trying to extract serialized transaction from signable transaction.";
+    public static final String SIGNATURE_FORMATTING_ERROR = "An error occured formating the signature!";
+    public static final String COULD_NOT_RECOVER_PUBLIC_KEY_FROM_SIG = "Could not recover public key from Signature.";
+    public static final String NON_CANONICAL_SIGNATURE = "Input signature is not canonical.";
 
     // ABIProviderImpl Errors
     public static final String NO_RESPONSE_RETRIEVING_ABI = "No response retrieving ABI.";
@@ -35,7 +42,13 @@ public class ErrorConstants {
     public static final String NO_ABI_FOUND = "No ABI found for requested account name.";
     public static final String ERROR_RETRIEVING_ABI = "Error retrieving ABI from the chain.";
 
-    //region TransactionProcessor errors
+    //PEMProcessor Errors
+    public static final String ERROR_READING_PEM_OBJECT = "Error reading PEM object!";
+    public static final String ERROR_PARSING_PEM_OBJECT = "Error parsing PEM object!";
+    public static final String KEY_DATA_NOT_FOUND = "Key data not found in PEM object!";
+    public static final String INVALID_PEM_OBJECT = "Cannot read PEM object!";
+
+    //TransactionProcessor Errors
 
     public static final String TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG = "Action list can't be empty!";
     public static final String TRANSACTION_PROCESSOR_RPC_GET_INFO = "Error happened on calling GetInfo RPC.";
@@ -72,5 +85,4 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY = "Can't call broadcast because Signature is empty. Make sure of calling sign before calling broadcast.";
     public static final String TRANSACTION_PROCESSOR_SIGN_BROADCAST_SIGN_EMPTY = "Can't call sign and broadcast because Signature is empty. Make sure of calling sign before calling sign and broadcast.";
 
-    //endregion
 }
