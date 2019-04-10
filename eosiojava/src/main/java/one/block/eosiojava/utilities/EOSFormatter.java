@@ -106,9 +106,9 @@ public class EOSFormatter {
 
     private static final int CHAIN_ID_LENGTH = 64;
     /**
-     * Minimum length of signable transaction: Chain id length + 32 bytes of 0's length
+     * Minimum length of signable transaction: Chain id length + 32 bytes of 0's length + 1 (minimum length for serialized transaction)
      */
-    private static final int MINIMUM_SIGNABLE_TRANSACTION_LENGTH = CHAIN_ID_LENGTH + 64;
+    private static final int MINIMUM_SIGNABLE_TRANSACTION_LENGTH = CHAIN_ID_LENGTH + 64 + 1;
 
     //SIGNATURE RELATED CONSTANTS
     private static final int VALUE_TO_ADD_TO_SIGNATURE_HEADER = 31;
