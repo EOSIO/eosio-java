@@ -1159,7 +1159,6 @@ public class EOSFormatter {
         return decodedKey;
     }
 
-
     /**
      * Validate checksum by RipeMD160 digestion
      *
