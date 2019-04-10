@@ -56,6 +56,7 @@ import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
+import one.block.eosiojava.utilities.Constants;
 import one.block.eosiojava.utilities.DateFormatter;
 import one.block.eosiojava.utilities.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -435,7 +436,7 @@ public class TransactionProcessor {
      */
     @Nullable
     public String toJSON() {
-        return Utils.getDefaultGson().toJson(this.transaction);
+        return Utils.getGson(Constants.BACKEND_DATE_PATTERN).toJson(this.transaction);
     }
 
     /**
@@ -608,7 +609,7 @@ public class TransactionProcessor {
                         deserializeTransactionError);
             }
 
-            this.transaction = Utils.getDefaultGson().fromJson(transactionJSON, Transaction.class);
+            this.transaction = Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(transactionJSON, Transaction.class);
         }
 
         this.signatures = new ArrayList<>();
@@ -710,7 +711,7 @@ public class TransactionProcessor {
         // Serialize the whole transaction
         String _serializedTransaction;
         try {
-            String clonedTransactionToJSON = Utils.getDefaultGson().toJson(clonedTransaction);
+            String clonedTransactionToJSON = Utils.getGson(Constants.BACKEND_DATE_PATTERN).toJson(clonedTransaction);
             _serializedTransaction = this.serializationProvider
                     .serializeTransaction(clonedTransactionToJSON);
             if (_serializedTransaction == null || _serializedTransaction.isEmpty()) {

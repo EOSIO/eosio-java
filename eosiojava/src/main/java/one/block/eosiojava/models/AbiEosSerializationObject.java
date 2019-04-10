@@ -3,6 +3,9 @@ package one.block.eosiojava.models;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * The request/response object to pass to Serialization Provider for generic serialization/deserialization
+ */
 public class AbiEosSerializationObject {
 
     private @Nullable String contract;
