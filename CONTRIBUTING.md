@@ -70,6 +70,15 @@ To get it out of the way:
 - **[develop](https://github.com/EOSIO/eosio-java/tree/develop)** is the development branch. All work on the next release happens here so you should generally branch off `develop`. Do **NOT** use this branch for a production site.
 - **[master](https://github.com/EOSIO/eosio-java)** contains the latest release of EOSIO SDK for Java}. This branch may be used in production. Do **NOT** use this branch to work on EOSIO SDK for Java's source.
 
+### Developing With Gradle Locally
+
+By default, libraries are installed from remote Maven repositories through Gradle. If, however, you wish to develop locally and you'd like to integrate with locally-cloned versions of EOSIO SDK for Java and/or other Providers, follow these instructions:
+
+1. Clone this and other repos into the same directory, as siblings of one another.
+1. *TODO* add directions here for changing to local development
+1. Import as a gradle project into your favorite IDE or build with gradle from the command line.
+1. Develop!
+
 ### Submitting Pull Requests
 
 Pull requests are awesome. If you're looking to raise a PR for something which doesn't have an open issue, please think carefully about [raising an issue](#reporting-an-issue) which your PR can close, especially if you're fixing a bug. This makes it more likely that there will be enough information available for your PR to be properly tested and merged.
@@ -79,6 +88,12 @@ Pull requests are awesome. If you're looking to raise a PR for something which d
 Never underestimate just how useful quality assurance is. If you're looking to get involved with the code base and don't know where to start, checking out and testing a pull request is one of the most useful things you could do.
 
 Essentially, [check out the latest develop branch](#working-on-eosio-sdk-for-java), take it for a spin, and if you find anything odd, please follow the [bug report guidelines](#bug-reports) and let us know!
+
+### Code Style and Linting
+
+EOSIO SDK for Java leverages [sonarlint](https://www.sonarlint.org/) for linting and the [Google Java Style Guide](https://github.com/google/styleguide) with tab size and indent set to 4, and continuation indent set to 8 for code format flagging. Once sonarlint is installed, linting warnings and errors will be flagged inline with squiggles.  Automatic code formatting can be accomplished by downloading and importing the Google Java Style settings into your IDE.  
+
+Please be sure to resolve any linting issues introduced by your contributions prior to requesting a review on your PR. 
 
 ## Conduct
 
