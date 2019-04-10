@@ -6,14 +6,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.CharArrayReader;
-import java.io.IOException;
 import java.io.Reader;
-import one.block.eosiojava.enums.AlgorithmEmployed;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.utilities.EOSFormatterError;
-import one.block.eosiojava.error.utilities.PEMProcessorError;
 import one.block.eosiojava.utilities.EOSFormatter;
-import one.block.eosiojava.utilities.PEMProcessor;
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -478,6 +474,92 @@ Test uses output of one way conversion as input for return conversion.
 
     }
 
+    /**
+     * Validate positive test for PrepareSerializedTransactionForSigning
+     */
+    @Test
+    public void validatePrepareSerializedTransactionForSigning() {
+        String chainId = "687fa513e18843ad3e820744f4ffcf93b1354036d80737db8dc444fe4b15ad17";
+        String serializedTransaction = "8BC2A35CF56E6CC25F7F000000000100A6823403EA3055000000572D3CCDCD01000000000000C03400000000A8ED32322A000000000000C034000000000000A682A08601000000000004454F530000000009536F6D657468696E6700";
+        String expectedSignableTransaction = chainId + serializedTransaction + Hex.toHexString(new byte[32]);
+
+        try {
+            String signableTransaction = EOSFormatter.prepareSerializedTransactionForSigning(serializedTransaction, chainId);
+            assertEquals(expectedSignableTransaction, signableTransaction);
+        } catch (EOSFormatterError eosFormatterError) {
+            eosFormatterError.printStackTrace();
+            fail("Should not throw exception here");
+        }
+    }
+
+    /**
+     * Negative test PrepareSerializedTransactionForSigning with invalid length input
+     * Expect to get EosFormatError with message at ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE
+     */
+    @Test
+    public void validatePrepareSerializedTransactionForSigning_thenThrowErrorLengthInput() {
+        String chainId = "687fa513e18843ad3e820744f4ffcf9";
+        String serializedTransaction = "8";
+
+        try {
+            EOSFormatter.prepareSerializedTransactionForSigning(serializedTransaction, chainId);
+            fail("Expected EOSFormatterError to be thrown!");
+        } catch (EOSFormatterError eosFormatterError) {
+            assertEquals(String.format(ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE, 129), eosFormatterError.getMessage());
+        }
+    }
+
+    /**
+     * Negative test PrepareSerializedTransactionForSigning with empty input
+     * Expect to get EosFormatError with message at ErrorConstants.EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING
+     */
+    @Test
+    public void validatePrepareSerializedTransactionForSigning_thenThrowErrorEmptyInput() {
+        String chainId = "";
+        String serializedTransaction = "";
+
+        try {
+            EOSFormatter.prepareSerializedTransactionForSigning(serializedTransaction, chainId);
+            fail("Expected EOSFormatterError to be thrown!");
+        } catch (EOSFormatterError eosFormatterError) {
+            assertEquals(ErrorConstants.EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING, eosFormatterError.getMessage());
+        }
+    }
+
+    /**
+     * Validate positive ExtractSerializedTransactionFromSignable
+     */
+    @Test
+    public void validateExtractSerializedTransactionFromSignable() {
+        String chainId = "687fa513e18843ad3e820744f4ffcf93b1354036d80737db8dc444fe4b15ad17";
+        String expectedSerializedTransaction = "8BC2A35CF56E6CC25F7F000000000100A6823403EA3055000000572D3CCDCD01000000000000C03400000000A8ED32322A000000000000C034000000000000A682A08601000000000004454F530000000009536F6D657468696E6700";
+        String signableTransaction = chainId + expectedSerializedTransaction + Hex.toHexString(new byte[32]);
+
+        try {
+            String serializedTransaction = EOSFormatter.extractSerializedTransactionFromSignable(signableTransaction);
+            assertEquals(expectedSerializedTransaction, serializedTransaction);
+        } catch (EOSFormatterError eosFormatterError) {
+            eosFormatterError.printStackTrace();
+            fail("Should not throw exception here");
+        }
+    }
+
+    /**
+     * Negative test ExtractSerializedTransactionFromSignable with empty input
+     * Expect to get EosFormatError with message at ErrorConstants.EMPTY_INPUT_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE
+     */
+    @Test
+    public void validateExtractSerializedTransactionFromSignable_thenThrowEmptyError() {
+        String signableTransaction = "";
+
+        try {
+            EOSFormatter.extractSerializedTransactionFromSignable(signableTransaction);
+            fail("Expected EOSFormatterError to be thrown!");
+        } catch (EOSFormatterError eosFormatterError) {
+            assertEquals(ErrorConstants.EMPTY_INPUT_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE, eosFormatterError.getMessage());
+        }
+    }
+
     /*
     Validate signature using a signable transaction and public key used to sign the transaction.
     Convert the signature to EOS format.
@@ -569,4 +651,38 @@ Test uses output of one way conversion as input for return conversion.
 
     }
 
+
+    /**
+     * Negative test ExtractSerializedTransactionFromSignable with invalid length input
+     * Expect to get EosFormatError with message at ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE
+     */
+    @Test
+    public void validateExtractSerializedTransactionFromSignable_thenThrowLengthError() {
+        String signableTransaction = "8BC2A35CF56E6CC25F7F000000000100A6823403EA30550000";
+
+        try {
+            EOSFormatter.extractSerializedTransactionFromSignable(signableTransaction);
+            fail("Expected EOSFormatterError to be thrown!");
+        } catch (EOSFormatterError eosFormatterError) {
+            assertEquals(String.format(ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE, 129), eosFormatterError.getMessage());
+        }
+    }
+
+    /**
+     * Negative test ExtractSerializedTransactionFromSignable with invalid structure input
+     * Expect to get EosFormatError with message at ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE
+     */
+    @Test
+    public void validateExtractSerializedTransactionFromSignable_thenThrowInvalidStructureError() {
+        String chainId = "687fa513e18843ad3e820744f4ffcf93b1354036d80737db8dc444fe4b15ad17";
+        String expectedSerializedTransaction = "8BC2A35CF56E6CC25F7F000000000100A6823403EA3055000000572D3CCDCD01000000000000C03400000000A8ED32322A000000000000C034000000000000A682A08601000000000004454F530000000009536F6D657468696E6700";
+        String signableTransaction = chainId + expectedSerializedTransaction + Hex.toHexString(new byte[30]);
+
+        try {
+            EOSFormatter.extractSerializedTransactionFromSignable(signableTransaction);
+            fail("Expected EOSFormatterError to be thrown!");
+        } catch (EOSFormatterError eosFormatterError) {
+            assertEquals(ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE, eosFormatterError.getMessage());
+        }
+    }
 }
