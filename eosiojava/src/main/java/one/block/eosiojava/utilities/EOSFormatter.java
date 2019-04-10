@@ -90,6 +90,12 @@ public class EOSFormatter {
     private static final byte COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_POSITIVE_Y = 0x02;
     private static final byte COMPRESSED_PUBLIC_KEY_BYTE_INDICATOR_NEGATIVE_Y = 0x03;
 
+    private static final int CHAIN_ID_LENGTH = 64;
+    /**
+     * Minimum length of signable transaction: Chain id length + 32 bytes of 0's length
+     */
+    private static final int MINIMUM_SIGNABLE_TRANSACTION_LENGTH = CHAIN_ID_LENGTH + 64;
+
     /*
     Covers the PEM objects currently supported by this class (i.e. The class allows for PEM
     formatting of public keys, private keys, and signatures).
@@ -518,18 +524,63 @@ public class EOSFormatter {
         return pemFormattedPrivateKey;
     }
 
-    public String extractSerializedTransactionFromSignable(@NotNull String eosTransaction)
+    /**
+     * Extract serialized transaction from a signable transaction
+     * <p/>
+     * Signable signature structure:
+     * <p/>
+     * chainId (64 characters) + serialized transaction + 32 bytes of 0
+     *
+     * @param eosTransaction - the input signable transaction
+     * @return - extracted serialized transaction from the input signable transaction
+     * @throws EOSFormatterError if input is invalid
+     */
+    public static String extractSerializedTransactionFromSignable(@NotNull String eosTransaction)
             throws EOSFormatterError {
-        String serializedTransaction = eosTransaction;
+        if (eosTransaction.isEmpty()) {
+            throw new EOSFormatterError(ErrorConstants.EMPTY_INPUT_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE);
+        }
 
-        return eosTransaction;
+        if (eosTransaction.length() <= MINIMUM_SIGNABLE_TRANSACTION_LENGTH) {
+            throw new EOSFormatterError(String.format(ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE, MINIMUM_SIGNABLE_TRANSACTION_LENGTH));
+        }
+
+        if (!eosTransaction.endsWith(Hex.toHexString(new byte[32]))) {
+            throw new EOSFormatterError(ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE);
+        }
+
+        try {
+            String cutChainId = eosTransaction.substring(CHAIN_ID_LENGTH);
+            return cutChainId.substring(0, cutChainId.length() - Hex.toHexString(new byte[32]).length());
+        } catch (Exception ex) {
+            throw new EOSFormatterError(ErrorConstants.EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE_ERROR, ex);
+        }
     }
 
-    public String prepareSerializedTransactionForSigning(@NotNull String serializedTransaction,
+    /**
+     * Preparing signable transaction for signing.
+     * <p/>
+     * Signable signature structure:
+     * <p/>
+     * chainId + serialized transaction + 32 bytes of 0
+     *
+     * @param serializedTransaction - the serialized transaction to be converted to signable transaction
+     * @param chainId - the chain id will be used inside the signature transaction structure.
+     * @return - Signable transaction
+     * @throws EOSFormatterError if inputs are invalid
+     */
+    public static String prepareSerializedTransactionForSigning(@NotNull String serializedTransaction,
             @NotNull String chainId) throws EOSFormatterError {
-        String signable = serializedTransaction;
+        if (serializedTransaction.isEmpty() || chainId.isEmpty()) {
+            throw new EOSFormatterError(ErrorConstants.EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING);
+        }
 
-        return signable;
+        String signableTransaction = chainId + serializedTransaction + Hex.toHexString(new byte[32]);
+        if (signableTransaction.length() <= MINIMUM_SIGNABLE_TRANSACTION_LENGTH) {
+            throw new EOSFormatterError(String.format(ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE, MINIMUM_SIGNABLE_TRANSACTION_LENGTH));
+        }
+
+        return signableTransaction;
     }
 
     /**

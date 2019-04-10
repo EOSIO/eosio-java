@@ -21,6 +21,11 @@ public class ErrorConstants {
     public static final String PUBLIC_KEY_DECOMPRESSION_ERROR = "Problem decompressing public key!";
     public static final String PUBLIC_KEY_COMPRESSION_ERROR = "Problem compressing public key!";
     public static final String PUBLIC_KEY_IS_EMPTY = "Input key to decode can't be empty!";
+    public static final String EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING = "Chain id and serialized transaction can't be empty!";
+    public static final String EMPTY_INPUT_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Signable transaction can't be empty!";
+    public static final String INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Length of the signable transaction must be larger than %s";
+    public static final String INVALID_INPUT_SIGNABLE_TRANS_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Signable signature has to have this structure: chainId (64 characters) + serialized transaction + 32 bytes of 0!";
+    public static final String EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE_ERROR = "Something went wrong when trying to extract serialized transaction from signable transaction.";
 
     // ABIProviderImpl Errors
     public static final String NO_RESPONSE_RETRIEVING_ABI = "No response retrieving ABI.";
