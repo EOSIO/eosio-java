@@ -52,6 +52,7 @@ import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
+import one.block.eosiojava.utilities.Constants;
 import one.block.eosiojava.utilities.Utils;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
@@ -153,7 +154,7 @@ public class NegativeTransactionProcessorTest {
 
         try {
             when(this.mockedRpcProvider.getInfo())
-                    .thenReturn(Utils.getDefaultGson().fromJson(mockedGetInfoResponseWithWeirdDateFormat, GetInfoResponse.class));
+                    .thenReturn(Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponseWithWeirdDateFormat, GetInfoResponse.class));
         } catch (GetInfoRpcError getInfoRpcError) {
             getInfoRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking getInfo");
@@ -280,7 +281,7 @@ public class NegativeTransactionProcessorTest {
         // Mock RpcProvider
         this.mockGetInfoPositively();
         this.mockGetBlockPositively();
-        this.mockRequiredKeys(Utils.getDefaultGson().fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
+        this.mockRequiredKeys(Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
 
         // Mock AbiProvider
         this.mockGetAbi(EOSIOTOKENABIJSON);
@@ -297,7 +298,7 @@ public class NegativeTransactionProcessorTest {
                 + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
                 + "}";
 
-        this.mockSignTransaction(Utils.getDefaultGson()
+        this.mockSignTransaction(Utils.getGson(Constants.BACKEND_DATE_PATTERN)
                 .fromJson(mockedEmptyTransactionSignatureResponseJSON, EosioTransactionSignatureResponse.class));
 
         TransactionProcessor processor = session.getTransactionProcessor();
@@ -323,7 +324,7 @@ public class NegativeTransactionProcessorTest {
         // Mock RpcProvider
         this.mockGetInfoPositively();
         this.mockGetBlockPositively();
-        this.mockRequiredKeys(Utils.getDefaultGson().fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
+        this.mockRequiredKeys(Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
 
         // Mock AbiProvider
         this.mockGetAbi(EOSIOTOKENABIJSON);
@@ -340,7 +341,7 @@ public class NegativeTransactionProcessorTest {
                 + "\"signatures\": []"
                 + "}";
 
-        this.mockSignTransaction(Utils.getDefaultGson()
+        this.mockSignTransaction(Utils.getGson(Constants.BACKEND_DATE_PATTERN)
                 .fromJson(mockedEmptySignaturesSignatureResponseJSON, EosioTransactionSignatureResponse.class));
 
         TransactionProcessor processor = session.getTransactionProcessor();
@@ -366,7 +367,7 @@ public class NegativeTransactionProcessorTest {
         // Mock RpcProvider
         this.mockGetInfoPositively();
         this.mockGetBlockPositively();
-        this.mockRequiredKeys(Utils.getDefaultGson().fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
+        this.mockRequiredKeys(Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
 
         // Mock AbiProvider
         this.mockGetAbi(EOSIOTOKENABIJSON);
@@ -385,7 +386,7 @@ public class NegativeTransactionProcessorTest {
 
         // Mock signature provider
         this.mockGetAvailableKey(Arrays.asList("Key1", "Key2"));
-        this.mockSignTransaction(Utils.getDefaultGson()
+        this.mockSignTransaction(Utils.getGson(Constants.BACKEND_DATE_PATTERN)
                 .fromJson(mockedEosioTransactionSignatureResponseModifiedTransactionJSON, EosioTransactionSignatureResponse.class));
 
         TransactionProcessor processor = session.getTransactionProcessor();
@@ -414,7 +415,7 @@ public class NegativeTransactionProcessorTest {
         // Mock RpcProvider
         this.mockGetInfoPositively();
         this.mockGetBlockPositively();
-        this.mockRequiredKeys(Utils.getDefaultGson().fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
+        this.mockRequiredKeys(Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
 
         // Mock PushTransaction RPC to throw error
         try {
@@ -433,7 +434,7 @@ public class NegativeTransactionProcessorTest {
 
         // Mock signature provider
         this.mockGetAvailableKey(Arrays.asList("Key1", "Key2"));
-        this.mockSignTransaction(Utils.getDefaultGson()
+        this.mockSignTransaction(Utils.getGson(Constants.BACKEND_DATE_PATTERN)
                 .fromJson(mockedEosioTransactionSignatureResponseJSON, EosioTransactionSignatureResponse.class));
 
         TransactionProcessor processor = session.getTransactionProcessor();
@@ -530,7 +531,7 @@ public class NegativeTransactionProcessorTest {
     private void mockGetBlockPositively() {
         try {
             when(this.mockedRpcProvider.getBlock(any(GetBlockRequest.class)))
-                    .thenReturn(Utils.getDefaultGson().fromJson(mockedGetBlockResponse, GetBlockResponse.class));
+                    .thenReturn(Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class));
         } catch (GetBlockRpcError getBlockRpcError) {
             getBlockRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking getBlock");
@@ -540,7 +541,7 @@ public class NegativeTransactionProcessorTest {
     private void mockGetInfoPositively() {
         try {
             when(this.mockedRpcProvider.getInfo())
-                    .thenReturn(Utils.getDefaultGson().fromJson(mockedGetInfoResponse, GetInfoResponse.class));
+                    .thenReturn(Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class));
         } catch (GetInfoRpcError getInfoRpcError) {
             getInfoRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking getInfo");

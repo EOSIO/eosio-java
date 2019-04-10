@@ -32,11 +32,11 @@ public class Utils {
     }
 
     /**
-     * Getting a default GSON
+     * Getting a GSON object
      */
-    public static Gson getDefaultGson() {
+    public static Gson getGson(String datePattern) {
         return new GsonBuilder()
-                .setDateFormat(Constants.BACKEND_DATE_PATTERN)
+                .setDateFormat(datePattern)
                 .disableHtmlEscaping()
                 .create();
     }
