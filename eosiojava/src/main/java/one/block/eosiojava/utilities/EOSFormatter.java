@@ -9,7 +9,7 @@ import java.io.CharArrayReader;
 import java.io.Reader;
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Base64;
+import javax.xml.bind.DatatypeConverter;
 import one.block.eosiojava.enums.AlgorithmEmployed;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.utilities.Base58ManipulationError;
@@ -899,8 +899,7 @@ public class EOSFormatter {
             pemForm.append("\n");
 
             //Base64 Encode DER Encoded Byte Array And Add to PEM Object
-            Base64.Encoder encoder = Base64.getEncoder();
-            String base64EncodedByteArray = encoder.encodeToString(derEncodedByteArray);
+            String base64EncodedByteArray = DatatypeConverter.printBase64Binary(derEncodedByteArray);
             pemForm.append(base64EncodedByteArray);
             pemForm.append("\n");
 

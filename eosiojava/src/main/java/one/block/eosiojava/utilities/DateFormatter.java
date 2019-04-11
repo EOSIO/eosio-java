@@ -2,8 +2,6 @@ package one.block.eosiojava.utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.DateTimeException;
-import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -31,9 +29,9 @@ public class DateFormatter {
                 sdf.setTimeZone(TimeZone.getTimeZone(Constants.BACKEND_DATE_TIME_ZONE));
                 Date parsedDate = sdf.parse(backendTime);
                 return parsedDate.getTime();
-            } catch (DateTimeParseException ex) {
+            } catch (ParseException ex) {
                 // Keep going even exception is thrown for trying different date pattern
-            } catch (DateTimeException ex) {
+            } catch (IllegalArgumentException ex) {
                 // Keep going even exception is thrown for trying different date pattern
             }
         }
