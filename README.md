@@ -1,4 +1,4 @@
-![Swift Logo](img/java-logo.png)
+![Java Logo](img/java-logo.png)
 # EOSIO SDK for Java ![EOSIO Alpha](https://img.shields.io/badge/EOSIO-Alpha-blue.svg)
 [![Software License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider/blob/master/LICENSE)
 ![Lagnuage Java](https://img.shields.io/badge/Language-Java-yellow.svg)
@@ -38,6 +38,7 @@ To use EOSIO SDK for Java in your app, add the following modules to your build.g
 ```groovy
 implementation 'one.block:eosio-java:0.1-alpha'
 implementation 'one.block:eosio-java-android-serialization-provider:0.1-alpha'
+implementation 'one.block:eosio-java-android-rpc-provider:0.1-alpha'
 implementation 'one.block:eosio-java-softkey-signature-provider:0.1-alpha'
 ```
 
@@ -64,6 +65,10 @@ ISerializationProvider serializationProvider = new AbiEos();
 IABIProvider abiProvider = new ABIProviderImpl(rpcProvider, serializationProvider);
 ISignatureProvider signatureProvider = new SoftKeySignatureProviderImpl();
 
+signatureProvider.importKey(privateKeyK1EOS);
+// or
+signatureProvider.importKey(privateKeyR1EOS);
+            
 TransactionSession session = new TransactionSession(serializationProvider,
         rpcProvider,
         abiProvider,
@@ -101,7 +106,7 @@ By simply switching out the signature provider on a transaction, signature reque
 EOSIO SDK for Java _does not include_ a signature provider implementation; one must be installed separately.
 
 * [ISignatureProvider](eosiojava/src/main/java/one/block/eosiojava/interfaces/ISignatureProvider.java)
-* [Softkey Signature Provider](https://github.com/EOSIO/eosio-java-softkey-signature-provider) - Example signature provider for signing transactions using K1 keys in memory.*
+* [Softkey Signature Provider](https://github.com/EOSIO/eosio-java-softkey-signature-provider) - Example signature provider for signing transactions using R1 and K1 keys in memory.*
 
 *_Softkey Signature Provider stores keys in memory and is therefore not secure. It should only be used for development purposes. In production, we strongly recommend using a signature provider that interfaces with a secure vault, authenticator or wallet._
 
