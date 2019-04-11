@@ -6,7 +6,7 @@
 
 EOSIO SDK for Java is an API for integrating with EOSIO-based blockchains using the [EOSIO RPC API](https://developers.eos.io/eosio-nodeos/reference).
 
-To date, EOSIO SDK for Java has only been tested on Android. The goal, however, is for the core library to run anywhere Java runs, adding other targets (server, desktop) as the library matures.
+To date, EOSIO SDK for Java has only been tested on Android. The goal, however, is for the core library to run anywhere Java runs, adding other targets (server, desktop, embedded) as the library matures.
 
 *All product and company names are trademarks™ or registered® trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them.*
 
@@ -25,11 +25,11 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 
 * Java JDK 1.8+ (1.7 source compatibility is targeted)
 * Gradle 4.10.1+
-* For Android, Android 6(Marshmallow)+
+* For Android, Android 6 (Marshmallow)+
 
-***Note:** [ABIEOS Serialization Provider](https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider) requires Android 6+ at the moment.
+***Note:** [ABIEOS Serialization Provider](https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider) requires Android 6 (Marshmallow)+ at the moment.
 
-## Installation
+### Instructions
 
 To use EOSIO SDK for Java in your app, add the following modules to your build.gradle:
 
@@ -112,7 +112,7 @@ The RPC Provider is responsible for all [RPC calls to nodeos](https://developers
 EOSIO SDK for Java _does not include_ an RPC provider implementation; one must be installed separately.
 
 * [IRPCProvider](eosiojava/src/main/java/one/block/eosiojava/interfaces/IRPCProvider.java)
-* [Default RPC Provder](https://github.com/EOSIO/eosio-java-android-rpc-provider) - Currently supports Android 6+
+* [Default RPC Provder](https://github.com/EOSIO/eosio-java-android-rpc-provider) - Currently supports Android 6 (Marshmallow)+
 * [Nodeos RPC Reference Documentation](https://developers.eos.io/eosio-nodeos/reference)
 
 *_EOSIO Java Android RPC Provider includes a [default RPC Provider implementation](https://github.com/EOSIO/eosio-java-android-rpc-provider) for communicating with EOSIO nodes using the [EOSIO RPC API](https://developers.eos.io/eosio-nodeos/reference). Alternate RPC providers can be used assuming they conform to the minimal [RPC Provider Interface](eosiojava/src/main/java/one/block/eosiojava/interfaces/IRPCProvider.java). The core EOSIO SDK for Java library depends only on the five RPC endpoints set forth in that Interface. Other endpoints, however, are planned to be exposed in the [default RPC provider](https://github.com/EOSIO/eosio-java-android-rpc-provider)._
