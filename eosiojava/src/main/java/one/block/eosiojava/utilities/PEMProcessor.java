@@ -4,11 +4,6 @@
 
 package one.block.eosiojava.utilities;
 
-import java.io.CharArrayReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.math.BigInteger;
-
 import one.block.eosiojava.enums.AlgorithmEmployed;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.utilities.Base58ManipulationError;
@@ -17,7 +12,6 @@ import one.block.eosiojava.error.utilities.PEMProcessorError;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DLSequence;
-import org.bouncycastle.asn1.sec.SECNamedCurves;
 import org.bouncycastle.asn1.sec.SECObjectIdentifiers;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.asn1.x9.X9ECParameters;
@@ -34,12 +28,19 @@ import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.CharArrayReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.math.BigInteger;
+
 /**
  * This is a wrapper class for PEMObjects that throws a {@link PEMProcessorError} if an invalid
  * PEMObject is passed into the constructor.  Once initialized the PEMProcessor can be used to
  * return the type, DER format, or alogorithm used to create the PEMObject.
  */
 public class PEMProcessor {
+
+    private static final String PRIVATE_KEY_TYPE = "EC PRIVATE KEY";
 
     private static final int PRIVATE_KEY_START_INDEX = 2;
 
@@ -53,16 +54,6 @@ public class PEMProcessor {
      * Const name of secp256k1 curves
      */
     private static final String SECP256_K1 = "secp256k1";
-
-    /**
-     * EC domain parameters of R1 key
-     */
-    private static final ECDomainParameters ecParamsR1;
-
-    /**
-     * EC domain parameters of K1 key
-     */
-    private static final ECDomainParameters ecParamsK1;
 
     /**
      * EC parameters holder of R1 key type
@@ -80,30 +71,12 @@ public class PEMProcessor {
     private static final ECDomainParameters CURVE_R1;
 
     /**
-     * Half curve value of R1 key type (to calculate low S)
-     */
-    private static final BigInteger HALF_CURVE_ORDER_R1;
-
-    /**
      * EC holder of K1 key type
      */
     private static final ECDomainParameters CURVE_K1;
 
-    /**
-     * Half curve value of K1 key type (to calculate low S)
-     */
-    private static final BigInteger HALF_CURVE_ORDER_K1;
-
 
     static {
-        X9ECParameters paramsR1 = SECNamedCurves.getByName(SECP256_R1);
-        ecParamsR1 = new ECDomainParameters(paramsR1.getCurve(), paramsR1.getG(), paramsR1.getN(),
-                paramsR1.getH());
-
-        X9ECParameters paramsK1 = SECNamedCurves.getByName(SECP256_K1);
-        ecParamsK1 = new ECDomainParameters(paramsK1.getCurve(), paramsK1.getG(), paramsK1.getN(),
-                paramsK1.getH());
-
         // secp256r1
         FixedPointUtil.precompute(CURVE_PARAMS_R1.getG());
         CURVE_R1 = new ECDomainParameters(
@@ -111,7 +84,6 @@ public class PEMProcessor {
                 CURVE_PARAMS_R1.getG(),
                 CURVE_PARAMS_R1.getN(),
                 CURVE_PARAMS_R1.getH());
-        HALF_CURVE_ORDER_R1 = CURVE_PARAMS_R1.getN().shiftRight(1);
 
         // secp256k1
         CURVE_K1 = new ECDomainParameters(
@@ -119,7 +91,6 @@ public class PEMProcessor {
                 CURVE_PARAMS_K1.getG(),
                 CURVE_PARAMS_K1.getN(),
                 CURVE_PARAMS_K1.getH());
-        HALF_CURVE_ORDER_K1 = CURVE_PARAMS_K1.getN().shiftRight(1);
     }
     //endregion
 
@@ -235,11 +206,15 @@ public class PEMProcessor {
     /**
      * Extract EOS public key
      *
-     * @param isLegacy whether return WIF legacy format
+     * @param isLegacy - Set to true if the WIF legacy format of the key is desired.
      * @return EOS format public key of the current private key
      * @throws PEMProcessorError
      */
     public String extractEOSPublicKeyFromPrivateKey(boolean isLegacy) throws PEMProcessorError {
+        if (!this.getType().equals(PRIVATE_KEY_TYPE)) {
+            throw new PEMProcessorError(ErrorConstants.PEM_PROCESSOR_EXTRACT_PUBKEY_FROM_PRIVKEY_NOT_PRIVKEY_ERROR);
+        }
+
         AlgorithmEmployed keyCurve = this.getAlgorithm();
         BigInteger privateKeyBI = new BigInteger(this.getKeyData());
         BigInteger n;
