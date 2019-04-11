@@ -27,7 +27,7 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 * Gradle 4.10.1+
 * For Android, Android 6 (Marshmallow)+
 
-***Note:** [ABIEOS Serialization Provider](https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider) requires Android 6 (Marshmallow)+ at the moment.
+***Note:** Android 6 (Marshmallow) was selected as the minimum target level due to Keystore security concerns in older versions of Android.
 
 ### Instructions
 
@@ -61,7 +61,7 @@ Transactions are instantiated via a `TransactionSession()` which must be configu
 
 ```java
 IRPCProvider rpcProvider = new EosioJavaRpcProviderImpl("https://baseurl.com/v1/");
-ISerializationProvider serializationProvider = new AbiEos();
+ISerializationProvider serializationProvider = new AbiEosSerializationProviderImpl();
 IABIProvider abiProvider = new ABIProviderImpl(rpcProvider, serializationProvider);
 ISignatureProvider signatureProvider = new SoftKeySignatureProviderImpl();
 
@@ -101,7 +101,7 @@ The core EOSIO SDK for Java library uses a provider-interface-driven architectur
 
 The Signature Provider abstraction is arguably the most useful of all of the providers. It is responsible for _a)_ finding out what keys are available for signing and _b)_ requesting and obtaining transaction signatures with a subset of the available keys.
 
-By simply switching out the signature provider on a transaction, signature requests can be routed any number of ways. Need a signature from keys in the platform's Keystore or Secure Enclave? Configure the `TransactionSession` with a conforming signature provider that exposes that functionality. Need signatures from a wallet on the user's device? A signature provider can do that too!
+By simply switching out the signature provider on a transaction, signature requests can be routed any number of ways. Need a signature from keys in the platform's Keystore or hardware backed security module such as Titan M? Configure the `TransactionSession` with a conforming signature provider that exposes that functionality. Need signatures from a wallet on the user's device? A signature provider can do that too!
 
 EOSIO SDK for Java _does not include_ a signature provider implementation; one must be installed separately.
 
@@ -120,7 +120,7 @@ EOSIO SDK for Java _does not include_ an RPC provider implementation; one must b
 * [Default RPC Provder](https://github.com/EOSIO/eosio-java-android-rpc-provider) - Currently supports Android 6 (Marshmallow)+
 * [Nodeos RPC Reference Documentation](https://developers.eos.io/eosio-nodeos/reference)
 
-*_EOSIO Java Android RPC Provider includes a [default RPC Provider implementation](https://github.com/EOSIO/eosio-java-android-rpc-provider) for communicating with EOSIO nodes using the [EOSIO RPC API](https://developers.eos.io/eosio-nodeos/reference). Alternate RPC providers can be used assuming they conform to the minimal [RPC Provider Interface](eosiojava/src/main/java/one/block/eosiojava/interfaces/IRPCProvider.java). The core EOSIO SDK for Java library depends only on the five RPC endpoints set forth in that Interface. Other endpoints, however, are planned to be exposed in the [default RPC provider](https://github.com/EOSIO/eosio-java-android-rpc-provider)._
+*_Alternate RPC providers can be used assuming they conform to the minimal [RPC Provider Interface](eosiojava/src/main/java/one/block/eosiojava/interfaces/IRPCProvider.java). The core EOSIO SDK for Java library depends only on the five RPC endpoints set forth in that Interface. Other endpoints, however, are planned to be exposed in the [default RPC provider](https://github.com/EOSIO/eosio-java-android-rpc-provider)._
 
 ### Serialization Provider Protocol
 
