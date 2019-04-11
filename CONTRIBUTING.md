@@ -91,7 +91,7 @@ Essentially, [check out the latest develop branch](#working-on-eosio-sdk-for-jav
 
 ### Code Style and Linting
 
-EOSIO SDK for Java leverages [sonarlint](https://www.sonarlint.org/) for linting and the [Google Java Style Guide](https://github.com/google/styleguide) with tab size and indent set to 4, and continuation indent set to 8 for code format flagging. Once sonarlint is installed, linting warnings and errors will be flagged inline with squiggles.  Automatic code formatting can be accomplished by downloading and importing the Google Java Style settings into your IDE.  
+EOSIO SDK for Java leverages [SonarLint](https://www.sonarlint.org/) for linting and the [Google Java Style Guide](https://github.com/google/styleguide) with tab size and indent set to 4, and continuation indent set to 8 for code format flagging. Once SonarLint is installed, linting warnings and errors will be flagged inline with squiggles.  Automatic code formatting can be accomplished by downloading and importing the Google Java Style settings into your IDE.  
 
 Please be sure to resolve any linting issues introduced by your contributions prior to requesting a review on your PR. 
 

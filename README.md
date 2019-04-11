@@ -41,14 +41,51 @@ implementation 'one.block:eosio-java-android-serialization-provider:0.1-alpha'
 implementation 'one.block:eosio-java-softkey-signature-provider:0.1-alpha'
 ```
 
+If you are using EOSIO SDK for Java, or any library that depends on it, in an Android application you must also add the following to your application's build.gradle file in the `android` section:
+
+```groovy
+// Needed to get bitcoin-j to produce a valid apk for android.
+packagingOptions {
+    exclude 'lib/x86_64/darwin/libscrypt.dylib'
+    exclude 'lib/x86_64/freebsd/libscrypt.so'
+    exclude 'lib/x86_64/linux/libscrypt.so'
+}
+```
+
 Then refresh your gradle project.  Then you're all set for the [Basic Usage](#basic-usage) example!
 
 ## Basic Usage
 
-Transactions are instantiated via a `TransactionSession()` which must be configured with a number of providers and a `TransactionProcessor()`, which manipulates and performs actions on a Transaction, prior to use. (See [Provider Interface Architecture](#provider-interface-architecture) below for more information about providers.)
+Transactions are instantiated via a `TransactionSession()` which must be configured with a number of providers and a `TransactionProcessor()`, which manipulates and performs actions on a Transaction, prior to use. The code below shows a very barebones flow.  Error handling has been omitted for clarity but should be handled in normal usage.  (See [Provider Interface Architecture](#provider-interface-architecture) below for more information about providers.)
 
 ```java
-// TODO Example goes here
+IRPCProvider rpcProvider = new EosioJavaRpcProviderImpl("https://baseurl.com/v1/");
+ISerializationProvider serializationProvider = new AbiEos();
+IABIProvider abiProvider = new ABIProviderImpl(rpcProvider, serializationProvider);
+ISignatureProvider signatureProvider = new SoftKeySignatureProviderImpl();
+
+TransactionSession session = new TransactionSession(serializationProvider,
+        rpcProvider,
+        abiProvider,
+        signatureProvider);
+        
+TransactionProcessor processor = session.getTransactionProcessor();
+
+String jsonData = "{\n" +
+        "\"from\": \"person1\",\n" +
+        "\"to\": \"person2\",\n" +
+        "\"quantity\": \"10.0000 EOS\",\n" +
+        "\"memo\" : \"Something\"\n" +
+        "}";
+
+List<Authorization> authorizations = new ArrayList<>();
+authorizations.add(new Authorization("myaccount", "active"));
+List<Action> actions = new ArrayList<>();
+actions.add(new Action("eosio.token", "transfer", authorizations, jsonData));
+
+processor.prepare(actions);
+
+PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
 ```
 
 ## Provider Interface Architecture
