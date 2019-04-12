@@ -9,7 +9,6 @@ import java.io.CharArrayReader;
 import java.io.Reader;
 import java.math.BigInteger;
 import java.util.Arrays;
-import javax.xml.bind.DatatypeConverter;
 import one.block.eosiojava.enums.AlgorithmEmployed;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.utilities.Base58ManipulationError;
@@ -33,6 +32,7 @@ import org.bouncycastle.math.ec.ECAlgorithms;
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.math.ec.FixedPointUtil;
+import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.Hex;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -899,7 +899,7 @@ public class EOSFormatter {
             pemForm.append("\n");
 
             //Base64 Encode DER Encoded Byte Array And Add to PEM Object
-            String base64EncodedByteArray = DatatypeConverter.printBase64Binary(derEncodedByteArray);
+            String base64EncodedByteArray = new String(Base64.encode(derEncodedByteArray));
             pemForm.append(base64EncodedByteArray);
             pemForm.append("\n");
 
