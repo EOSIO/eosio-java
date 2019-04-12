@@ -458,6 +458,22 @@ public class EOSFormatter {
             s = checkAndHandleLowS(s, algorithmEmployed);
 
             /*
+            Get recovery ID.  This is the index of the public key (0-3) that represents the
+            expected public key used to sign the transaction.
+             */
+            int recoverId = getRecoveryId(r, s, Sha256Hash.of(signableTransaction), keyData,
+                    algorithmEmployed);
+
+            if (recoverId < 0) {
+                throw new IllegalStateException(
+                        ErrorConstants.COULD_NOT_RECOVER_PUBLIC_KEY_FROM_SIG);
+            }
+
+            //Add RecoveryID + 27 + 4 to create the header byte
+            recoverId += VALUE_TO_ADD_TO_SIGNATURE_HEADER;
+            byte headerByte = ((Integer) recoverId).byteValue();
+
+            /*
             Chop of the sign bit of R and S if necessary because the signature should be exactly 65 bytes after
             recID is added.
             */
@@ -472,21 +488,6 @@ public class EOSFormatter {
                 sFinalArray = Arrays.copyOfRange(sFinalArray, 1, sFinalArray.length);
             }
 
-            /*
-            Get recovery ID.  This is the index of the public key (0-3) that represents the
-            expected public key used to sign the transaction.
-             */
-            int recoverId = getRecoveryId(new BigInteger(rFinalArray), new BigInteger(sFinalArray), Sha256Hash.of(signableTransaction), keyData,
-                    algorithmEmployed);
-
-            if (recoverId < 0) {
-                throw new IllegalStateException(
-                        ErrorConstants.COULD_NOT_RECOVER_PUBLIC_KEY_FROM_SIG);
-            }
-
-            //Add RecoveryID + 27 + 4 to create the header byte
-            recoverId += VALUE_TO_ADD_TO_SIGNATURE_HEADER;
-            byte headerByte = ((Integer) recoverId).byteValue();
             byte[] decodedSignature = Bytes
                     .concat(new byte[]{headerByte}, rFinalArray, sFinalArray);
             if (algorithmEmployed.equals(AlgorithmEmployed.SECP256K1) &&
