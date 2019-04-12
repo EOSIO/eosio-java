@@ -28,6 +28,12 @@ public class EosioTransactionSignatureResponse {
     @Nullable
     private SignatureProviderError error;
 
+    public EosioTransactionSignatureResponse(@NotNull String serializeTransaction, @NotNull List<String> signatures, @Nullable SignatureProviderError error) {
+        this.serializeTransaction = serializeTransaction;
+        this.signatures = signatures;
+        this.error = error;
+    }
+
     /**
      * Gets serialize transaction.
      *

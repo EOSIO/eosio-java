@@ -3,7 +3,6 @@
 package one.block.eosiojava.error;
 
 public class ErrorConstants {
-
     private ErrorConstants(){
 
     }
@@ -33,6 +32,7 @@ public class ErrorConstants {
     public static final String SIGNATURE_FORMATTING_ERROR = "An error occured formating the signature!";
     public static final String COULD_NOT_RECOVER_PUBLIC_KEY_FROM_SIG = "Could not recover public key from Signature.";
     public static final String NON_CANONICAL_SIGNATURE = "Input signature is not canonical.";
+    public static final String PEM_PROCESSOR_EXTRACT_PUBKEY_FROM_PRIVKEY_NOT_PRIVKEY_ERROR = "This is not a private key!";
 
     // ABIProviderImpl Errors
     public static final String NO_RESPONSE_RETRIEVING_ABI = "No response retrieving ABI.";

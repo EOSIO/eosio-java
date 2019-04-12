@@ -21,7 +21,7 @@ public interface ISignatureProvider {
      */
     @NotNull
     EosioTransactionSignatureResponse signTransaction(
-            EosioTransactionSignatureRequest eosioTransactionSignatureRequest)
+            @NotNull EosioTransactionSignatureRequest eosioTransactionSignatureRequest)
             throws SignTransactionError;
 
     /**

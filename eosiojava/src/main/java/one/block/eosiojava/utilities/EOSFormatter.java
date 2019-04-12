@@ -11,10 +11,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import one.block.eosiojava.enums.AlgorithmEmployed;
 import one.block.eosiojava.error.ErrorConstants;
-import one.block.eosiojava.error.utilities.Base58ManipulationError;
-import one.block.eosiojava.error.utilities.DerToPemConversionError;
-import one.block.eosiojava.error.utilities.EOSFormatterError;
-import one.block.eosiojava.error.utilities.LowSVerificationError;
+import one.block.eosiojava.error.utilities.*;
 import org.bitcoinj.core.Base58;
 import org.bitcoinj.core.Sha256Hash;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -461,25 +458,10 @@ public class EOSFormatter {
             s = checkAndHandleLowS(s, algorithmEmployed);
 
             /*
-            Chop of the sign bit of R and S if necessary because the signature should be exactly 65 bytes after
-            recID is added.
-            */
-            byte[] rFinalArray = r.toByteArray();
-            byte[] sFinalArray = s.toByteArray();
-
-            if (rFinalArray.length > EXPECTED_R_OR_S_LENGTH) {
-                rFinalArray = Arrays.copyOfRange(rFinalArray, 1, rFinalArray.length);
-            }
-
-            if (sFinalArray.length > EXPECTED_R_OR_S_LENGTH) {
-                sFinalArray = Arrays.copyOfRange(sFinalArray, 1, sFinalArray.length);
-            }
-
-            /*
             Get recovery ID.  This is the index of the public key (0-3) that represents the
             expected public key used to sign the transaction.
              */
-            int recoverId = getRecoveryId(new BigInteger(rFinalArray), new BigInteger(sFinalArray), Sha256Hash.of(signableTransaction), keyData,
+            int recoverId = getRecoveryId(r, s, Sha256Hash.of(signableTransaction), keyData,
                     algorithmEmployed);
 
             if (recoverId < 0) {
@@ -490,8 +472,11 @@ public class EOSFormatter {
             //Add RecoveryID + 27 + 4 to create the header byte
             recoverId += VALUE_TO_ADD_TO_SIGNATURE_HEADER;
             byte headerByte = ((Integer) recoverId).byteValue();
+
+
+
             byte[] decodedSignature = Bytes
-                    .concat(new byte[]{headerByte}, rFinalArray, sFinalArray);
+                    .concat(new byte[]{headerByte}, org.bitcoinj.core.Utils.bigIntegerToBytes(r,EXPECTED_R_OR_S_LENGTH), org.bitcoinj.core.Utils.bigIntegerToBytes(s,EXPECTED_R_OR_S_LENGTH));
             if (algorithmEmployed.equals(AlgorithmEmployed.SECP256K1) &&
                     !isCanonical(decodedSignature)) {
                 throw new IllegalArgumentException(ErrorConstants.NON_CANONICAL_SIGNATURE);
@@ -561,25 +546,10 @@ public class EOSFormatter {
             s = checkAndHandleLowS(s, algorithmEmployed);
 
             /*
-            Chop of the sign bit of R and S if necessary because the signature should be exactly 65 bytes after
-            recID is added.
-            */
-            byte[] rFinalArray = r.toByteArray();
-            byte[] sFinalArray = s.toByteArray();
-
-            if (rFinalArray.length > EXPECTED_R_OR_S_LENGTH) {
-                rFinalArray = Arrays.copyOfRange(rFinalArray, 1, rFinalArray.length);
-            }
-
-            if (sFinalArray.length > EXPECTED_R_OR_S_LENGTH) {
-                sFinalArray = Arrays.copyOfRange(sFinalArray, 1, sFinalArray.length);
-            }
-
-            /*
             Get recovery ID.  This is the index of the public key (0-3) that represents the
             expected public key used to sign the transaction.
              */
-            int recoverId = getRecoveryId(new BigInteger(rFinalArray), new BigInteger(sFinalArray), Sha256Hash.of(signableTransaction), keyData,
+            int recoverId = getRecoveryId(r, s, Sha256Hash.of(signableTransaction), keyData,
                     algorithmEmployed);
 
             if (recoverId < 0) {
@@ -590,11 +560,12 @@ public class EOSFormatter {
             //Add RecoveryID + 27 + 4 to create the header byte
             recoverId += VALUE_TO_ADD_TO_SIGNATURE_HEADER;
             byte headerByte = ((Integer) recoverId).byteValue();
+
             byte[] decodedSignature = Bytes
-                    .concat(new byte[]{headerByte}, rFinalArray, sFinalArray);
+                    .concat(new byte[]{headerByte}, org.bitcoinj.core.Utils.bigIntegerToBytes(r,EXPECTED_R_OR_S_LENGTH), org.bitcoinj.core.Utils.bigIntegerToBytes(s,EXPECTED_R_OR_S_LENGTH));
             if (algorithmEmployed.equals(AlgorithmEmployed.SECP256K1) &&
                     !isCanonical(decodedSignature)) {
-                throw new IllegalArgumentException(ErrorConstants.NON_CANONICAL_SIGNATURE);
+                throw new EosFormatterSignatureIsNotCanonicalError(ErrorConstants.NON_CANONICAL_SIGNATURE);
             }
 
             //Add checksum to signature
@@ -1157,7 +1128,6 @@ public class EOSFormatter {
 
         return decodedKey;
     }
-
 
     /**
      * Validate checksum by RipeMD160 digestion
