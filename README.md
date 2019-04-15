@@ -1,7 +1,7 @@
 ![Java Logo](img/java-logo.png)
 # EOSIO SDK for Java ![EOSIO Alpha](https://img.shields.io/badge/EOSIO-Alpha-blue.svg)
-[![Software License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider/blob/master/LICENSE)
-![Language Java](https://img.shields.io/badge/Language-Java-yellow.svg)
+[![Software License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](./LICENSE)
+![Lagnuage Java](https://img.shields.io/badge/Language-Java-yellow.svg)
 ![](https://img.shields.io/badge/Deployment%20Target-JVM-blue.svg)
 
 EOSIO SDK for Java is an API for integrating with EOSIO-based blockchains using the [EOSIO RPC API](https://developers.eos.io/eosio-nodeos/reference).
