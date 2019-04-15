@@ -36,12 +36,12 @@ Guidelines for bug reports:
    reported.
 
 1. **Check if the issue has been fixed** &mdash; look for [closed issues in the
-   current milestone](https://github.com/EOSIO/eosio-java/issues?q=is%3Aissue+is%3Aclosed) or try to reproduce it
+   current milestone](/../../issues?q=is%3Aissue+is%3Aclosed) or try to reproduce it
    using the latest `develop` branch.
 
 A good bug report shouldn't leave others needing to chase you up for more information. Be sure to include the details of your environment and relevant tests that demonstrate the failure.
 
-[Report a bug](https://github.com/EOSIO/eosio-java/issues/new?title=Bug%3A)
+[Report a bug](/../../issues/new?title=Bug%3A)
 
 ### Feature Requests
 
@@ -61,7 +61,7 @@ Change requests cover both architectural and functional changes to how EOSIO SDK
 
 ## Working on EOSIO SDK for Java
 
-Code contributions are welcome and encouraged! If you are looking for a good place to start, check out the [good first issue](https://github.com/EOSIO/eosio-java/labels/good%20first%20issue) label in GitHub issues.
+Code contributions are welcome and encouraged! If you are looking for a good place to start, check out the [good first issue](/../../labels/good%20first%20issue) label in GitHub issues.
 
 Also, please follow these guidelines when submitting code:
 
@@ -69,8 +69,8 @@ Also, please follow these guidelines when submitting code:
 
 To get it out of the way:
 
-- **[develop](https://github.com/EOSIO/eosio-java/tree/develop)** is the development branch. All work on the next release happens here so you should generally branch off `develop`. Do **NOT** use this branch for a production site.
-- **[master](https://github.com/EOSIO/eosio-java)** contains the latest release of EOSIO SDK for Java}. This branch may be used in production. Do **NOT** use this branch to work on EOSIO SDK for Java's source.
+- **[develop](/../../tree/develop)** is the development branch. All work on the next release happens here so you should generally branch off `develop`. Do **NOT** use this branch for a production site.
+- **[master](/../../tree/master)** contains the latest release of EOSIO SDK for Java}. This branch may be used in production. Do **NOT** use this branch to work on EOSIO SDK for Java's source.
 
 ### Developing With Gradle Locally
 
