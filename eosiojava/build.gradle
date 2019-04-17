@@ -7,7 +7,6 @@ plugins {
 }
 
 group 'one.block'
-version ''
 
 repositories {
     jcenter()
@@ -25,13 +24,6 @@ dependencies {
     testCompile 'org.mockito:mockito-core:2.26.0'
     implementation 'org.bitcoinj:bitcoinj-core:0.15.1'
     implementation 'org.slf4j:slf4j-jdk14:1.7.25'
-}
-
-jar {
-    doFirst {
-        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    }
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }
 
 def libraryGroupId = 'one.block'
@@ -52,13 +44,13 @@ publishing {
 }
 
 artifactory {
-    contextUrl = 'http://localhost:8081/artifactory'
+    contextUrl = artifactory_contextURL
     publish {
         repository {
             repoKey = 'libs-release-local'
 
-            username = 'admin'
-            password = 'password123'
+            username = artifactory_username
+            password = artifactory_password
         }
         defaults {
             publications('jar')
