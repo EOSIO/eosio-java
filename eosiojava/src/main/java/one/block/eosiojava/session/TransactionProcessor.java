@@ -105,8 +105,10 @@ public class TransactionProcessor {
 
     /**
      * Transaction instance which keep all data relating to EOS Transaction
-     * <p/>
+     * <p>
      * This object hold the non-serialized version of transaction
+     * <p>
+     * It could contains serialized or un-serialized actions
      */
     @Nullable
     private Transaction transaction;
@@ -131,9 +133,9 @@ public class TransactionProcessor {
     /**
      * Serialized version of Transaction which is keeping here for checking if signature update
      * transaction data.
-     * <p/>
+     * <p>
      *     If the transaction is updated, this object need to be cleared or up-to-date
-     * <p/>
+     * <p>
      *     Check getSignature() flow in "complete workflow" doc for more detail
      * about value assigned and usages
      */
@@ -164,9 +166,9 @@ public class TransactionProcessor {
 
     /**
      * Configuration for transaction which offers ability to set:
-     * <p/>
+     * <p>
      * - The expiration period for the transaction in second
-     * <p/>
+     * <p>
      * - How many blocks behind
      */
     @NotNull
@@ -181,7 +183,7 @@ public class TransactionProcessor {
 
     /**
      * Whether allow signature provider to modify the transaction or not.
-     * <p/>
+     * <p>
      * Default is false.
      */
     private boolean isTransactionModificationAllowed;
@@ -708,6 +710,10 @@ public class TransactionProcessor {
             action.setData(actionAbiEosSerializationObject.getHex());
         }
 
+        // Apply serialized actions to current transaction to be used on getRequiredKeys
+        // From now, the current transaction keep serialized actions
+        this.transaction = clonedTransaction;
+
         // Serialize the whole transaction
         String _serializedTransaction;
         try {
@@ -834,7 +840,7 @@ public class TransactionProcessor {
     /**
      * True: The transaction could be modified and updated to current transaction by Signature
      * provider.
-     * <p/>
+     * <p>
      * False: No modification. {@link TransactionGetSignatureNotAllowModifyTransactionError} will be
      * thrown if transaction is modified.
      */

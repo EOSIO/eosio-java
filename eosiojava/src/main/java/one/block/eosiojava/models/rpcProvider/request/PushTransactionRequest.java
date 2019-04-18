@@ -30,7 +30,7 @@ public class PushTransactionRequest {
 
     /**
      * The Pack Transaction (Serialized Transaction).
-     * <br/> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
+     * <br> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      */
     @SerializedName("packed_trx")
     @NotNull

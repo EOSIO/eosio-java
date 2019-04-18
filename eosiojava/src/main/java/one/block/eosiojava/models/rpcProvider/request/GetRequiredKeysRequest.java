@@ -18,8 +18,8 @@ public class GetRequiredKeysRequest {
     private List<String> availableKeys;
 
     /**
-     * The Transaction which will be broadcast to backend. <br/> !!!! action inside actions of the
-     * transaction have to be serialized.
+     * The Transaction which will be broadcast to backend.
+     * <br> !!!! action inside actions of the transaction have to be serialized.
      */
     @SerializedName("transaction")
     @NotNull
@@ -67,7 +67,7 @@ public class GetRequiredKeysRequest {
     }
 
     /**
-     * Sets transaction. The Transaction which will be broadcast to backend. <br/> !!!! action
+     * Sets transaction. The Transaction which will be broadcast to backend. <br> !!!! action
      * inside actions of the transaction have to be serialized.
      *
      * @param transaction the transaction

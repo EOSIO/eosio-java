@@ -15,7 +15,7 @@ public class DateFormatter {
 
     /**
      * Converting backend time to millisecond
-     * <p/>
+     * <p>
      * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
      */
     public static long convertBackendTimeToMilli(String backendTime) throws ParseException {
@@ -41,7 +41,7 @@ public class DateFormatter {
 
     /**
      * Convert MilliSeconds to backend time string
-     * <p/>
+     * <p>
      * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
      */
     public static String convertMilliSecondToBackendTimeString(long timeInMilliSeconds) {

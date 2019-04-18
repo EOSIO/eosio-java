@@ -32,10 +32,10 @@ public class Action implements Serializable {
     private List<Authorization> authorization;
 
     /**
-     * The Data. <br/> This field could hold hex or json string depend on the step on the processing
-     * flow. <br/> JSON type: it is the un-serialized version which has action data for an action in
+     * The Data. <br> This field could hold hex or json string depend on the step on the processing
+     * flow. <br> JSON type: it is the un-serialized version which has action data for an action in
      * smart contract Hex type: it is the serialized version of JSON type which is serialized by
-     * SerializationProvider <br/> Check "Complete workflow" diagram for more information
+     * SerializationProvider <br> Check "Complete workflow" diagram for more information
      */
     @SerializedName("data")
     @NotNull
