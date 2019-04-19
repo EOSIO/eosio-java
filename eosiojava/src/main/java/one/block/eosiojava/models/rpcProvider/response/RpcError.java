@@ -5,36 +5,33 @@ import java.math.BigInteger;
 import java.util.List;
 
 /**
- * The Error of RPC response error
+ * The error detail of {@link RPCResponseError}
  */
 public class RpcError {
 
     /**
-     * The Code.
+     * The error code.
      */
     @SerializedName("code")
     private BigInteger code;
 
     /**
-     * The Name.
+     * The error name.
      */
     @SerializedName("name")
     private String name;
 
-    /**
-     * The What.
-     */
     @SerializedName("what")
     private String what;
 
     /**
-     * The Details.
+     * The deeper error details.
      */
     @SerializedName("details")
     private List<Detail> details;
 
     /**
-     * Gets code.
+     * Gets error code.
      *
      * @return the code
      */
@@ -51,19 +48,14 @@ public class RpcError {
         return name;
     }
 
-    /**
-     * Gets what.
-     *
-     * @return the what
-     */
     public String getWhat() {
         return what;
     }
 
     /**
-     * Gets details.
+     * Gets deeper details.
      *
-     * @return the details
+     * @return the deeper details
      */
     public List<Detail> getDetails() {
         return details;

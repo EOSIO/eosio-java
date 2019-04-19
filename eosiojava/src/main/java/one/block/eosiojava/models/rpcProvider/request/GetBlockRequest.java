@@ -4,30 +4,30 @@ import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The request class for GetBlock RPC call
+ * The request class for GetBlock RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockRequest)}
  */
 public class GetBlockRequest {
 
     /**
-     * Instantiates a new Get block request.
+     * Instantiates a new GetBlockRequest.
      *
-     * @param blockNumOrId the block num or id
+     * @param blockNumOrId the block number or a block id
      */
     public GetBlockRequest(@NotNull String blockNumOrId) {
         this.blockNumOrId = blockNumOrId;
     }
 
     /**
-     * Block num or id
+     * Provide a block number or a block id
      */
     @SerializedName("block_num_or_id")
     @NotNull
     private String blockNumOrId;
 
     /**
-     * Gets block num or id.
+     * Gets block number or a block id.
      *
-     * @return the block num or id
+     * @return the block number or a block id
      */
     @NotNull
     public String getBlockNumOrId() {
@@ -35,9 +35,9 @@ public class GetBlockRequest {
     }
 
     /**
-     * Sets block num or id.
+     * Sets block number or a block id.
      *
-     * @param blockNumOrId the block num or id
+     * @param blockNumOrId the block number or a block id
      */
     public void setBlockNumOrId(@NotNull String blockNumOrId) {
         this.blockNumOrId = blockNumOrId;

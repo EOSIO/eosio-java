@@ -11,31 +11,32 @@ import org.jetbrains.annotations.NotNull;
 public class Action implements Serializable {
 
     /**
-     * The Account.
+     * The Contract account name.
      */
     @SerializedName("account")
     @NotNull
     private String account;
 
     /**
-     * The Name.
+     * The Contract action name.
      */
     @SerializedName("name")
     @NotNull
     private String name;
 
     /**
-     * The Authorization.
+     * The Authorization (actor and permission) to make transaction
      */
     @SerializedName("authorization")
     @NotNull
     private List<Authorization> authorization;
 
     /**
-     * The Data. <br/> This field could hold hex or json string depend on the step on the processing
-     * flow. <br/> JSON type: it is the un-serialized version which has action data for an action in
-     * smart contract Hex type: it is the serialized version of JSON type which is serialized by
-     * SerializationProvider <br/> Check "Complete workflow" diagram for more information
+     * The Action Data. <br/> This field could hold hex or json string depend on the step on the
+     * processing flow. <br/> JSON type: it is the un-serialized version which has action data for
+     * an action in smart contract Hex type: it is the serialized version of JSON type which is
+     * serialized by SerializationProvider <br/> Check "Complete workflow" diagram for more
+     * information
      */
     @SerializedName("data")
     @NotNull
@@ -44,10 +45,10 @@ public class Action implements Serializable {
     /**
      * Instantiates a new Action.
      *
-     * @param account the account
-     * @param name the name
-     * @param authorization the authorization
-     * @param data the data
+     * @param account the Contract account name.
+     * @param name the Contract action name.
+     * @param authorization the Authorization (actor and permission) to make transaction
+     * @param data the action data
      */
     public Action(@NotNull String account, @NotNull String name,
             @NotNull List<Authorization> authorization, @NotNull String data) {
@@ -58,9 +59,9 @@ public class Action implements Serializable {
     }
 
     /**
-     * Gets account.
+     * Gets Contract account name.
      *
-     * @return the account
+     * @return the contract account name.
      */
     @NotNull
     public String getAccount() {
@@ -68,18 +69,18 @@ public class Action implements Serializable {
     }
 
     /**
-     * Sets account.
+     * Sets Contract account name.
      *
-     * @param account the account
+     * @param account the contract account name.
      */
     public void setAccount(@NotNull String account) {
         this.account = account;
     }
 
     /**
-     * Gets name.
+     * Gets contact action name.
      *
-     * @return the name
+     * @return the contact action name.
      */
     @NotNull
     public String getName() {
@@ -87,18 +88,18 @@ public class Action implements Serializable {
     }
 
     /**
-     * Sets name.
+     * Sets contact action name.
      *
-     * @param name the name
+     * @param name the contact action name.
      */
     public void setName(@NotNull String name) {
         this.name = name;
     }
 
     /**
-     * Gets authorization.
+     * Gets authorization (actor and permission) to make transaction.
      *
-     * @return the authorization
+     * @return the authorization (actor and permission) to make transaction.
      */
     @NotNull
     public List<Authorization> getAuthorization() {
@@ -106,9 +107,9 @@ public class Action implements Serializable {
     }
 
     /**
-     * Sets authorization.
+     * Sets authorization (actor and permission) to make transaction
      *
-     * @param authorization the authorization
+     * @param authorization the authorization (actor and permission) to make transaction.
      */
     public void setAuthorization(
             @NotNull List<Authorization> authorization) {
@@ -116,9 +117,9 @@ public class Action implements Serializable {
     }
 
     /**
-     * Gets data.
+     * Gets action data.
      *
-     * @return the data
+     * @return the action data.
      */
     @NotNull
     public String getData() {
@@ -126,9 +127,9 @@ public class Action implements Serializable {
     }
 
     /**
-     * Sets data.
+     * Sets action data.
      *
-     * @param data the data
+     * @param data the action data.
      */
     public void setData(@NotNull String data) {
         this.data = data;

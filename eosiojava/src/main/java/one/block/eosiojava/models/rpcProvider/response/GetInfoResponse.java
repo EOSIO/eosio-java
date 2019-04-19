@@ -2,39 +2,38 @@ package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
 import java.math.BigInteger;
+import java.util.List;
+import one.block.eosiojava.interfaces.IRPCProvider;
+import one.block.eosiojava.models.rpcProvider.Transaction;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 
 /**
- * The response of GetInfo RPC call
+ * The response of GetInfo RPC call {@link IRPCProvider#getInfo()}
  */
 public class GetInfoResponse {
 
-    /**
-     * The Server version.
-     */
     @SerializedName("server_version")
     private String serverVersion;
 
     /**
-     * The Chain id.
+     * The Chain id. It is an argument to make signable serializeTransaction in {@link
+     * one.block.eosiojava.utilities.EOSFormatter#prepareSerializedTransactionForSigning(String,
+     * String)}
      */
     @SerializedName("chain_id")
     private String chainId;
 
     /**
-     * The Head block num.
+     * The Head block number. It is an argument to specify the reference block to call {@link
+     * one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockRequest)} at {@link
+     * one.block.eosiojava.session.TransactionProcessor#prepare(List)}
      */
     @SerializedName("head_block_num")
-    private BigInteger  headBlockNum;
+    private BigInteger headBlockNum;
 
-    /**
-     * The Last irreversible block num.
-     */
     @SerializedName("last_irreversible_block_num")
     private BigInteger lastIrreversibleBlockNum;
 
-    /**
-     * The Last irreversible block id.
-     */
     @SerializedName("last_irreversible_block_id")
     private String lastIrreversibleBlockId;
 
@@ -45,160 +44,108 @@ public class GetInfoResponse {
     private String headBlockId;
 
     /**
-     * The Head block time.
+     * The Head block time. Which is used to calculate expiration time for {@link
+     * Transaction#setExpiration(String)}} at {@link one.block.eosiojava.session.TransactionProcessor#prepare(List)}
      */
     @SerializedName("head_block_time")
     private String headBlockTime;
 
     /**
-     * The Head block producer.
+     * The Head block producer name.
      */
     @SerializedName("head_block_producer")
     private String headBlockProducer;
 
-    /**
-     * The Virtual block cpu limit.
-     */
     @SerializedName("virtual_block_cpu_limit")
-    private BigInteger  virtualBlockCpuLimit;
+    private BigInteger virtualBlockCpuLimit;
 
-    /**
-     * The Virtual block net limit.
-     */
     @SerializedName("virtual_block_net_limit")
-    private BigInteger  virtualBlockNetLimit;
+    private BigInteger virtualBlockNetLimit;
 
-    /**
-     * The Block cpu limit.
-     */
     @SerializedName("block_cpu_limit")
-    private BigInteger  blockCpuLimit;
+    private BigInteger blockCpuLimit;
 
-    /**
-     * The Block net limit.
-     */
     @SerializedName("block_net_limit")
-    private BigInteger  blockNetLimit;
+    private BigInteger blockNetLimit;
 
-    /**
-     * The Server version string.
-     */
     @SerializedName("server_version_string")
     private String serverVersionString;
 
-    /**
-     * Gets server version.
-     *
-     * @return the server version
-     */
     public String getServerVersion() {
         return serverVersion;
     }
 
     /**
-     * Gets chain id.
+     * Gets the Chain id. It is an argument to make signable serializeTransaction in {@link
+     * one.block.eosiojava.utilities.EOSFormatter#prepareSerializedTransactionForSigning(String,
+     * String)}
      *
-     * @return the chain id
+     * @return the chain id.
      */
     public String getChainId() {
         return chainId;
     }
 
     /**
-     * Gets head block num.
-     *
-     * @return the head block num
+     * Gets the head block number. It is an argument to specify the reference block to call {@link
+     * one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockRequest)} at {@link
+     * one.block.eosiojava.session.TransactionProcessor#prepare(List)}
+     * @return the head block number.
      */
-    public BigInteger  getHeadBlockNum() {
+    public BigInteger getHeadBlockNum() {
         return headBlockNum;
     }
 
-    /**
-     * Gets last irreversible block num.
-     *
-     * @return the last irreversible block num
-     */
-    public BigInteger  getLastIrreversibleBlockNum() {
+    public BigInteger getLastIrreversibleBlockNum() {
         return lastIrreversibleBlockNum;
     }
 
-    /**
-     * Gets last irreversible block id.
-     *
-     * @return the last irreversible block id
-     */
     public String getLastIrreversibleBlockId() {
         return lastIrreversibleBlockId;
     }
 
     /**
-     * Gets head block id.
-     *
-     * @return the head block id
+     * The head block id.
+     * @return head block id.
      */
     public String getHeadBlockId() {
         return headBlockId;
     }
 
     /**
-     * Gets head block time.
-     *
-     * @return the head block time
+     * Gets the Head block time. Which is used to calculate expiration time for {@link
+     * Transaction#setExpiration(String)}} at {@link one.block.eosiojava.session.TransactionProcessor#prepare(List)}
+     * @return the head block time.
      */
     public String getHeadBlockTime() {
         return headBlockTime;
     }
 
     /**
-     * Gets head block producer.
+     * Gets head block producer name.
      *
-     * @return the head block producer
+     * @return the head block producer name.
      */
     public String getHeadBlockProducer() {
         return headBlockProducer;
     }
 
-    /**
-     * Gets virtual block cpu limit.
-     *
-     * @return the virtual block cpu limit
-     */
-    public BigInteger  getVirtualBlockCpuLimit() {
+    public BigInteger getVirtualBlockCpuLimit() {
         return virtualBlockCpuLimit;
     }
 
-    /**
-     * Gets virtual block net limit.
-     *
-     * @return the virtual block net limit
-     */
-    public BigInteger  getVirtualBlockNetLimit() {
+    public BigInteger getVirtualBlockNetLimit() {
         return virtualBlockNetLimit;
     }
 
-    /**
-     * Gets block cpu limit.
-     *
-     * @return the block cpu limit
-     */
-    public BigInteger  getBlockCpuLimit() {
+    public BigInteger getBlockCpuLimit() {
         return blockCpuLimit;
     }
 
-    /**
-     * Gets block net limit.
-     *
-     * @return the block net limit
-     */
-    public BigInteger  getBlockNetLimit() {
+    public BigInteger getBlockNetLimit() {
         return blockNetLimit;
     }
 
-    /**
-     * Gets server version string.
-     *
-     * @return the server version string
-     */
     public String getServerVersionString() {
         return serverVersionString;
     }

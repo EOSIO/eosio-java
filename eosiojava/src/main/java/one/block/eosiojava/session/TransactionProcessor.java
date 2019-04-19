@@ -494,7 +494,7 @@ public class TransactionProcessor {
 
         // Assign required keys to signing public keys if it was set.
         if (this.requiredKeys != null && !this.requiredKeys.isEmpty()) {
-            eosioTransactionSignatureRequest.setSigningPublicKey(this.requiredKeys);
+            eosioTransactionSignatureRequest.setSigningPublicKeys(this.requiredKeys);
             return eosioTransactionSignatureRequest;
         }
 
@@ -541,7 +541,7 @@ public class TransactionProcessor {
                     getRequiredKeysRpcError);
         }
 
-        eosioTransactionSignatureRequest.setSigningPublicKey(this.requiredKeys);
+        eosioTransactionSignatureRequest.setSigningPublicKeys(this.requiredKeys);
         return eosioTransactionSignatureRequest;
     }
 

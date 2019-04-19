@@ -5,25 +5,25 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The request of PushTransactionRequest RPC call.
+ * The request of PushTransactionRequest RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#pushTransaction(PushTransactionRequest)}
  */
 public class PushTransactionRequest {
 
     /**
-     * The Signatures for packTrx
+     * List of signatures required to authorize transaction
      */
     @SerializedName("signatures")
     @NotNull
     private List<String> signatures;
 
     /**
-     * The Compression.
+     * The compression used, usually 0.
      */
     @SerializedName("compression")
     private int compression;
 
     /**
-     * The Packaged context free data.
+     * Context free data in hex
      */
     @SerializedName("packed_context_free_data")
     private String packagedContextFreeData;
@@ -37,12 +37,12 @@ public class PushTransactionRequest {
     private String packTrx;
 
     /**
-     * Instantiates a new Push transaction request.
+     * Instantiates a new PushTransactionRequest.
      *
-     * @param signatures the signatures
-     * @param compression the compression
-     * @param packagedContextFreeData the packaged context free data
-     * @param packTrx the pack trx
+     * @param signatures the list of signatures required to authorize transaction
+     * @param compression the compression used, usually 0.
+     * @param packagedContextFreeData the context free data in hex
+     * @param packTrx the pack Transaction (Serialized Transaction). It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      */
     public PushTransactionRequest(@NotNull List<String> signatures, int compression,
             String packagedContextFreeData, @NotNull String packTrx) {
@@ -53,9 +53,9 @@ public class PushTransactionRequest {
     }
 
     /**
-     * Gets signatures.
+     * Gets List of signatures required to authorize transaction.
      *
-     * @return the signatures
+     * @return the list of signatures
      */
     @NotNull
     public List<String> getSignatures() {
@@ -63,54 +63,55 @@ public class PushTransactionRequest {
     }
 
     /**
-     * Sets signatures.
+     * Sets List of signatures required to authorize transaction.
      *
-     * @param signatures the signatures
+     * @param signatures the list of signatures.
      */
     public void setSignatures(@NotNull List<String> signatures) {
         this.signatures = signatures;
     }
 
     /**
-     * Gets compression.
+     * Gets the compression used, usually 0.
      *
-     * @return the compression
+     * @return the compression.
      */
     public int getCompression() {
         return compression;
     }
 
     /**
-     * Sets compression.
+     * Sets the compression used, usually 0.
      *
-     * @param compression the compression
+     * @param compression the compression.
      */
     public void setCompression(int compression) {
         this.compression = compression;
     }
 
     /**
-     * Gets packaged context free data.
+     * Gets packaged context free data in hex.
      *
-     * @return the packaged context free data
+     * @return the packaged context free data in hex.
      */
     public String getPackagedContextFreeData() {
         return packagedContextFreeData;
     }
 
     /**
-     * Sets packaged context free data.
+     * Sets packaged context free data in hex
      *
-     * @param packagedContextFreeData the packaged context free data
+     * @param packagedContextFreeData the packaged context free data in hex.
      */
     public void setPackagedContextFreeData(String packagedContextFreeData) {
         this.packagedContextFreeData = packagedContextFreeData;
     }
 
     /**
-     * Gets pack trx.
+     * Gets the Pack Transaction (Serialized Transaction).
+     * <br/> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      *
-     * @return the pack trx
+     * @return the Pack Transaction (Serialized Transaction).
      */
     @NotNull
     public String getPackTrx() {
@@ -118,9 +119,10 @@ public class PushTransactionRequest {
     }
 
     /**
-     * Sets pack trx.
+     * Sets The Pack Transaction (Serialized Transaction).
+     * <br/> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      *
-     * @param packTrx the pack trx
+     * @param packTrx the Pack Transaction (Serialized Transaction).
      */
     public void setPackTrx(@NotNull String packTrx) {
         this.packTrx = packTrx;

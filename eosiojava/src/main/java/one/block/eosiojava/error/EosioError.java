@@ -46,7 +46,9 @@ public class EosioError extends Exception {
     }
 
     /**
-     * @return A JSON formatted string describing the error code, and reason.
+     * Construct a JSON formatted string describing the error code, and reason.
+     *
+     * @return A JSON formatted string
      */
     @NotNull
     public String asJsonString() {

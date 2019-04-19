@@ -4,12 +4,12 @@ import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The type Binary abi.
+ * This class hold data of ABI along with its contract account name to be passed to Signature Provider inside {@link EosioTransactionSignatureRequest}
  */
 public class BinaryAbi {
 
     /**
-     * The Account name.
+     * The contract account name.
      */
     @SerializedName("account_name")
     @NotNull
@@ -25,7 +25,7 @@ public class BinaryAbi {
     /**
      * Instantiates a new Binary abi.
      *
-     * @param accountName the account name
+     * @param accountName the contract account name
      * @param abi the abi
      */
     public BinaryAbi(@NotNull String accountName, @NotNull String abi) {
@@ -34,9 +34,9 @@ public class BinaryAbi {
     }
 
     /**
-     * Gets accont name.
+     * Gets contract account name.
      *
-     * @return the accont name
+     * @return the contract account name
      */
     @NotNull
     public String getAccontName() {
@@ -44,9 +44,9 @@ public class BinaryAbi {
     }
 
     /**
-     * Sets accont name.
+     * Sets contract account name.
      *
-     * @param accountName the account name
+     * @param accountName the contract account name
      */
     public void setAccontName(@NotNull String accountName) {
         this.accountName = accountName;

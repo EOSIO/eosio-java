@@ -103,10 +103,16 @@ public class PEMProcessor {
     private PemObject pemObject;
     private String pemObjectString;
 
+    /**
+     * Initialize PEMProcessor with PEM content in String format.
+     *
+     * @param pemObject - input PEM content in String format.
+     * @throws PEMProcessorError When failing to read pem data from the input.
+     */
     public PEMProcessor(String pemObject) throws PEMProcessorError {
         this.pemObjectString = pemObject;
         try (Reader reader = new CharArrayReader(this.pemObjectString.toCharArray());
-                PemReader pemReader = new PemReader(reader);) {
+                PemReader pemReader = new PemReader(reader)) {
             this.pemObject = pemReader.readPemObject();
             if (this.pemObject == null) {
                 throw new PEMProcessorError(ErrorConstants.INVALID_PEM_OBJECT);

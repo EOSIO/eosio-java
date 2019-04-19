@@ -6,7 +6,7 @@ import one.block.eosiojava.models.rpcProvider.Transaction;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The request of GetRequiredKeys RPC call.
+ * The request of GetRequiredKeys RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#getRequiredKeys(GetRequiredKeysRequest)}
  */
 public class GetRequiredKeysRequest {
 
@@ -18,7 +18,7 @@ public class GetRequiredKeysRequest {
     private List<String> availableKeys;
 
     /**
-     * The Transaction which will be broadcast to backend. <br/> !!!! action inside actions of the
+     * The Transaction which will be broadcast to backend. <br/> Action inside actions of the
      * transaction have to be serialized.
      */
     @SerializedName("transaction")
@@ -26,10 +26,10 @@ public class GetRequiredKeysRequest {
     private Transaction transaction;
 
     /**
-     * Instantiates a new Get required keys request.
+     * Instantiates a new GetRequiredKeysRequest.
      *
-     * @param availableKeys the available keys
-     * @param transaction the transaction
+     * @param availableKeys the available keys which come from SignatureProvider or manually set
+     * @param transaction the transaction which will be broadcast to backend. Action inside actions of the transaction have to be serialized.
      */
     public GetRequiredKeysRequest(@NotNull List<String> availableKeys,
             @NotNull Transaction transaction) {
@@ -38,7 +38,7 @@ public class GetRequiredKeysRequest {
     }
 
     /**
-     * Gets available keys.
+     * Gets available keys which come from SignatureProvider or manually set
      *
      * @return the available keys
      */
@@ -48,7 +48,7 @@ public class GetRequiredKeysRequest {
     }
 
     /**
-     * Sets available keys.
+     * Sets available keys which come from SignatureProvider or manually set
      *
      * @param availableKeys the available keys
      */
@@ -57,7 +57,9 @@ public class GetRequiredKeysRequest {
     }
 
     /**
-     * Gets transaction.
+     * Gets transaction. The Transaction which will be broadcast to backend.
+     * <br>
+     *     Action inside actions of the transaction have to be serialized.
      *
      * @return the transaction
      */
@@ -67,7 +69,7 @@ public class GetRequiredKeysRequest {
     }
 
     /**
-     * Sets transaction. The Transaction which will be broadcast to backend. <br/> !!!! action
+     * Sets transaction. The Transaction which will be broadcast to backend. <br/> Action
      * inside actions of the transaction have to be serialized.
      *
      * @param transaction the transaction

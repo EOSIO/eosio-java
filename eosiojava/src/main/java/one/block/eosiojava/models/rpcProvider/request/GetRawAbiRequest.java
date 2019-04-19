@@ -4,30 +4,30 @@ import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The request class of GetRawAbi RPC call
+ * The request class of GetRawAbi RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#getRawAbi(GetRawAbiRequest)}
  */
 public class GetRawAbiRequest {
 
     /**
-     * Instantiates a new Get raw abi request.
+     * Instantiates a new GetRawAbiRequest.
      *
-     * @param accountName the account name
+     * @param accountName the String representation of EOSIO name type
      */
     public GetRawAbiRequest(@NotNull String accountName) {
         this.accountName = accountName;
     }
 
     /**
-     * The Account name.
+     * The string representation of EOSIO name type
      */
     @SerializedName("account_name")
     @NotNull
     private String accountName;
 
     /**
-     * Gets account name.
+     * Gets the string representation of EOSIO name type
      *
-     * @return the account name
+     * @return the string representation of EOSIO name type
      */
     @NotNull
     public String getAccountName() {
@@ -35,9 +35,9 @@ public class GetRawAbiRequest {
     }
 
     /**
-     * Sets account name.
+     * Sets the string representation of EOSIO name type
      *
-     * @param accountName the account name
+     * @param accountName the string representation of EOSIO name type
      */
     public void setAccountName(@NotNull String accountName) {
         this.accountName = accountName;
