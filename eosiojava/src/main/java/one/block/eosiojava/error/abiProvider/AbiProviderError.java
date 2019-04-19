@@ -4,7 +4,7 @@ import one.block.eosiojava.error.EosioError;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class of Error/Exception could be thrown from AbiProvider
+ * Error class is used when there is an exception while attempting to call any method AbiProvider
  */
 public class AbiProviderError extends EosioError {
 

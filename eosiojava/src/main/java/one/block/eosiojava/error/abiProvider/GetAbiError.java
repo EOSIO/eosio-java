@@ -3,7 +3,7 @@ package one.block.eosiojava.error.abiProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class of Error/Exception could be thrown from AbiProvider#GetAbi and AbiProvider#GetAbis methods
+ * Error class is used when there is an exception while attempting to call GetAbi or GetAbis methods of ABI Provider
  */
 public class GetAbiError extends AbiProviderError {
 

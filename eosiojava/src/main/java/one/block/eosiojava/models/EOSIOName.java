@@ -10,6 +10,11 @@ public class EOSIOName {
 
     @NotNull private String accountName;
 
+    /**
+     * Initialize EOSIOName object with account name
+     *
+     * @param accountName - input account name
+     */
     public EOSIOName(@NotNull String accountName) {
         this.accountName = accountName;
     }

@@ -13,15 +13,35 @@ import org.jetbrains.annotations.NotNull;
  */
 public class TransactionSession {
 
+    /**
+     * Serialization provider to be used as a reference on {@link TransactionProcessor} object
+     * <br>
+     *     Responsible for serialization/deserialization between JSON and Hex for communicate with EOSIO chain
+     */
     @NotNull
     private ISerializationProvider serializationProvider;
 
+    /**
+     * Rpc provider to be used as a reference on {@link TransactionProcessor} object
+     * <br>
+     *     Responsible for communicate with EOSIO chain
+     */
     @NotNull
     private IRPCProvider rpcProvider;
 
+    /**
+     * ABI Provider to be used as a reference on {@link TransactionProcessor} object
+     * <br>
+     *     Responsible for managing ABIs for serialization/deserialization
+     */
     @NotNull
     private IABIProvider abiProvider;
 
+    /**
+     * Signature provider to be used as a reference on {@link TransactionProcessor} object
+     * <br>
+     *     Responsible for managing keys, create signature to make transaction to EOSIO chain
+     */
     @NotNull
     private ISignatureProvider signatureProvider;
 

@@ -49,7 +49,6 @@ public class ErrorConstants {
     public static final String INVALID_PEM_OBJECT = "Cannot read PEM object!";
 
     //TransactionProcessor Errors
-
     public static final String TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG = "Action list can't be empty!";
     public static final String TRANSACTION_PROCESSOR_RPC_GET_INFO = "Error happened on calling GetInfo RPC.";
     public static final String TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK = "Error happened on calling GetBlock RPC.";

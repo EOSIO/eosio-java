@@ -3,7 +3,7 @@ package one.block.eosiojava.error.rpcProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class of Error/Exception for PushTransaction RPC call
+ * Error class is used when there is an exception while attempting to call PushTransaction RPC call
  */
 public class PushTransactionRpcError extends RpcProviderError {
 

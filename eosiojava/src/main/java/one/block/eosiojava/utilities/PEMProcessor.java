@@ -40,8 +40,14 @@ import java.math.BigInteger;
  */
 public class PEMProcessor {
 
+    /**
+     * PEM private key type on header
+     */
     private static final String PRIVATE_KEY_TYPE = "EC PRIVATE KEY";
 
+    /**
+     * Private key start index on ASN.1 sequence
+     */
     private static final int PRIVATE_KEY_START_INDEX = 2;
 
     //region CURVE Constants

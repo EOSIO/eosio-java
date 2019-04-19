@@ -3,7 +3,7 @@ package one.block.eosiojava.error.session;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error would come out of TransactionProcessor#Prepare
+ * Error class is used when there is an exception while attempting to call any rpc inside prepare() of TransactionProcessor
  */
 public class TransactionPrepareRpcError extends TransactionPrepareError {
 

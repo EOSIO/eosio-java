@@ -4,7 +4,7 @@ import one.block.eosiojava.error.EosioError;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error would come out of TransactionProcessor
+ * Error class is used when there is an exception while attempting to call any method of TransactionProcessor
  */
 public class TransactionProcessorError extends EosioError {
 

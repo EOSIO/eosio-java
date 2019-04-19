@@ -3,7 +3,7 @@ package one.block.eosiojava.error.session;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error would come out of TransactionProcessor#CreateSignatureRequest#GetAvailableKey
+ * Error class is used when there is an exception while attempting to call GetAvailableKey() inside CreateSignatureRequest of TransactionProcessor
  */
 public class TransactionCreateSignatureRequestKeyError extends TransactionCreateSignatureRequestError {
 

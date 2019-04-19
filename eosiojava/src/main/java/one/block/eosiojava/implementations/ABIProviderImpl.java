@@ -4,8 +4,6 @@
 
 package one.block.eosiojava.implementations;
 
-import static one.block.eosiojava.utilities.ByteFormatter.createFromBase64;
-
 import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.HashMap;

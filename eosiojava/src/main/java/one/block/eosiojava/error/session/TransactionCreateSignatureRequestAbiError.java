@@ -3,7 +3,7 @@ package one.block.eosiojava.error.session;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error would come out of TransactionProcessor#CreateSignature#getAbi
+ * Error class is used when there is an exception while attempting to call getAbi() inside createSignature() of TransactionProcessor
  */
 public class TransactionCreateSignatureRequestAbiError extends TransactionCreateSignatureRequestError{
 

@@ -5,6 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Error class is used when there is an exception while attempting to process anything inside Eosio-java library
+ */
 public class EosioError extends Exception {
 
     /**

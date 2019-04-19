@@ -4,7 +4,7 @@ import one.block.eosiojava.error.EosioError;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error class which could be thrown from SignatureProvider
+ * Error class is used when there is an exception while attempting to call any method of SignatureProvider
  */
 public class SignatureProviderError extends EosioError {
 

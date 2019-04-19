@@ -3,7 +3,7 @@ package one.block.eosiojava.error.signatureProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error class which could be thrown from SignatureProvider#SignTransaction
+ * Error class is used when there is an exception while attempting to call SignTransaction() of SignatureProvider
  */
 public class SignTransactionError extends SignatureProviderError {
 

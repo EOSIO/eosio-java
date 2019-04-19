@@ -4,7 +4,7 @@ import one.block.eosiojava.error.EosioError;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class of Error/Exception for GetRawAbi RPC call
+ * Error class is used when there is an exception while attempting to call GetRawAbi RPC call
  */
 public class GetRawAbiRpcError extends EosioError {
 
