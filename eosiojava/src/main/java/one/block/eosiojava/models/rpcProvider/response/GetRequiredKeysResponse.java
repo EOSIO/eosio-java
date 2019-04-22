@@ -11,7 +11,7 @@ public class GetRequiredKeysResponse {
 
     /**
      * The Required public EOSIO keys to sign the transaction. It get assigned to {@link
-     * one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest#setSigningPublicKey(List)}
+     * one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest#setSigningPublicKeys(List)}
      * which passed to Signature Provider top sign a transaction
      */
     @SerializedName("required_keys")
@@ -19,7 +19,7 @@ public class GetRequiredKeysResponse {
 
     /**
      * Gets the Required public EOSIO keys to sign the transaction. It get assigned to {@link
-     * one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest#setSigningPublicKey(List)}
+     * one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest#setSigningPublicKeys(List)}
      * which passed to Signature Provider top sign a transaction
      * @return the required public EOSIO keys.
      */

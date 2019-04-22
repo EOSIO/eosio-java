@@ -29,9 +29,11 @@ public class DateFormatter {
     private DateFormatter() {}
 
     /**
-     * Converting backend time to millisecond
+     * Converting backend time to millisecond.
      * <p/>
-     * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
+     * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT.
+     * @param backendTime input backend time.
+     * @return Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by parsed input backend time.
      * @throws ParseException thrown if the input does not match with any supported datetime pattern.
      */
     public static long convertBackendTimeToMilli(String backendTime) throws ParseException {
@@ -59,6 +61,8 @@ public class DateFormatter {
      * Convert MilliSeconds to backend time string
      * <p/>
      * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
+     * @param timeInMilliSeconds input number of milliseconds
+     * @return String format of input number of milliseconds
      */
     public static String convertMilliSecondToBackendTimeString(long timeInMilliSeconds) {
         SimpleDateFormat sdf = new SimpleDateFormat(BACKEND_DATE_PATTERN);
