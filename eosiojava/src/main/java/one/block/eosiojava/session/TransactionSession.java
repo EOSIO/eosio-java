@@ -45,6 +45,14 @@ public class TransactionSession {
     @NotNull
     private ISignatureProvider signatureProvider;
 
+    /**
+     * Initialize TransactionSession object which acts like a factory to create {@link TransactionProcessor} object from providers instances.
+     *
+     * @param serializationProvider serialization provider.
+     * @param rpcProvider Rpc provider.
+     * @param abiProvider ABI provider.
+     * @param signatureProvider signature provider.
+     */
     public TransactionSession(
             @NotNull ISerializationProvider serializationProvider,
             @NotNull IRPCProvider rpcProvider, @NotNull IABIProvider abiProvider,
@@ -77,21 +85,46 @@ public class TransactionSession {
     }
 
     //region getters
+
+    /**
+     * Get serialization provider to be used as a reference on {@link TransactionProcessor} object
+     * <br>
+     *     Responsible for serialization/deserialization between JSON and Hex for communicate with EOSIO chain
+     * @return
+     */
     @NotNull
     public ISerializationProvider getSerializationProvider() {
         return serializationProvider;
     }
 
+    /**
+     * Get rpc provider to be used as a reference on {@link TransactionProcessor} object
+     * <br>
+     *     Responsible for communicate with EOSIO chain
+     * @return
+     */
     @NotNull
     public IRPCProvider getRpcProvider() {
         return rpcProvider;
     }
 
+    /**
+     * Get ABI Provider to be used as a reference on {@link TransactionProcessor} object
+     * <br>
+     *     Responsible for managing ABIs for serialization/deserialization
+     * @return
+     */
     @NotNull
     public IABIProvider getAbiProvider() {
         return abiProvider;
     }
 
+    /**
+     * Get signature provider to be used as a reference on {@link TransactionProcessor} object
+     * <br>
+     *     Responsible for managing keys, create signature to make transaction to EOSIO chain
+     * @return
+     */
     @NotNull
     public ISignatureProvider getSignatureProvider() {
         return signatureProvider;

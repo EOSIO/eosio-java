@@ -32,6 +32,7 @@ public class DateFormatter {
      * Converting backend time to millisecond
      * <p/>
      * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
+     * @throws ParseException thrown if the input does not match with any supported datetime pattern.
      */
     public static long convertBackendTimeToMilli(String backendTime) throws ParseException {
         String[] datePatterns = new String[]{

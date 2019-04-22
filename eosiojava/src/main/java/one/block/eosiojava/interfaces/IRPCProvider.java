@@ -17,7 +17,7 @@ import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The interface Irpc provider.
+ * The interface of RPC provider.
  */
 public interface IRPCProvider {
 
@@ -25,7 +25,7 @@ public interface IRPCProvider {
      * Gets info RPC call to get latest info/status of a chain.
      *
      * @return the latest info/status of a chain.
-     * @throws GetInfoRpcError
+     * @throws GetInfoRpcError thrown if there are any exceptions/backend error during the GetInfo process.
      */
     @NotNull
     GetInfoResponse getInfo() throws GetInfoRpcError;
@@ -35,7 +35,7 @@ public interface IRPCProvider {
      *
      * @param getBlockRequest Info of a specific block.
      * @return the info/status of a specific block in the request
-     * @throws GetBlockRpcError
+     * @throws GetBlockRpcError thrown if there are any exceptions/backend error during the GetBlock process.
      */
     @NotNull
     GetBlockResponse getBlock(GetBlockRequest getBlockRequest) throws GetBlockRpcError;
@@ -45,7 +45,7 @@ public interface IRPCProvider {
      *
      * @param getRawAbiRequest Info of a specific smart contract.
      * @return the serialized ABI of a smart contract in the request.
-     * @throws GetRawAbiRpcError
+     * @throws GetRawAbiRpcError thrown if there are any exceptions/backend error during the GetRawAbi process.
      */
     @NotNull
     GetRawAbiResponse getRawAbi(GetRawAbiRequest getRawAbiRequest) throws GetRawAbiRpcError;
@@ -55,7 +55,7 @@ public interface IRPCProvider {
      *
      * @param getRequiredKeysRequest Info to get required keys
      * @return the required keys to sign a transaction
-     * @throws GetRequiredKeysRpcError
+     * @throws GetRequiredKeysRpcError thrown if there are any exceptions/backend error during the GetRequiredKeys process.
      */
     @NotNull
     GetRequiredKeysResponse getRequiredKeys(GetRequiredKeysRequest getRequiredKeysRequest) throws GetRequiredKeysRpcError;
@@ -65,7 +65,7 @@ public interface IRPCProvider {
      *
      * @param pushTransactionRequest the transaction to push with signatures.
      * @return the push transaction response
-     * @throws PushTransactionRpcError
+     * @throws PushTransactionRpcError thrown if there are any exceptions/backend error during the PushTransaction process.
      */
     @NotNull
     PushTransactionResponse pushTransaction(PushTransactionRequest pushTransactionRequest) throws PushTransactionRpcError;

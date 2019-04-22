@@ -37,9 +37,9 @@ public class ABIProviderImpl implements IABIProvider {
      * Initialize a new ABI Provider, passing the necessary RPC provider to fetch ABI's
      * if they are not found in the cache.
      *
-     * @param rpcProvider - RPC provider implementation to use to fetch ABIs if they are not
+     * @param rpcProvider RPC provider implementation to use to fetch ABIs if they are not
      * in the cache.
-     * @param serializationProvider - Serialization provider implementation to use to deserialize
+     * @param serializationProvider Serialization provider implementation to use to deserialize
      * the ABIs for return and storage in the cache.
      */
     public ABIProviderImpl(@NotNull IRPCProvider rpcProvider,
@@ -57,7 +57,7 @@ public class ABIProviderImpl implements IABIProvider {
      * @param chainId the chain id
      * @param accounts the accounts - duplicate names will be removed
      * @return Map of ABIs keyed by the account
-     * @throws GetAbiError - If there is an error retrieving or deserializing any of the ABIs
+     * @throws GetAbiError If there is an error retrieving or deserializing any of the ABIs
      */
     @Override
     public @NotNull Map<String, String> getAbis(@NotNull String chainId,
@@ -82,7 +82,7 @@ public class ABIProviderImpl implements IABIProvider {
      * @param chainId the chain id
      * @param account the account
      * @return abiJsonString - the deserialized JSON string for the requested ABI
-     * @throws GetAbiError - If there is an error retrieving or deserializing the ABI.
+     * @throws GetAbiError If there is an error retrieving or deserializing the ABI.
      */
     @Override
     public @NotNull String getAbi(@NotNull String chainId, @NotNull EOSIOName account)

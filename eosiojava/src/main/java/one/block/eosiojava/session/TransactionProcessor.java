@@ -2,6 +2,7 @@ package one.block.eosiojava.session;
 
 import com.google.common.base.Strings;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -204,6 +205,7 @@ public class TransactionProcessor {
      * Transaction
      *
      * @param transaction - preset Transaction
+     * @throws TransactionProcessorConstructorInputError thrown if the input transaction has an empty action list.
      */
     public TransactionProcessor(
             @NotNull ISerializationProvider serializationProvider,
@@ -228,6 +230,19 @@ public class TransactionProcessor {
      *
      * @param actions - List of action with data. If the transaction is preset or has value and it
      * has its own actions, that list will be override by this input list
+     * @throws TransactionPrepareError thrown if
+     *          <br>
+     *              - ChainId from {@link IRPCProvider#getInfo()} is blank
+     *          <br>
+     *              - ChainId getting from the chain does not match with input chainId
+     *          <br>
+     *              - Having problem with parsing head block time from {@link GetInfoResponse#getHeadBlockTime()}
+     *          <br>
+     *          and throw as base error class for
+     *          <br>
+     *              {@link TransactionPrepareInputError} thrown if input is invalid
+     *              <br>
+     *              {@link TransactionPrepareRpcError} throw if any RPC call ({@link IRPCProvider#getInfo()} and {@link IRPCProvider#getBlock(GetBlockRequest)}) return/throw error
      */
     public void prepare(@NotNull List<Action> actions) throws TransactionPrepareError {
         if (actions.isEmpty()) {
@@ -331,6 +346,11 @@ public class TransactionProcessor {
      * Check sign() flow in "complete workflow" doc for more detail
      *
      * @return success or not
+     * @throws TransactionSignError thrown if there are any exceptions error during:
+     *      <br>
+     *          - Creating signature. Cause: {@link TransactionCreateSignatureRequestError}
+     *      <br>
+     *          - Signing. Cause: {@link TransactionGetSignatureError} or {@link SignatureProviderError}
      */
     public boolean sign() throws TransactionSignError {
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest;
@@ -364,6 +384,13 @@ public class TransactionProcessor {
      * detail
      *
      * @return broadcast result from chain
+     * @throws TransactionBroadCastError thrown if there are any exceptions/backend error about:
+     *      <br>
+     *          - The transaction has been not prepared or serialized yet.
+     *      <br>
+     *          - The transaction has been not signed yet (no signature).
+     *      <br>
+     *          - Any backend error get returned from backend. Cause: {@link TransactionPushTransactionError}
      */
     @NotNull
     public PushTransactionResponse broadcast() throws TransactionBroadCastError {
@@ -392,6 +419,17 @@ public class TransactionProcessor {
      * Sign and broadcast the transaction and signature to chain
      *
      * @return broadcast result from chain
+     * @throws TransactionSignAndBroadCastError thrown if there are any exceptions/backend error about:
+     *      <br>
+     *          - Creating signature. Cause: {@link TransactionCreateSignatureRequestError}
+     *      <br>
+     *          - Signing. Cause: {@link TransactionGetSignatureError} or {@link SignatureProviderError}
+     *      <br>
+     *          - The transaction has not been prepared or serialized yet.
+     *      <br>
+     *          - The transaction has not been signed yet (no signature).
+     *      <br>
+     *          - Any backend error get returned from backend. Cause: {@link TransactionPushTransactionError}
      */
     @NotNull
     public PushTransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
@@ -443,6 +481,20 @@ public class TransactionProcessor {
      * doc for more detail
      *
      * @return serialized Transaction
+     * @throws TransactionSerializeError thrown if there are any exceptions error about serializing transaction. Cause: {@link TransactionCreateSignatureRequestError}
+     *      <br>
+     *          - Error on trying to clone transaction for runtime handling. Method used {@link Utils#clone(Serializable)}
+     *      <br>
+     *      and throw as base error class for:
+     *      <br>
+     *          - {@link TransactionCreateSignatureRequestRpcError} thrown if any Rpc call ({@link IRPCProvider#getInfo()}) error happens
+     *      <br>
+     *          - {@link TransactionCreateSignatureRequestAbiError} thrown if any error happens on calling {@link IABIProvider#getAbi(String, EOSIOName)} to get the ABI for serialize each action
+     *      <br>
+     *          - {@link TransactionCreateSignatureRequestSerializationError} thrown if any error happens on
+     *          calling {@link ISerializationProvider#serialize(AbiEosSerializationObject)} to serialize each action
+     *          or
+     *          calling {@link ISerializationProvider#serializeTransaction(String)} to serialize the whole transaction.
      */
     @Nullable
     public String serialize() throws TransactionSerializeError {
@@ -641,6 +693,20 @@ public class TransactionProcessor {
      * Serialize current transaction
      *
      * @return serialized transaction in Hex
+     * @throws TransactionCreateSignatureRequestError thrown if there are any exceptions error about serializing transaction:
+     *      <br>
+     *          - Error on trying to clone transaction for runtime handling. Method used {@link Utils#clone(Serializable)}
+     *      <br>
+     *      and throw as base error class for:
+     *      <br>
+     *          - {@link TransactionCreateSignatureRequestRpcError} thrown if any Rpc call ({@link IRPCProvider#getInfo()}) error happens
+     *      <br>
+     *          - {@link TransactionCreateSignatureRequestAbiError} thrown if any error happens on calling {@link IABIProvider#getAbi(String, EOSIOName)} to get the ABI for serialize each action
+     *      <br>
+     *          - {@link TransactionCreateSignatureRequestSerializationError} thrown if any error happens on
+     *          calling {@link ISerializationProvider#serialize(AbiEosSerializationObject)} to serialize each action
+     *          or
+     *          calling {@link ISerializationProvider#serializeTransaction(String)} to serialize the whole transaction.
      */
     @NotNull
     private String serializeTransaction() throws TransactionCreateSignatureRequestError {
@@ -754,31 +820,77 @@ public class TransactionProcessor {
     //endregion
 
     //region getters/setters
+
+    /**
+     * Gets transaction instance which keep all data relating to EOS Transaction
+     * <p/>
+     * This object hold the non-serialized version of transaction
+     * @return the current transaction
+     */
     @Nullable
     public Transaction getTransaction() {
         return transaction;
     }
 
+    /**
+     * Gets transaction instance which keep the original transaction reference after signature provider
+     * return signing result
+     *
+     * Check getSignature() flow in "complete workflow" doc for more detail
+     * @return the original transaction
+     */
     @Nullable
     public Transaction getOriginalTransaction() {
         return originalTransaction;
     }
 
+    /**
+     * List of signature which will be filled after signature provider return signing result.
+     * <p>
+     * Check getSignature() flow in "complete workflow" doc for more detail
+     * @return list of EOS format signature.
+     */
     @NotNull
     public List<String> getSignatures() {
         return signatures;
     }
 
+    /**
+     * Gets serialized version of Transaction which is keeping here for checking if signature update
+     * transaction data.
+     * <p/>
+     *     If the transaction is updated, this object need to be cleared or up-to-date
+     * <p/>
+     *     Check getSignature() flow in "complete workflow" doc for more detail
+     * about value assigned and usages
+     * @return the serialized transaction.
+     */
     @Nullable
     public String getSerializedTransaction() {
         return serializedTransaction;
     }
 
+    /**
+     * Gets configuration for transaction which offers ability to set:
+     * <p/>
+     * - The expiration period for the transaction in second
+     * <p/>
+     * - How many blocks behind
+     * @return the configuration for transaction
+     */
     @NotNull
     public TransactionConfig getTransactionConfig() {
         return transactionConfig;
     }
 
+    /**
+     * Sets configuration for transaction which offers ability to set:
+     * <p/>
+     * - The expiration period for the transaction in second
+     * <p/>
+     * - How many blocks behind
+     * @param transactionConfig the input configuration for transaction
+     */
     public void setTransactionConfig(@NotNull TransactionConfig transactionConfig) {
         this.transactionConfig = transactionConfig;
     }
