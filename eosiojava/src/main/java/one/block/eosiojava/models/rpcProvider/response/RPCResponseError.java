@@ -4,50 +4,50 @@ import com.google.gson.annotations.SerializedName;
 import java.math.BigInteger;
 
 /**
- * The generic response error could be thrown from Rpc calls.
+ * The generic response error could be thrown from Rpc calls of {@link one.block.eosiojava.interfaces.IRPCProvider}
  */
 public class RPCResponseError {
 
     /**
-     * The Code.
+     * The error Code.
      */
     @SerializedName("code")
     private BigInteger code;
 
     /**
-     * The Message.
+     * The error Message.
      */
     @SerializedName("message")
     private String message;
 
     /**
-     * The Error.
+     * The Error detail.
      */
     @SerializedName("error")
     private RpcError error;
 
     /**
-     * Gets code.
+     * Gets error code.
      *
-     * @return the code
+     * @return the error code.
      */
     public BigInteger getCode() {
         return code;
     }
 
     /**
-     * Gets message.
+     * Gets error message.
      *
-     * @return the message
+     * @return the error message.
      */
     public String getMessage() {
         return message;
     }
 
     /**
-     * Gets error.
+     * Gets error detail.
      *
-     * @return the error
+     * @return the error detail.
      */
     public RpcError getError() {
         return error;

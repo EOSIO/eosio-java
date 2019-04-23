@@ -3,7 +3,7 @@ package one.block.eosiojava.error.session;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error would come out of TransactionProcessor#Constructors
+ * Error class is used when there is an exception while attempting to initialize TransactionProcessor
  */
 public class TransactionProcessorConstructorInputError extends TransactionProcessorError {
 

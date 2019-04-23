@@ -3,7 +3,7 @@ package one.block.eosiojava.error.rpcProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class of Error/Exception for GetBlock RPC call
+ * Error class is used when there is an exception while attempting to use the RPC call, getBlock().
  */
 public class GetBlockRpcError extends RpcProviderError{
 

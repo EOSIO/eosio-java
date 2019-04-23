@@ -21,6 +21,9 @@ public class Utils {
      *
      * @param object input object
      * @param <T> - Class of the object
+     * @return the cloned object.
+     * @throws IOException Any exception thrown by the underlying OutputStream.
+     * @throws ClassNotFoundException Class of a serialized object cannot be found.
      */
     public static <T extends Serializable> T clone(T object) throws IOException, ClassNotFoundException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -32,7 +35,9 @@ public class Utils {
     }
 
     /**
-     * Getting a GSON object
+     * Getting a GSON object with a date time pattern
+     * @param datePattern - input date time pattern
+     * @return Configured GSON object with input.
      */
     public static Gson getGson(String datePattern) {
         return new GsonBuilder()

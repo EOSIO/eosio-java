@@ -8,14 +8,10 @@ import static org.junit.Assert.assertNull;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import one.block.eosiojava.models.rpcProvider.EosioEndPoint;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRawAbiRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
-import one.block.eosiojava.models.rpcProvider.response.Detail;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
@@ -331,25 +327,6 @@ public class RpcModelTest {
         assertNotNull(toJSON);
         assertNotEquals("", toJSON);
         assertEquals(jsonContent, toJSON);
-    }
-
-    //endregion
-
-    //region Misc tests
-
-    /**
-     * Test EosioEndPoint
-     */
-    @Test
-    public void EosioEndPointTest() {
-        EosioEndPoint endPoint = new EosioEndPoint("https", 443, "api.eosnewyork.io");
-        try {
-            assertEquals("https://api.eosnewyork.io:443", endPoint.toURL().toURI().toString());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
     }
 
     //endregion

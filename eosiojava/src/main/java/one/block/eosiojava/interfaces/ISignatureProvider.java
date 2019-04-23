@@ -8,7 +8,7 @@ import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRes
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The interface Signature provider.
+ * The interface of Signature provider.
  */
 public interface ISignatureProvider {
 
@@ -18,6 +18,7 @@ public interface ISignatureProvider {
      *
      * @param eosioTransactionSignatureRequest the request
      * @return the response
+     * @throws SignTransactionError thrown if there are any exceptions during the signing process.
      */
     @NotNull
     EosioTransactionSignatureResponse signTransaction(
@@ -29,6 +30,7 @@ public interface ISignatureProvider {
      * "complete workflow" for more detail of how the method is used
      *
      * @return the available keys of signature provider in EOS format
+     * @throws GetAvailableKeysError thrown if there are any exceptions during the get available keys process.
      */
     @NotNull
     List<String> getAvailableKeys() throws GetAvailableKeysError;

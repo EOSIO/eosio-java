@@ -20,9 +20,9 @@ import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
-import one.block.eosiojava.error.serializationprovider.DeserializeTransactionError;
-import one.block.eosiojava.error.serializationprovider.SerializeError;
-import one.block.eosiojava.error.serializationprovider.SerializeTransactionError;
+import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
+import one.block.eosiojava.error.serializationProvider.SerializeError;
+import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.error.session.TransactionBroadCastError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestRequiredKeysEmptyError;
 import one.block.eosiojava.error.session.TransactionPrepareError;
@@ -51,7 +51,7 @@ import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
-import one.block.eosiojava.utilities.Constants;
+import one.block.eosiojava.utilities.DateFormatter;
 import one.block.eosiojava.utilities.Utils;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
@@ -83,8 +83,8 @@ public class TransactionProcessorTest {
         assertNotNull(processor);
 
         this.mockRPC(
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
                 null, null);
 
         // Apply
@@ -346,15 +346,15 @@ public class TransactionProcessorTest {
     @Test
     public void isAllowTransactionToBeModified() {
         this.mockRPC(
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(MOCKED_PUSHTRANSACTION_RESPONE_JSON, PushTransactionResponse.class));
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_PUSHTRANSACTION_RESPONE_JSON, PushTransactionResponse.class));
 
         this.mockAbiProvider(EOSIOTOKENABIJSON);
         this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction);
         this.mockSignatureProvider(Arrays.asList("Key1", "Key2"),
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN)
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN)
                         .fromJson(mockedEosioTransactionSignatureResponseModifiedTransactionJSON, EosioTransactionSignatureResponse.class));
 
         TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
@@ -499,15 +499,15 @@ public class TransactionProcessorTest {
 
     private void mockDefaultSuccessData() {
         this.mockRPC(
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(MOCKED_PUSHTRANSACTION_RESPONE_JSON, PushTransactionResponse.class));
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_PUSHTRANSACTION_RESPONE_JSON, PushTransactionResponse.class));
 
         this.mockAbiProvider(EOSIOTOKENABIJSON);
         this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction);
         this.mockSignatureProvider(Arrays.asList("Key1", "Key2"),
-                Utils.getGson(Constants.BACKEND_DATE_PATTERN).fromJson(mockedEosioTransactionSignatureResponseJSON, EosioTransactionSignatureResponse.class));
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedEosioTransactionSignatureResponseJSON, EosioTransactionSignatureResponse.class));
     }
 
     private List<Action> defaultActions() {

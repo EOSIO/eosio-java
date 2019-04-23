@@ -3,7 +3,7 @@ package one.block.eosiojava.error.signatureProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error class which could be thrown from SignatureProvider#GetAvailableKeys
+ * Error class is used when there is an exception while attempting to call getAvailableKeys() of SignatureProvider
  */
 public class GetAvailableKeysError extends SignatureProviderError {
 

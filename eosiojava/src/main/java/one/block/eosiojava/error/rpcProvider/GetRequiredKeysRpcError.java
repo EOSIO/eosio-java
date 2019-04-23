@@ -3,7 +3,8 @@ package one.block.eosiojava.error.rpcProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class of Error/Exception for GetRequiredKeys RPC call
+ * Error class is used when there is an exception while attempting to use the RPC call,
+ * getRequiredKeys().
  */
 public class GetRequiredKeysRpcError extends RpcProviderError {
 
