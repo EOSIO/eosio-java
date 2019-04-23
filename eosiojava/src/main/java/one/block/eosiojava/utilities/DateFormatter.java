@@ -7,31 +7,31 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * This class provides utility methods to handle date time objects with supported date time patterns
+ * This class provides utility methods to handle the formatting of dates and times to supported patterns.
  */
 public class DateFormatter {
 
     /**
-     * Date pattern of Backend datetime for SimpleDateFormat
+     * Blockchain pattern for SimpleDateFormat
      */
     public static final String BACKEND_DATE_PATTERN = "yyyy-MM-dd'T'kk:mm:ss.000";
 
     /**
-     * Date pattern with timezone of Backend datetime for SimpleDateFormat
+     * Blockchain pattern for SimpleDateFormat.  It includes timezone.
      */
     public static final String BACKEND_DATE_PATTERN_WITH_TIMEZONE = "yyyy-MM-dd'T'kk:mm:ss.000 zzz";
 
     /**
-     * Timezone/Time standard of backend datetime for SimpleDateFormat
+     * Blockchain timezone/time standard for SimpleDateFormat
      */
     public static final String BACKEND_DATE_TIME_ZONE = "UTC";
 
     private DateFormatter() {}
 
     /**
-     * Converting backend time to millisecond
+     * Converting blockchain time to milliseconds
      * <p/>
-     * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
+     * Blockchain time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
      * @throws ParseException thrown if the input does not match with any supported datetime pattern.
      */
     public static long convertBackendTimeToMilli(String backendTime) throws ParseException {
@@ -46,9 +46,9 @@ public class DateFormatter {
                 Date parsedDate = sdf.parse(backendTime);
                 return parsedDate.getTime();
             } catch (ParseException ex) {
-                // Keep going even exception is thrown for trying different date pattern
+                // Keep going even if exception is thrown for trying different date pattern
             } catch (IllegalArgumentException ex) {
-                // Keep going even exception is thrown for trying different date pattern
+                // Keep going even if exception is thrown for trying different date pattern
             }
         }
 
@@ -56,7 +56,7 @@ public class DateFormatter {
     }
 
     /**
-     * Convert MilliSeconds to backend time string
+     * Convert milliseconds to time string format used on blockchain.
      * <p/>
      * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
      */

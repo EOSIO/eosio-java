@@ -3,7 +3,7 @@ package one.block.eosiojava.error.session;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error class is used when there is an exception while attempting to call BroadCast of TransactionProcessor
+ * Error class is used when there is an exception while attempting to call broadCast() of TransactionProcessor
  */
 public class TransactionBroadCastError extends TransactionProcessorError {
 

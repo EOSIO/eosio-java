@@ -26,8 +26,8 @@ import static junit.framework.TestCase.*;
 import static org.mockito.Mockito.*;
 
 import one.block.eosiojava.models.EOSIOName;
-import one.block.eosiojava.models.rpcProvider.request.GetRawAbiRequest;
-import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
+import one.block.eosiojava.models.rpcprovider.request.GetRawAbiRequest;
+import one.block.eosiojava.models.rpcprovider.response.GetRawAbiResponse;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.junit.Before;
 import org.junit.Test;

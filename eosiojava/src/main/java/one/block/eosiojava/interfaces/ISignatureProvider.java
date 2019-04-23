@@ -1,10 +1,10 @@
 package one.block.eosiojava.interfaces;
 
 import java.util.List;
-import one.block.eosiojava.error.signatureProvider.GetAvailableKeysError;
-import one.block.eosiojava.error.signatureProvider.SignTransactionError;
-import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
-import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
+import one.block.eosiojava.error.signatureprovider.GetAvailableKeysError;
+import one.block.eosiojava.error.signatureprovider.SignTransactionError;
+import one.block.eosiojava.models.signatureprovider.EosioTransactionSignatureRequest;
+import one.block.eosiojava.models.signatureprovider.EosioTransactionSignatureResponse;
 import org.jetbrains.annotations.NotNull;
 
 /**

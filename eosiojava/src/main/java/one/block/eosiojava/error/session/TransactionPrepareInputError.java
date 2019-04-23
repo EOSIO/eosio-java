@@ -3,9 +3,9 @@ package one.block.eosiojava.error.session;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error class is used when there is an exception while attempting to call Prepare() inside TransactionProcessor
+ * Error class is used when there is an exception while attempting to call prepare() inside TransactionProcessor.
  * <br>
- *     Get thrown if input for prepare() is invalid
+ *     Gets thrown if input for Prepare() is invalid.
  */
 public class TransactionPrepareInputError extends TransactionPrepareError {
 

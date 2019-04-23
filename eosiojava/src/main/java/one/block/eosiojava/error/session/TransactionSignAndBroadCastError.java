@@ -3,7 +3,7 @@ package one.block.eosiojava.error.session;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error class is used when there is an exception while attempting to call SignAndBroadCast() of TransactionProcessor
+ * Error class is used when there is an exception while attempting to call signAndBroadCast() of TransactionProcessor
  */
 public class TransactionSignAndBroadCastError extends TransactionProcessorError {
 

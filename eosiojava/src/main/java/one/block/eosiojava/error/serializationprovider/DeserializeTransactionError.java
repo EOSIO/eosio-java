@@ -3,7 +3,8 @@ package one.block.eosiojava.error.serializationprovider;
 import org.jetbrains.annotations.NotNull;
 
 /**
- *  Error class is used when there is an exception while attempting to call DeserializeTransaction of Serialization Provider
+ *  Error class is used when there is an exception while attempting to call deserializeTransaction()
+ *  of Serialization Provider
  */
 public class DeserializeTransactionError extends SerializationProviderError {
 

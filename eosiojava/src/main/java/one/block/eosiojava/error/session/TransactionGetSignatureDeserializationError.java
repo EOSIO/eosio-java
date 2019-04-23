@@ -3,7 +3,8 @@ package one.block.eosiojava.error.session;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error class is used when there is an exception while attempting to call any deserialization method inside CreateSignatureRequest() of TransactionProcessor
+ * Error class is used when there is an exception while attempting to call any deserialization
+ * method inside createSignatureRequest() of TransactionProcessor
  */
 public class TransactionGetSignatureDeserializationError extends TransactionGetSignatureError {
 

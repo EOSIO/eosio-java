@@ -1,6 +1,7 @@
 /**
- * Provides the classes/constants necessary for describe meaningful exceptions that occur on all process of eosio-java like:
- * {@link one.block.eosiojava.session.TransactionProcessor} flow,
+ * Provides the classes/constants necessary to describe meaningful exceptions that occur in all processes
+ * of eosio-java like:
+ * {@link one.block.eosiojava.session.TransactionProcessor} transaction processing flow,
  * {@link one.block.eosiojava.utilities.EOSFormatter} utilities and other processes.
  */
 

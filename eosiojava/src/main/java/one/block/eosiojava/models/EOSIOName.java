@@ -4,7 +4,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class holds block chain account name
+ * Class holds block chain account name.
  */
 public class EOSIOName {
 

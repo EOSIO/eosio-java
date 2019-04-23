@@ -3,7 +3,7 @@ package one.block.eosiojava.error.session;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error class is used when there is an exception while attempting to call GetSignature() of TransactionProcessor
+ * Error class is used when there is an exception while attempting to call getSignature() of TransactionProcessor
  */
 public class TransactionGetSignatureSigningError extends TransactionGetSignatureError {
 

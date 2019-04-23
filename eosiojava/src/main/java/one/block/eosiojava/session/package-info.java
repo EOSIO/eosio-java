@@ -1,5 +1,5 @@
 /**
- * Provides the core classes to handle transaction in eosio-java which utilize all providers.
+ * Provides the core classes to handle transaction manipulation.
  */
 
 package one.block.eosiojava.session;

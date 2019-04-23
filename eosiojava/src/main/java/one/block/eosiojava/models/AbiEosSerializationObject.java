@@ -9,12 +9,12 @@ import org.jetbrains.annotations.Nullable;
 public class AbiEosSerializationObject {
 
     /**
-     * A string representing contract name for the serialize action lookup for the ABIEOS conversion.
+     * A string representing the contract name that is to be serialized or de-serialized.
      */
     private @Nullable String contract;
 
     /**
-     * A string representing an action name that is used in conjunction with contract (above) to derive the serialize type name.
+     * A string representing an action that is used in conjunction with the contract (above).
      */
     private @NotNull String name;
 
@@ -45,7 +45,7 @@ public class AbiEosSerializationObject {
     /**
      * Gets contract.
      * <br>
-     *     A string representing contract name for the serialize action lookup for the ABIEOS conversion.
+     *     A string representing the contract name that is to be serialized or de-serialized.
      * @return the contract.
      */
     @Nullable
@@ -56,7 +56,7 @@ public class AbiEosSerializationObject {
     /**
      * Gets name.
      * <br>
-     *     A string representing an action name that is used in conjunction with contract (above) to derive the serialize type name.
+     *     A string representing the type name for the serialize action lookup for this serialize conversion.
      *
      * @return the action name.
      */

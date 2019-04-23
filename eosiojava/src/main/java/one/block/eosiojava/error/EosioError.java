@@ -6,7 +6,8 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error class is used when there is an exception while attempting to process anything inside Eosio-java library
+ * Error class is used when there is an exception while attempting to process anything inside the
+ * Eosio-java library
  */
 public class EosioError extends Exception {
 
@@ -46,7 +47,7 @@ public class EosioError extends Exception {
     }
 
     /**
-     * Construct a JSON formatted string describing the error code, and reason.
+     * Construct a JSON formatted string describing the error code and reason.
      *
      * @return A JSON formatted string
      */
