@@ -1,8 +1,8 @@
-package one.block.eosiojava.models.rpcprovider.response;
+package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
-import one.block.eosiojava.models.rpcprovider.request.GetRequiredKeysRequest;
+import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 
 /**
  * The response of GetRequiredKeys RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#getRequiredKeys(GetRequiredKeysRequest)}
@@ -10,18 +10,18 @@ import one.block.eosiojava.models.rpcprovider.request.GetRequiredKeysRequest;
 public class GetRequiredKeysResponse {
 
     /**
-     * The required public EOSIO keys to sign the transaction. It gets assigned to {@link
-     * one.block.eosiojava.models.signatureprovider.EosioTransactionSignatureRequest#setSigningPublicKeys(List)},
-     * which is passed to a Signature Provider to sign a transaction.
+     * The Required public EOSIO keys to sign the transaction. It get assigned to {@link
+     * one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest#setSigningPublicKeys(List)}
+     * which passed to Signature Provider top sign a transaction
      */
     @SerializedName("required_keys")
     private List<String> requiredKeys;
 
     /**
-     * Gets the required public EOSIO keys to sign the transaction. It gets assigned to {@link
-     * one.block.eosiojava.models.signatureprovider.EosioTransactionSignatureRequest#setSigningPublicKeys(List)},
-     * which is passed to a Signature Provider to sign a transaction.
-     * @return The required public EOSIO keys.
+     * Gets the Required public EOSIO keys to sign the transaction. It get assigned to {@link
+     * one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest#setSigningPublicKeys(List)}
+     * which passed to Signature Provider top sign a transaction
+     * @return the required public EOSIO keys.
      */
     public List<String> getRequiredKeys() {
         return requiredKeys;

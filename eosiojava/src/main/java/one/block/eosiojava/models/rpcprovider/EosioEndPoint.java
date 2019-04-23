@@ -102,7 +102,9 @@ public class EosioEndPoint {
     }
 
     /**
-     * Return
+     * Return {@link URL} object of the endpoint
+     * @return {@link URL} object of the endpoint
+     * @throws MalformedURLException if an unknown protocol is specified.
      */
     public URL toURL() throws MalformedURLException {
         return new URL(this.protocol, this.host, this.port, "");

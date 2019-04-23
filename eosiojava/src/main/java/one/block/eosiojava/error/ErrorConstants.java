@@ -2,6 +2,22 @@
 
 package one.block.eosiojava.error;
 
+import java.util.List;
+import one.block.eosiojava.interfaces.IRPCProvider;
+import one.block.eosiojava.interfaces.ISignatureProvider;
+import one.block.eosiojava.models.AbiEosSerializationObject;
+import one.block.eosiojava.models.EOSIOName;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
+import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
+import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
+import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
+import one.block.eosiojava.session.TransactionProcessor;
+import one.block.eosiojava.interfaces.IABIProvider;
+import one.block.eosiojava.interfaces.ISerializationProvider;
+import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
+
 public class ErrorConstants {
     private ErrorConstants(){
 
@@ -138,39 +154,174 @@ public class ErrorConstants {
     public static final String INVALID_PEM_OBJECT = "Cannot read PEM object!";
 
     //TransactionProcessor Errors
+    /**
+     * Error message get thrown if actions list is empty during processes of {@link TransactionProcessor}.
+     */
     public static final String TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG = "Action list can't be empty!";
+
+    /**
+     * Error message get thrown if {@link IRPCProvider#getInfo()} thrown exception during processes of {@link TransactionProcessor}
+     */
     public static final String TRANSACTION_PROCESSOR_RPC_GET_INFO = "Error happened on calling GetInfo RPC.";
+
+    /**
+     * Error message get thrown if {@link IRPCProvider#getBlock(GetBlockRequest)} thrown exception during process of {@link TransactionProcessor#prepare(List)}
+     */
     public static final String TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK = "Error happened on calling GetBlock RPC.";
+
+    /**
+     * Error message get thrown if chain id from {@link GetInfoResponse#getChainId()} does not match with the input chain id
+     */
     public static final String TRANSACTION_PROCESSOR_PREPARE_CHAINID_NOT_MATCH = "Provided chain id %s does not match chain id %s";
+
+    /**
+     * Error message get thrown if chain id from {@link GetInfoResponse#getChainId()} is empty.
+     */
     public static final String TRANSACTION_PROCESSOR_PREPARE_CHAINID_RPC_EMPTY = "Chain id from back end is empty!";
+
+    /**
+     * Error message get thrown if parsing head block time from {@link GetInfoResponse#getHeadBlockTime()} get error
+     */
     public static final String TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR = "Failed to parse head block time";
+
+    /**
+     * Error message get thrown if making clone version of transaction is failed.
+     */
     public static final String TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR = "Error happened on cloning transaction.";
+
+    /**
+     * Error message get thrown if making clone version of transaction is failed by {@link ClassNotFoundException}
+     */
     public static final String TRANSACTION_PROCESSOR_PREPARE_CLONE_CLASS_NOT_FOUND = "Transaction class was not found";
+
+    /**
+     * Error message get thrown if the current transaction inside {@link TransactionProcessor} has not been initialized or empty.
+     */
     public static final String TRANSACTION_PROCESSOR_TRANSACTION_HAS_TO_BE_INITIALIZED = "Transaction must be initialized before this method could be called! call prepare for initialize Transaction";
+
+    /**
+     * Error message get thrown if {@link IABIProvider#getAbi(String, EOSIOName)} get error.
+     */
     public static final String TRANSACTION_PROCESSOR_GET_ABI_ERROR = "Error happened on getting abi for contract [%s]";
+
+    /**
+     * Error message get thrown if Action's serialization process execute successfully but its result is empty.
+     */
     public static final String TRANSACTION_PROCESSOR_SERIALIZE_ACTION_WORKED_BUT_EMPTY_RESULT = "Serialization of action worked fine but got back empty result!";
+
+    /**
+     * Error message get thrown if Transaction's serialization process execute successfully but its result is empty.
+     */
     public static final String TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_WORKED_BUT_EMPTY_RESULT = "Serialization of transaction worked fine but got back empty result!";
+
+    /**
+     * Error message get thrown if Action's serialization process get error by calling {@link ISerializationProvider#serialize(AbiEosSerializationObject)}
+     */
     public static final String TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR = "Error happened on serializing action [%s]";
+
+    /**
+     * Error message get thrown if Transaction's serialization process get error by calling {@link ISerializationProvider#serializeTransaction(String)}
+     */
     public static final String TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_ERROR = "Error happened on serializing transaction";
+
+    /**
+     * Error message get thrown if {@link ISignatureProvider#getAvailableKeys()} returns error.
+     */
     public static final String TRANSACTION_PROCESSOR_GET_AVAILABLE_KEY_ERROR = "Error happened on getAvailableKeys from SignatureProvider!";
+
+    /**
+     * Error message get thrown if {@link ISignatureProvider#getAvailableKeys()} returns no key.
+     */
     public static final String TRANSACTION_PROCESSOR_GET_AVAILABLE_KEY_EMPTY = "Signature provider return no available key";
+
+    /**
+     * Error message get thrown if {@link IRPCProvider#getRequiredKeys(GetRequiredKeysRequest)} get error.
+     */
     public static final String TRANSACTION_PROCESSOR_RPC_GET_REQUIRED_KEYS = "Error happened on calling getRequiredKeys RPC call.";
+
+    /**
+     * Error message get thrown if {@link IRPCProvider#getRequiredKeys(GetRequiredKeysRequest)} returns no key.
+     */
     public static final String GET_REQUIRED_KEY_RPC_EMPTY_RESULT = "GetRequiredKeys RPC returned no required keys";
+
+    /**
+     * Error message get thrown if {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)} returns error
+     */
     public static final String TRANSACTION_PROCESSOR_SIGN_TRANSACTION_ERROR = "Error happened on calling sign transaction of Signature provider";
+
+    /**
+     * Error message get thrown if {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)} return empty serialized transaction.
+     */
     public static final String TRANSACTION_PROCESSOR_SIGN_TRANSACTION_TRANS_EMPTY_ERROR = "Serialized transaction come back empty from Signature Provider";
+
+    /**
+     * Error message get thrown if {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)} return no signature.
+     */
     public static final String TRANSACTION_PROCESSOR_SIGN_TRANSACTION_SIGN_EMPTY_ERROR = "Signatures come back empty from Signature Provider";
+
+    /**
+     * Error message get thrown if {@link EosioTransactionSignatureResponse} which return from {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)} has modified serialized transaction but {@link TransactionProcessor#isTransactionModificationAllowed()} is false
+     */
     public static final String TRANSACTION_IS_NOT_ALLOWED_TOBE_MODIFIED = "The transaction is not allowed to be modified but was modified by signature provider!";
+
+    /**
+     * Error message get thrown if {@link ISerializationProvider#deserializeTransaction} returns error during deserialize modified serialized transaction inside {@link EosioTransactionSignatureResponse} which return from {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)}
+     */
     public static final String TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_ERROR = "Error happened on calling deserializeTransaction to refresh transaction object with new values";
+
+    /**
+     * Error message get thrown if {@link IRPCProvider#pushTransaction(PushTransactionRequest)} returns error.
+     */
     public static final String TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION = "Error happened on calling pushTransaction RPC call";
+
+    /**
+     * Error message get thrown if {@link TransactionProcessor#serialize()}
+     */
     public static final String TRANSACTION_PROCESSOR_SERIALIZE_ERROR = "Error happened on calling serializeTransaction";
+
+    /**
+     * Error message get thrown if error happens during creating signature process of {@link TransactionProcessor#sign()}
+     */
     public static final String TRANSACTION_PROCESSOR_SIGN_CREATE_SIGN_REQUEST_ERROR = "Error happened on creating signature request for Signature Provider to sign!";
+
+    /**
+     * Error message get thrown if error happens during pushing transaction to backend
+     */
     public static final String TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR = "Error happened on pushing transaction to chain!";
+
+    /**
+     * Error message get thrown if required keys from {@link GetRequiredKeysResponse} is not subset of keys from {@link ISignatureProvider#getAvailableKeys()}
+     */
     public static final String TRANSACTION_PROCESSOR_REQUIRED_KEY_NOT_SUBSET = "Required keys from back end are not available in available keys from Signature Provider.";
+
+    /**
+     * Error message get thrown if serialized transaction is empty or has not been populated during process of {@link TransactionProcessor#broadcast()}
+     */
     public static final String TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY = "Serialized Transaction is empty or has not been populated. Make sure to call prepare then sign before calling broadcast";
+
+    /**
+     * Error message get thrown if serialized transaction is empty or has not been populated during process of {@link TransactionProcessor#signAndBroadcast()} ()}
+     */
     public static final String TRANSACTION_PROCESSOR_SIGN_BROADCAST_SERIALIZED_TRANSACTION_EMPTY = "Serialized Transaction is empty or has not been populated. Make sure to call prepare then sign before calling sign and broadcast";
+
+    /**
+     * Error message get thrown if {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)} return error during process of {@link TransactionProcessor#sign()}
+     */
     public static final String TRANSACTION_PROCESSOR_SIGN_SIGNATURE_RESPONSE_ERROR = "Error happened on the response of getSignature.";
+
+    /**
+     * Error message get thrown if {@link ISerializationProvider#deserializeTransaction} returns empty result during deserialize modified serialized transaction inside {@link EosioTransactionSignatureResponse} which return from {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)}
+     */
     public static final String TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_EMPTY_ERROR = "Deserialized transaction is null or empty";
+
+    /**
+     * Error message get thrown if {@link TransactionProcessor#getSignatures()} is empty during process of {@link TransactionProcessor#broadcast()}
+     */
     public static final String TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY = "Can't call broadcast because Signature is empty. Make sure of calling sign before calling broadcast.";
+
+    /**
+     * Error message get thrown if {@link TransactionProcessor#getSignatures()} is empty during process of {@link TransactionProcessor#signAndBroadcast()} ()}
+     */
     public static final String TRANSACTION_PROCESSOR_SIGN_BROADCAST_SIGN_EMPTY = "Can't call sign and broadcast because Signature is empty. Make sure of calling sign before calling sign and broadcast.";
 
 }

@@ -29,9 +29,17 @@ public class DateFormatter {
     private DateFormatter() {}
 
     /**
+<<<<<<< HEAD
      * Converting blockchain time to milliseconds
      * <p/>
      * Blockchain time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
+=======
+     * Converting backend time to millisecond.
+     * <p/>
+     * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT.
+     * @param backendTime input backend time.
+     * @return Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by parsed input backend time.
+>>>>>>> 531b424a0301ef41ce426c32f50de447c9dfa544
      * @throws ParseException thrown if the input does not match with any supported datetime pattern.
      */
     public static long convertBackendTimeToMilli(String backendTime) throws ParseException {
@@ -59,6 +67,8 @@ public class DateFormatter {
      * Convert milliseconds to time string format used on blockchain.
      * <p/>
      * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
+     * @param timeInMilliSeconds input number of milliseconds
+     * @return String format of input number of milliseconds
      */
     public static String convertMilliSecondToBackendTimeString(long timeInMilliSeconds) {
         SimpleDateFormat sdf = new SimpleDateFormat(BACKEND_DATE_PATTERN);

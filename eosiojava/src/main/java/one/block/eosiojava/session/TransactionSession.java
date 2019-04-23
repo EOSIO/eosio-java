@@ -78,6 +78,7 @@ public class TransactionSession {
      *
      * @param transaction - preset transaction
      * @return new instance of TransactionProcessor
+     * @throws TransactionProcessorConstructorInputError thrown if initializing {@link TransactionProcessor} get error.
      */
     public TransactionProcessor getTransactionProcessor(Transaction transaction) throws TransactionProcessorConstructorInputError {
         return new TransactionProcessor(this.serializationProvider, this.rpcProvider,
@@ -90,7 +91,7 @@ public class TransactionSession {
      * Get serialization provider to be used as a reference on {@link TransactionProcessor} object
      * <br>
      *     Responsible for serialization/deserialization between JSON and Hex for communicate with EOSIO chain
-     * @return
+     * @return the serialization provider
      */
     @NotNull
     public ISerializationProvider getSerializationProvider() {
@@ -101,7 +102,7 @@ public class TransactionSession {
      * Get rpc provider to be used as a reference on {@link TransactionProcessor} object
      * <br>
      *     Responsible for communicate with EOSIO chain
-     * @return
+     * @return the rpc provider.
      */
     @NotNull
     public IRPCProvider getRpcProvider() {
@@ -112,7 +113,7 @@ public class TransactionSession {
      * Get ABI Provider to be used as a reference on {@link TransactionProcessor} object
      * <br>
      *     Responsible for managing ABIs for serialization/deserialization
-     * @return
+     * @return the rpc provider.
      */
     @NotNull
     public IABIProvider getAbiProvider() {
@@ -123,7 +124,7 @@ public class TransactionSession {
      * Get signature provider to be used as a reference on {@link TransactionProcessor} object
      * <br>
      *     Responsible for managing keys, create signature to make transaction to EOSIO chain
-     * @return
+     * @return the signature provider.
      */
     @NotNull
     public ISignatureProvider getSignatureProvider() {

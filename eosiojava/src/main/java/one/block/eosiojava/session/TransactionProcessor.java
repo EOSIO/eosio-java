@@ -193,6 +193,10 @@ public class TransactionProcessor {
 
     /**
      * Constructor with all provider references from {@link TransactionSession}
+     * @param serializationProvider the serialization provider.
+     * @param rpcProvider the rpc provider.
+     * @param abiProvider the abi provider.
+     * @param signatureProvider the signature provider.
      */
     public TransactionProcessor(
             @NotNull ISerializationProvider serializationProvider,
@@ -208,7 +212,10 @@ public class TransactionProcessor {
     /**
      * Constructor with all provider references from {@link TransactionSession} and preset
      * Transaction
-     *
+     * @param serializationProvider the serialization provider.
+     * @param rpcProvider the rpc provider.
+     * @param abiProvider the abi provider.
+     * @param signatureProvider the signature provider.
      * @param transaction - preset Transaction
      * @throws TransactionProcessorConstructorInputError thrown if the input transaction has an empty action list.
      */
@@ -915,8 +922,14 @@ public class TransactionProcessor {
     }
 
     /**
+<<<<<<< HEAD
      * Sets chain id value. If the value has not been set yet, the getInfo() RPC call will be used
      * to get it.
+=======
+     * Sets chain id value. If the value has not set yet, then the code will call getInfo in Rpc
+     * provider to get it.
+     * @param chainId - input chain id
+>>>>>>> 531b424a0301ef41ce426c32f50de447c9dfa544
      */
     public void setChainId(@Nullable String chainId) {
         this.chainId = chainId;
@@ -954,7 +967,12 @@ public class TransactionProcessor {
     }
 
     /**
+<<<<<<< HEAD
      * Should the signature provider be able to modify the transaction?
+=======
+     * Whether allow transaction to be modified by Signature Provider.
+     * @return Whether allow transaction to be modified by Signature Provider.
+>>>>>>> 531b424a0301ef41ce426c32f50de447c9dfa544
      */
     public boolean isTransactionModificationAllowed() {
         return isTransactionModificationAllowed;
@@ -966,6 +984,7 @@ public class TransactionProcessor {
      * <p/>
      * False: No modification. {@link TransactionGetSignatureNotAllowModifyTransactionError} will be
      * thrown if transaction is modified.
+     * @param isTransactionModificationAllowed Whether allow transaction to be modified by Signature Provider.
      */
     public void setIsTransactionModificationAllowed(boolean isTransactionModificationAllowed) {
         this.isTransactionModificationAllowed = isTransactionModificationAllowed;
