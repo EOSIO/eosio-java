@@ -1,19 +1,19 @@
 package one.block.eosiojava.interfaces;
 
-import one.block.eosiojava.error.rpcprovider.GetBlockRpcError;
-import one.block.eosiojava.error.rpcprovider.GetInfoRpcError;
-import one.block.eosiojava.error.rpcprovider.GetRawAbiRpcError;
-import one.block.eosiojava.error.rpcprovider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcprovider.PushTransactionRpcError;
-import one.block.eosiojava.models.rpcprovider.request.GetBlockRequest;
-import one.block.eosiojava.models.rpcprovider.request.GetRawAbiRequest;
-import one.block.eosiojava.models.rpcprovider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcprovider.request.PushTransactionRequest;
-import one.block.eosiojava.models.rpcprovider.response.GetBlockResponse;
-import one.block.eosiojava.models.rpcprovider.response.GetInfoResponse;
-import one.block.eosiojava.models.rpcprovider.response.GetRawAbiResponse;
-import one.block.eosiojava.models.rpcprovider.response.GetRequiredKeysResponse;
-import one.block.eosiojava.models.rpcprovider.response.PushTransactionResponse;
+import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
+import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
+import one.block.eosiojava.error.rpcProvider.GetRawAbiRpcError;
+import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
+import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
+import one.block.eosiojava.models.rpcProvider.request.GetRawAbiRequest;
+import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
+import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
+import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
 import org.jetbrains.annotations.NotNull;
 
 /**

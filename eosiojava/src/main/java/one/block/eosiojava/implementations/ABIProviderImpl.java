@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import one.block.eosiojava.error.ErrorConstants;
-import one.block.eosiojava.error.abiprovider.GetAbiError;
+import one.block.eosiojava.error.abiProvider.GetAbiError;
 import one.block.eosiojava.interfaces.IABIProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.models.EOSIOName;
-import one.block.eosiojava.models.rpcprovider.request.GetRawAbiRequest;
-import one.block.eosiojava.models.rpcprovider.response.GetRawAbiResponse;
+import one.block.eosiojava.models.rpcProvider.request.GetRawAbiRequest;
+import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
 import one.block.eosiojava.utilities.ByteFormatter;
 import org.jetbrains.annotations.NotNull;
 

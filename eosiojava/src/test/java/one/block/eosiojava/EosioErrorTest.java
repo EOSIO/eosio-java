@@ -3,10 +3,9 @@
 package one.block.eosiojava;
 
 import one.block.eosiojava.error.EosioError;
-import one.block.eosiojava.error.serializationprovider.SerializationProviderError;
+import one.block.eosiojava.error.serializationProvider.SerializationProviderError;
 import org.junit.Test;
 
-import java.io.IOError;
 import java.io.IOException;
 
 import static org.junit.Assert.*;

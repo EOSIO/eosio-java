@@ -1,11 +1,11 @@
 package one.block.eosiojava.interfaces;
 
-import one.block.eosiojava.error.serializationprovider.DeserializeAbiError;
-import one.block.eosiojava.error.serializationprovider.DeserializeError;
-import one.block.eosiojava.error.serializationprovider.DeserializeTransactionError;
-import one.block.eosiojava.error.serializationprovider.SerializeAbiError;
-import one.block.eosiojava.error.serializationprovider.SerializeError;
-import one.block.eosiojava.error.serializationprovider.SerializeTransactionError;
+import one.block.eosiojava.error.serializationProvider.DeserializeAbiError;
+import one.block.eosiojava.error.serializationProvider.DeserializeError;
+import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
+import one.block.eosiojava.error.serializationProvider.SerializeAbiError;
+import one.block.eosiojava.error.serializationProvider.SerializeError;
+import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.models.AbiEosSerializationObject;
 
 /**

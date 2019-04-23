@@ -8,14 +8,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import one.block.eosiojava.error.ErrorConstants;
-import one.block.eosiojava.error.abiprovider.GetAbiError;
-import one.block.eosiojava.error.rpcprovider.GetBlockRpcError;
-import one.block.eosiojava.error.rpcprovider.GetInfoRpcError;
-import one.block.eosiojava.error.rpcprovider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcprovider.PushTransactionRpcError;
-import one.block.eosiojava.error.serializationprovider.DeserializeTransactionError;
-import one.block.eosiojava.error.serializationprovider.SerializeError;
-import one.block.eosiojava.error.serializationprovider.SerializeTransactionError;
+import one.block.eosiojava.error.abiProvider.GetAbiError;
+import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
+import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
+import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
+import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
+import one.block.eosiojava.error.serializationProvider.SerializeError;
+import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.error.session.TransactionBroadCastEmptySignatureError;
 import one.block.eosiojava.error.session.TransactionBroadCastError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestAbiError;
@@ -37,26 +37,26 @@ import one.block.eosiojava.error.session.TransactionPushTransactionError;
 import one.block.eosiojava.error.session.TransactionSerializeError;
 import one.block.eosiojava.error.session.TransactionSignAndBroadCastError;
 import one.block.eosiojava.error.session.TransactionSignError;
-import one.block.eosiojava.error.signatureprovider.GetAvailableKeysError;
-import one.block.eosiojava.error.signatureprovider.SignatureProviderError;
+import one.block.eosiojava.error.signatureProvider.GetAvailableKeysError;
+import one.block.eosiojava.error.signatureProvider.SignatureProviderError;
 import one.block.eosiojava.interfaces.IABIProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
 import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
-import one.block.eosiojava.models.rpcprovider.Action;
-import one.block.eosiojava.models.rpcprovider.Transaction;
-import one.block.eosiojava.models.rpcprovider.TransactionConfig;
-import one.block.eosiojava.models.rpcprovider.request.GetBlockRequest;
-import one.block.eosiojava.models.rpcprovider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcprovider.request.PushTransactionRequest;
-import one.block.eosiojava.models.rpcprovider.response.GetBlockResponse;
-import one.block.eosiojava.models.rpcprovider.response.GetInfoResponse;
-import one.block.eosiojava.models.rpcprovider.response.GetRequiredKeysResponse;
-import one.block.eosiojava.models.rpcprovider.response.PushTransactionResponse;
-import one.block.eosiojava.models.signatureprovider.EosioTransactionSignatureRequest;
-import one.block.eosiojava.models.signatureprovider.EosioTransactionSignatureResponse;
+import one.block.eosiojava.models.rpcProvider.Action;
+import one.block.eosiojava.models.rpcProvider.Transaction;
+import one.block.eosiojava.models.rpcProvider.TransactionConfig;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
+import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
+import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
+import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
+import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
+import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
 import one.block.eosiojava.utilities.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +68,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * The TransactionProcessor allows the developer to:
  * <p>
- * - Get input {@link one.block.eosiojava.models.rpcprovider.Action}
+ * - Get input {@link one.block.eosiojava.models.rpcProvider.Action}
  * <p>
  * - Create transaction
  * <p>

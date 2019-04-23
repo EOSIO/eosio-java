@@ -5,7 +5,7 @@ import one.block.eosiojava.interfaces.IABIProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
-import one.block.eosiojava.models.rpcprovider.Transaction;
+import one.block.eosiojava.models.rpcProvider.Transaction;
 import org.jetbrains.annotations.NotNull;
 
 /**

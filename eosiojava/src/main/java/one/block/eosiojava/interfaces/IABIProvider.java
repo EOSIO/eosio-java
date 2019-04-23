@@ -2,7 +2,7 @@ package one.block.eosiojava.interfaces;
 
 import java.util.List;
 import java.util.Map;
-import one.block.eosiojava.error.abiprovider.GetAbiError;
+import one.block.eosiojava.error.abiProvider.GetAbiError;
 import one.block.eosiojava.models.EOSIOName;
 import org.jetbrains.annotations.NotNull;
 
