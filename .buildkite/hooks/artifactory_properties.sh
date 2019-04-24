@@ -3,7 +3,7 @@ set -eu -o pipefail
 
  export artifactory_contextURL="https://blockone.jfrog.io/blockone"
 
-    GRADLE_PROPERTIES="/var/lib/buildkite-agent/builds/automation-android-builder-fleet/EOSIO/eosio-java/eosiojava/gradle.properties"
+    GRADLE_PROPERTIES="~/.gradle/"
     export GRADLE_PROPERTIES
 
     echo "Gradle Properties should exist at $GRADLE_PROPERTIES"
