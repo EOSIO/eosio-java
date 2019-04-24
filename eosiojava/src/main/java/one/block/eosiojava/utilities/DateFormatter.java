@@ -14,12 +14,12 @@ public class DateFormatter {
     /**
      * Blockchain pattern for SimpleDateFormat
      */
-    public static final String BACKEND_DATE_PATTERN = "yyyy-MM-dd'T'kk:mm:ss.000";
+    public static final String BACKEND_DATE_PATTERN = "yyyy-MM-dd'T'kk:mm:ss.SSS";
 
     /**
      * Blockchain pattern for SimpleDateFormat.  It includes timezone.
      */
-    public static final String BACKEND_DATE_PATTERN_WITH_TIMEZONE = "yyyy-MM-dd'T'kk:mm:ss.000 zzz";
+    public static final String BACKEND_DATE_PATTERN_WITH_TIMEZONE = "yyyy-MM-dd'T'kk:mm:ss.SSS zzz";
 
     /**
      * Blockchain timezone/time standard for SimpleDateFormat
@@ -29,17 +29,11 @@ public class DateFormatter {
     private DateFormatter() {}
 
     /**
-<<<<<<< HEAD
-     * Converting blockchain time to milliseconds
-     * <p/>
-     * Blockchain time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
-=======
      * Converting backend time to millisecond.
      * <p/>
      * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT.
      * @param backendTime input backend time.
      * @return Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by parsed input backend time.
->>>>>>> 531b424a0301ef41ce426c32f50de447c9dfa544
      * @throws ParseException thrown if the input does not match with any supported datetime pattern.
      */
     public static long convertBackendTimeToMilli(String backendTime) throws ParseException {

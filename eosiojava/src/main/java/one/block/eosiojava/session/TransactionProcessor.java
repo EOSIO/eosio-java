@@ -799,6 +799,10 @@ public class TransactionProcessor {
             action.setData(actionAbiEosSerializationObject.getHex());
         }
 
+        // Apply serialized actions to current transaction to be used on getRequiredKeys
+        // From now, the current transaction keep serialized actions
+        this.transaction = clonedTransaction;
+
         // Serialize the whole transaction
         String _serializedTransaction;
         try {

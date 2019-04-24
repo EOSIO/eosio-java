@@ -221,10 +221,6 @@ public class TransactionProcessorTest {
             assertNotNull(transaction);
             assertNotNull(transaction.getActions());
 
-            // Original version of the transaction should be equal to the transaction because signature provider does not change it.
-            assertTrue(Arrays.equals(actions.get(0).getAuthorization().toArray(),
-                    transaction.getActions().get(0).getAuthorization().toArray()));
-
             assertEquals(actions.get(0).getAuthorization().size(), transaction.getActions().get(0).getAuthorization().size());
             assertEquals(actions.get(0).getAuthorization().get(0).getActor(),
                     transaction.getActions().get(0).getAuthorization().get(0).getActor());
