@@ -1,6 +1,6 @@
 steps:
   - command: |
-    .scripts/artifactory_properties.sh  
+      .scripts/artifactory_properties.sh 
     label: "Set Artifactory Secrets"
     agents:
      - "queue=automation-android-builder-fleet"
