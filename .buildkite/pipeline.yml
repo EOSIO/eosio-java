@@ -1,13 +1,5 @@
 steps:
   - command: |
-      .scripts/artifactory_properties.sh 
-    label: "Set Artifactory Secrets"
-    agents:
-     - "queue=automation-android-builder-fleet"
-
-  - wait
-
-  - command: |
       gradle assemble artifactoryPublish --stacktrace
     label: "Build & Publish Library"
     agents:
