@@ -27,7 +27,7 @@ public class GetRawAbiResponse {
 
     /**
      * The Abi (Raw abi) of the account name (Contract name)
-     * <br>
+     * <br/>
      * This abi is used to serialize contract action's data.
      */
     @SerializedName("abi")

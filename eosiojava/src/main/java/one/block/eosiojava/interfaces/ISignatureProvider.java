@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public interface ISignatureProvider {
 
     /**
-     * Sign a transaction in Signature Provider <br> Check signTransaction flow() in "complete
+     * Sign a transaction in Signature Provider <br/> Check signTransaction flow() in "complete
      * workflow" for more detail
      *
      * @param eosioTransactionSignatureRequest the request
@@ -25,7 +25,7 @@ public interface ISignatureProvider {
             throws SignTransactionError;
 
     /**
-     * Gets available keys from signature provider <br> Check createSignatureRequest() flow in
+     * Gets available keys from signature provider <br/> Check createSignatureRequest() flow in
      * "complete workflow" for more detail of how the method is used
      *
      * @return the available keys of signature provider in EOS format

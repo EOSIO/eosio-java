@@ -13,7 +13,7 @@ public interface IABIProvider {
 
     /**
      * Gets multiple ABI by list of EOSIOName.
-     * <br>
+     * <br/>
      * Check ABIProviderImpl.getABIs() flow in "complete workflow"
      * doc for more detail about the implementation
      *
@@ -27,7 +27,7 @@ public interface IABIProvider {
 
     /**
      * Gets abi by EOSIOName.
-     * <br>
+     * <br/>
      * Check ABIProviderImpl.getABI() flow in "complete workflow"
      * doc for more detail about the implementation
      *
