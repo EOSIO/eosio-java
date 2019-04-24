@@ -12,7 +12,7 @@ repositories {
     jcenter()
     mavenCentral()
     maven {
-        url "http://localhost:8081/artifactory/libs-release-local"
+        url artifactory_contextURL
     }
 }
 
@@ -31,7 +31,7 @@ dependencies {
 
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '5.0.0'
+def libraryVersion = '1.0.0'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'
@@ -75,7 +75,7 @@ artifactory {
     contextUrl = artifactory_contextURL
     publish {
         repository {
-            repoKey = 'libs-release-local'
+            repoKey = artifactory_repo
 
             username = artifactory_username
             password = artifactory_password
