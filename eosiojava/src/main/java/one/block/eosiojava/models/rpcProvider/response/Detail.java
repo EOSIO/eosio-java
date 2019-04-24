@@ -4,65 +4,65 @@ import com.google.gson.annotations.SerializedName;
 import java.math.BigInteger;
 
 /**
- * The Error Detail of RPC response error.
+ * The Error Detail of {@link RPCResponseError}
  */
 public class Detail {
 
     /**
-     * The Message.
+     * The error message.
      */
     @SerializedName("message")
     private String message;
 
     /**
-     * The File.
+     * The error file on backend.
      */
     @SerializedName("file")
     private String file;
 
     /**
-     * The Line number.
+     * The error line number on backend.
      */
     @SerializedName("line_number")
     private BigInteger lineNumber;
 
     /**
-     * The Method.
+     * The method that caused the error on backend.
      */
     @SerializedName("method")
     private String method;
 
     /**
-     * Gets message.
+     * Gets the error message.
      *
-     * @return the message
+     * @return the error message
      */
     public String getMessage() {
         return message;
     }
 
     /**
-     * Gets file.
+     * Gets the error file from backend.
      *
-     * @return the file
+     * @return the error file
      */
     public String getFile() {
         return file;
     }
 
     /**
-     * Gets line number.
+     * Gets the error line number from backend.
      *
-     * @return the line number
+     * @return the error line number
      */
     public  BigInteger getLineNumber() {
         return lineNumber;
     }
 
     /**
-     * Gets method.
+     * Gets the method that caused the error from backend.
      *
-     * @return the method
+     * @return the method causing the error
      */
     public String getMethod() {
         return method;

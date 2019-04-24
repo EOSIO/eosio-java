@@ -4,21 +4,39 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class holds block chain account name
+ * Class holds block chain account name.
  */
 public class EOSIOName {
 
+    /**
+     * EOSIO account name in String format.
+     */
     @NotNull private String accountName;
 
+    /**
+     * Initialize EOSIOName object with EOSIO account name in String format
+     *
+     * @param accountName - input EOSIO account name in String format.
+     */
     public EOSIOName(@NotNull String accountName) {
         this.accountName = accountName;
     }
 
+    /**
+     * Get EOSIO account name in String format.
+     *
+     * @return EOSIO account name in String format.
+     */
     @NotNull
     public String getAccountName() {
         return accountName;
     }
 
+    /**
+     * Get EOSIO account name
+     *
+     * @param accountName input EOSIO account name in string format.
+     */
     public void setAccountName(@NotNull String accountName) {
         this.accountName = accountName;
     }

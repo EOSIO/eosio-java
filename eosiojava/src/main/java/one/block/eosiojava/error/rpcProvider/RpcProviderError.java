@@ -4,7 +4,9 @@ import one.block.eosiojava.error.EosioError;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Class of Error/Exception for all RPC error/exception
+ * Error class is used when there is an exception while attempting to use any RPC call.
+ * <br>
+ *     Any exception class which is used in an RPC Provider should extend this Error class.
  */
 public class RpcProviderError extends EosioError {
 

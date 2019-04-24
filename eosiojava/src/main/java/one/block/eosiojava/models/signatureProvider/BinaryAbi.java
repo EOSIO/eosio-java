@@ -4,19 +4,20 @@ import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The type Binary abi.
+ * This class holds data of the ABI and its contract account name that is passed to a Signature
+ * Provider inside {@link EosioTransactionSignatureRequest}
  */
 public class BinaryAbi {
 
     /**
-     * The Account name.
+     * The contract account name.
      */
     @SerializedName("account_name")
     @NotNull
     private String accountName;
 
     /**
-     * The Abi.
+     * The ABI.
      */
     @SerializedName("abi")
     @NotNull
@@ -25,8 +26,8 @@ public class BinaryAbi {
     /**
      * Instantiates a new Binary abi.
      *
-     * @param accountName the account name
-     * @param abi the abi
+     * @param accountName the contract account name
+     * @param abi the ABI
      */
     public BinaryAbi(@NotNull String accountName, @NotNull String abi) {
         this.accountName = accountName;
@@ -34,28 +35,28 @@ public class BinaryAbi {
     }
 
     /**
-     * Gets accont name.
+     * Gets contract account name.
      *
-     * @return the accont name
+     * @return the contract account name
      */
     @NotNull
-    public String getAccontName() {
+    public String getAccountName() {
         return accountName;
     }
 
     /**
-     * Sets accont name.
+     * Sets contract account name.
      *
-     * @param accountName the account name
+     * @param accountName the contract account name
      */
-    public void setAccontName(@NotNull String accountName) {
+    public void setAccountName(@NotNull String accountName) {
         this.accountName = accountName;
     }
 
     /**
-     * Gets abi.
+     * Gets ABI.
      *
-     * @return the abi
+     * @return the ABI
      */
     @NotNull
     public String getAbi() {
@@ -63,9 +64,9 @@ public class BinaryAbi {
     }
 
     /**
-     * Sets abi.
+     * Sets ABI.
      *
-     * @param abi the abi
+     * @param abi the ABI
      */
     public void setAbi(@NotNull String abi) {
         this.abi = abi;

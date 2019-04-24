@@ -1,7 +1,11 @@
-package one.block.eosiojava.error.serializationprovider;
+package one.block.eosiojava.error.serializationProvider;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Error class is used when there is an exception while attempting to call serialize()
+ * of Serialization Provider
+ */
 public class SerializeError extends SerializationProviderError {
 
     public SerializeError() {

@@ -5,29 +5,29 @@ import java.io.Serializable;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The Authorization of Action
+ * The Authorization of {@link Action}
  */
 public class Authorization implements Serializable {
 
     /**
-     * The Actor.
+     * The Actor name.
      */
     @SerializedName("actor")
     @NotNull
-    String actor;
+    private String actor;
 
     /**
-     * The Permission.
+     * The Permission of the actor.
      */
     @SerializedName("permission")
     @NotNull
-    String permission;
+    private String permission;
 
     /**
      * Instantiates a new Authorization.
      *
-     * @param actor the actor
-     * @param permission the permission
+     * @param actor the actor name.
+     * @param permission the permission of the actor.
      */
     public Authorization(@NotNull String actor, @NotNull String permission) {
         this.actor = actor;
@@ -35,9 +35,9 @@ public class Authorization implements Serializable {
     }
 
     /**
-     * Gets actor.
+     * Gets actor name.
      *
-     * @return the actor
+     * @return the actor name.
      */
     @NotNull
     public String getActor() {
@@ -45,27 +45,27 @@ public class Authorization implements Serializable {
     }
 
     /**
-     * Sets actor.
+     * Sets actor name.
      *
-     * @param actor the actor
+     * @param actor the actor name.
      */
     public void setActor(@NotNull String actor) {
         this.actor = actor;
     }
 
     /**
-     * Gets permission.
+     * Gets permission of the actor.
      *
-     * @return the permission
+     * @return the permission of the actor.
      */
     public String getPermission() {
         return permission;
     }
 
     /**
-     * Sets permission.
+     * Sets permission of the actor.
      *
-     * @param permission the permission
+     * @param permission the permission of the actor.
      */
     public void setPermission(@NotNull String permission) {
         this.permission = permission;

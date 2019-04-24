@@ -36,42 +36,48 @@ import java.math.BigInteger;
 /**
  * This is a wrapper class for PEMObjects that throws a {@link PEMProcessorError} if an invalid
  * PEMObject is passed into the constructor.  Once initialized the PEMProcessor can be used to
- * return the type, DER format, or alogorithm used to create the PEMObject.
+ * return the type, DER format, or algorithm used to create the PEMObject.
  */
 public class PEMProcessor {
 
+    /**
+     * PEM private key type on header
+     */
     private static final String PRIVATE_KEY_TYPE = "EC PRIVATE KEY";
 
+    /**
+     * Private key start index on ASN.1 sequence
+     */
     private static final int PRIVATE_KEY_START_INDEX = 2;
 
     //region CURVE Constants
     /**
-     * Const name of secp256r1 curves
+     * Constant name of secp256r1 curves
      */
     private static final String SECP256_R1 = "secp256r1";
 
     /**
-     * Const name of secp256k1 curves
+     * Constant name of secp256k1 curves
      */
     private static final String SECP256_K1 = "secp256k1";
 
     /**
-     * EC parameters holder of R1 key type
+     * EC parameters holder of secp256r1 key type
      */
     private static final X9ECParameters CURVE_PARAMS_R1 = CustomNamedCurves.getByName(SECP256_R1);
 
     /**
-     * EC parameters holder of K1 key type
+     * EC parameters holder of secp256k1 key type
      */
     private static final X9ECParameters CURVE_PARAMS_K1 = CustomNamedCurves.getByName(SECP256_K1);
 
     /**
-     * EC holder of R1 key type
+     * EC holder of secp256r1 key type
      */
     private static final ECDomainParameters CURVE_R1;
 
     /**
-     * EC holder of K1 key type
+     * EC holder of secp256k1 key type
      */
     private static final ECDomainParameters CURVE_K1;
 
@@ -97,10 +103,16 @@ public class PEMProcessor {
     private PemObject pemObject;
     private String pemObjectString;
 
+    /**
+     * Initialize PEMProcessor with PEM content in String format.
+     *
+     * @param pemObject - input PEM content in String format.
+     * @throws PEMProcessorError When failing to read pem data from the input.
+     */
     public PEMProcessor(String pemObject) throws PEMProcessorError {
         this.pemObjectString = pemObject;
         try (Reader reader = new CharArrayReader(this.pemObjectString.toCharArray());
-                PemReader pemReader = new PemReader(reader);) {
+                PemReader pemReader = new PemReader(reader)) {
             this.pemObject = pemReader.readPemObject();
             if (this.pemObject == null) {
                 throw new PEMProcessorError(ErrorConstants.INVALID_PEM_OBJECT);
@@ -206,13 +218,15 @@ public class PEMProcessor {
     /**
      * Extract EOS public key
      *
-     * @param isLegacy - Set to true if the WIF legacy format of the key is desired.
+     * @param isLegacy - Set to true if the legacy format of the key is desired.  This uses "EOS"
+     * to prefix the key data and only applies to keys generated with the secp256k1 algorithm.  The
+     * new format prefixes the key data with "PUB_K1_".
      * @return EOS format public key of the current private key
      * @throws PEMProcessorError
      */
     public String extractEOSPublicKeyFromPrivateKey(boolean isLegacy) throws PEMProcessorError {
         if (!this.getType().equals(PRIVATE_KEY_TYPE)) {
-            throw new PEMProcessorError(ErrorConstants.PEM_PROCESSOR_EXTRACT_PUBKEY_FROM_PRIVKEY_NOT_PRIVKEY_ERROR);
+            throw new PEMProcessorError(ErrorConstants.PUBLIC_KEY_COULD_NOT_BE_EXTRACTED_FROM_PRIVATE_KEY);
         }
 
         AlgorithmEmployed keyCurve = this.getAlgorithm();
@@ -248,7 +262,9 @@ public class PEMProcessor {
     /**
      * Extract PEM public key
      *
-     * @param isLegacy whether return WIF legacy format
+     * @param isLegacy Whether to return the legacy format of the key.  This uses "EOS"
+     * to prefix the key data and only applies to keys generated with the secp256k1 algorithm.  The
+     * new format prefixes the key data with "PUB_K1_".
      * @return EOS format public key of the current private key
      */
     public String extractPEMPublicKeyFromPrivateKey(boolean isLegacy) throws PEMProcessorError {
@@ -260,7 +276,7 @@ public class PEMProcessor {
     }
 
     /**
-     * Gets EC Curve's domain paramter by curve type
+     * Gets EC Curve's domain parameter by curve type
      *
      * @param curve - type
      * @return ECDomainParameters of input curve

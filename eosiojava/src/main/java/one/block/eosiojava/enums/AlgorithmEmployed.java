@@ -21,10 +21,18 @@ public enum AlgorithmEmployed {
 
     private String str;
 
+    /**
+     * Initialize AlgorithmEmployed enum object with a String value
+     * @param str - input String value of enums in AlgorithmEmployed
+     */
     AlgorithmEmployed(String str) {
         this.str = str;
     }
 
+    /**
+     * Gets string value of AlgorithmEmployed's enum
+     * @return string value of AlgorithmEmployed's enum
+     */
     public String getString() {
         return str;
     }
