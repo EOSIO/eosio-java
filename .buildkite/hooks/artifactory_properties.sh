@@ -3,7 +3,7 @@ set -eu -o pipefail
 
  export artifactory_contextURL="https://blockone.jfrog.io/blockone"
 
-    GRADLE_PROPERTIES="~/.gradle/"
+    GRADLE_PROPERTIES="/opt/gradle/gradle-4.10.1/bin/gradle.properties"
     export GRADLE_PROPERTIES
 
     echo "Gradle Properties should exist at $GRADLE_PROPERTIES"
