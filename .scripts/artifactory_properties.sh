@@ -2,7 +2,7 @@
 set -eu -o pipefail
 
 function copyEnvVarsToGradleProperties {
-    GRADLE_PROPERTIES=$HOME"/.gradle/gradle.properties"
+    GRADLE_PROPERTIES=$BUILDKITE_HOME"/EOSIO/eosio-java/eosiojava/gradle.properties"
     export GRADLE_PROPERTIES
     echo "Gradle Properties should exist at $GRADLE_PROPERTIES"
 
