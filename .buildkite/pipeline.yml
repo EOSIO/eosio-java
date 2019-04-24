@@ -8,7 +8,7 @@ steps:
   - wait
 
   - command: |
-      gradle assemble artifactoryPublish
+      gradle assemble artifactoryPublish --stacktrace
     label: "Build & Publish Library"
     agents:
      - "queue=automation-android-builder-fleet"
