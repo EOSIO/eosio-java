@@ -1,5 +1,6 @@
 steps:
   - command: |
+      bash .scripts/artifactory.sh
       gradle assemble artifactoryPublish --stacktrace
     label: "Build & Publish Library"
     agents:
