@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eu -o pipefail
 
-export username_test=(cat ~/var/lib/buildkite-agent/.artifactory-username)
+export username_test=$(cat /var/lib/buildkite-agent/.artifactory-username)
 export artifactory_contextURL="https://blockone.jfrog.io/blockone"
 GRADLE_PROPERTIES="/var/lib/buildkite-agent/builds/automation-android-builder-fleet/EOSIO/eosio-java/eosiojava/gradle.properties"
 export GRADLE_PROPERTIES
