@@ -12,6 +12,10 @@ repositories {
     jcenter()
     mavenCentral()
     maven {
+        credentials{
+            username artifactory_username
+            password artifactory_password
+        }
         url artifactory_contextURL
     }
 }
@@ -31,7 +35,7 @@ dependencies {
 
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '2.0.0'
+def libraryVersion = '1.0.0'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'
