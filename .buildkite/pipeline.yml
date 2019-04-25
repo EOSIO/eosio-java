@@ -1,7 +1,8 @@
 steps:
   - command: |
-      gradle build
-    label: "Build Library"
+      bash .scripts/artifactory.sh
+      gradle assemble artifactoryPublish --stacktrace
+    label: "Build & Publish Library"
     agents:
      - "queue=automation-android-builder-fleet"
 
