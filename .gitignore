@@ -108,3 +108,5 @@ gradle-app.setting
 ### Sonarlint ###
 .idea/sonarlint/
 
+gradle.properties
+
