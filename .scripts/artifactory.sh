@@ -11,6 +11,6 @@ echo "Writing Secrets to gradle.properties..."
 echo "artifactory_username=$(cat /var/lib/buildkite-agent/.artifactory-username)" >> $GRADLE_PROPERTIES
 #echo "artifactory_password=$(cat /var/lib/buildkite-agent/.artifactory-password)" >> $GRADLE_PROPERTIES
 echo "artifactory_password=testest" >> $GRADLE_PROPERTIES
-echo "artifactory_contextURL=https://blockone.jfrog.io/blockone/webapp/#/login" >> $GRADLE_PROPERTIES
+echo "artifactory_contextURL=http://blockone.jfrog.io/blockone/webapp/#/login" >> $GRADLE_PROPERTIES
 echo "artifactory_repo=android-libs-dev" >> $GRADLE_PROPERTIES
 
