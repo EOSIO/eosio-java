@@ -9,6 +9,7 @@ steps:
   - wait
 
   - command: |
+      bash .scripts/artifactory.sh
       gradle test
     label: "Run Tests"
     agents:
