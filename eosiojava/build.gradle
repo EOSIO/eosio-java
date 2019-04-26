@@ -35,7 +35,7 @@ dependencies {
 
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '1.0.0'
+def libraryVersion = '0.0.1'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'
