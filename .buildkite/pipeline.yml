@@ -1,7 +1,10 @@
 steps:
+
   - command: |
-      bash .scripts/artifactory.sh
-      gradle assemble artifactoryPublish
+      if [[ ${BUILDKITE_BRANCH} == "develop" || ${BUILDKITE_BRANCH} == "master" || ${BUILDKITE_BRANCH} == "release/*" || ${BUILDKITE_BRANCH} == "feature/*" ]]; then 
+        bash ./scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle assemble artifactoryPublish
+      else
+        bash ./scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
     label: "Build & Publish Library"
     agents:
      - "queue=automation-android-builder-fleet"
