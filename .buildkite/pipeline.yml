@@ -5,6 +5,7 @@ steps:
         bash ./scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle assemble artifactoryPublish
       else
         bash ./scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
+      fi
     label: "Build & Publish Library"
     agents:
      - "queue=automation-android-builder-fleet"
