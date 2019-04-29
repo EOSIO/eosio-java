@@ -3,6 +3,7 @@ package one.block.eosiojava.session;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -491,6 +492,28 @@ public class TransactionProcessorTest {
         }
 
         assertEquals("", processor.getSerializedTransaction());
+    }
+
+    @Test
+    public void testContextFreeActionPrepare() {
+        // Prepare and sign
+        this.mockDefaultSuccessData();
+
+        // Context free actions
+        TransactionProcessor processor = session.getTransactionProcessor();
+        try {
+            processor.prepare(this.defaultActions(), this.defaultActions());
+        } catch (TransactionPrepareError transactionPrepareError) {
+            transactionPrepareError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare.");
+        }
+
+        try {
+            assertNotEquals("", processor.serialize());
+        } catch (TransactionSerializeError transactionSerializeError) {
+            transactionSerializeError.printStackTrace();
+            fail("Exception should not be thrown here for calling serialize.");
+        }
     }
 
     private void mockDefaultSuccessData() {
