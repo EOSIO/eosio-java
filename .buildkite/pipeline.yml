@@ -1,7 +1,7 @@
 steps:
 
   - command: |
-      if [[ "$BUILDKITE_BRANCH" == "develop" || "$BUILDKITE_BRANCH" == "master" || "$BUILDKITE_BRANCH" == "release/*" || "$BUILDKITE_BRANCH" == "feature/*" ]]; then 
+      if [[ "$BUILDKITE_BRANCH" == "develop" || "$BUILDKITE_BRANCH" == "master" || echo "$BUILDKITE_BRANCH" | egrep -c "^release/.+" > /dev/null || echo "$BUILDKITE_BRANCH" | egrep -c "^feature/.+" > /dev/null ]]; then 
         bash .scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle assemble artifactoryPublish
       else
         bash .scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
@@ -13,7 +13,7 @@ steps:
   - wait
 
   - command: |
-      if [[ "$BUILDKITE_BRANCH" == "develop" || "$BUILDKITE_BRANCH" == "master" || "$BUILDKITE_BRANCH" == "release/*" || "$BUILDKITE_BRANCH" == "feature/*" ]]; then 
+      if [[ "$BUILDKITE_BRANCH" == "develop" || "$BUILDKITE_BRANCH" == "master" || echo "$BUILDKITE_BRANCH" | egrep -c "^release/.+" > /dev/null || echo "$BUILDKITE_BRANCH" | egrep -c "^feature/.+" > /dev/null ]]; then 
         bash .scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle test
       else
         bash .scripts/artifactory.sh -e scratch && gradle test
