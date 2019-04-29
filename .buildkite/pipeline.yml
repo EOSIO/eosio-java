@@ -13,7 +13,7 @@ steps:
   - wait
 
   - command: |
-      if [[ ${BUILDKITE_BRANCH} == "develop" || ${BUILDKITE_BRANCH} == "master" || ${BUILDKITE_BRANCH} == "release/*" || ${BUILDKITE_BRANCH} == "feature/*" ]]; then 
+      if [[ "$BUILDKITE_BRANCH" == "develop" || "$BUILDKITE_BRANCH" == "master" || "$BUILDKITE_BRANCH" == "release/*" || "$BUILDKITE_BRANCH" == "feature/*" ]]; then 
         bash .scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle test
       else
         bash .scripts/artifactory.sh -e scratch && gradle test
