@@ -1,7 +1,7 @@
 steps:
 
-  - command:
-      bash .scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle assemble artifactoryPublish
+  - command: |
+      bash ./scripts/artifactory.sh -e "${BUILDKITE_BRANCH}" && gradle assemble artifactoryPublish
     branches: master develop release/* feature/*
     label: "Build & Publish Library"
     agents:
@@ -9,26 +9,26 @@ steps:
 
   - wait
 
-  - command:
-      bash .scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
-    branches: "!master" "!develop" "!release/*" "!feature/*"
+  - command: |
+      bash ./scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
+    branches: !master !develop !release/* !feature/*
     label: "Build & Publish Library"
     agents:
      - "queue=automation-android-builder-fleet"
 
   - wait
 
-  - command:
-      bash .scripts/artifactory.sh -e scratch && gradle test
-    branches: "!master" "!develop" "!release/*" "!feature/*"  
+  - command: |
+      bash ./scripts/artifactory.sh -e scratch && gradle test
+    branches: !master !develop !release/* !feature/*
     label: "Run Tests"
     agents:
      - "queue=automation-android-builder-fleet"
 
   - wait
 
-    - command:
-      bash .scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle test
+    - command: |
+        bash ./scripts/artifactory.sh -e "${BUILDKITE_BRANCH}" && gradle test
     branches: master develop release/* feature/*
     label: "Run Tests"
     agents:
