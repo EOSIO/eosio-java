@@ -2,9 +2,9 @@ steps:
 
   - command: |
       if [[ ${BUILDKITE_BRANCH} == "develop" || ${BUILDKITE_BRANCH} == "master" || ${BUILDKITE_BRANCH} == "release/*" || ${BUILDKITE_BRANCH} == "feature/*" ]]; then 
-        bash ./scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle assemble artifactoryPublish
+        bash .scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle assemble artifactoryPublish
       else
-        bash ./scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
+        bash .scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
       fi
     label: "Build & Publish Library"
     agents:
@@ -13,8 +13,11 @@ steps:
   - wait
 
   - command: |
-      bash .scripts/artifactory.sh
-      gradle test
+      if [[ ${BUILDKITE_BRANCH} == "develop" || ${BUILDKITE_BRANCH} == "master" || ${BUILDKITE_BRANCH} == "release/*" || ${BUILDKITE_BRANCH} == "feature/*" ]]; then 
+        bash .scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle test
+      else
+        bash .scripts/artifactory.sh -e scratch && gradle test
+      fi
     label: "Run Tests"
     agents:
      - "queue=automation-android-builder-fleet"
