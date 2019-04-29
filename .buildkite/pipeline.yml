@@ -1,11 +1,8 @@
 steps:
 
   - command: |
-      if [[ "$BUILDKITE_BRANCH" == "develop" || "$BUILDKITE_BRANCH" == "master" || echo "$BUILDKITE_BRANCH" | egrep -c "^release/.+" > /dev/null || echo "$BUILDKITE_BRANCH" | egrep -c "^feature/.+" > /dev/null ]]; then 
         bash .scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle assemble artifactoryPublish
-      else
-        bash .scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
-      fi
+    branches: "master develop release/* feature/*
     label: "Build & Publish Library"
     agents:
      - "queue=automation-android-builder-fleet"
@@ -13,11 +10,26 @@ steps:
   - wait
 
   - command: |
-      if [[ "$BUILDKITE_BRANCH" == "develop" || "$BUILDKITE_BRANCH" == "master" || echo "$BUILDKITE_BRANCH" | egrep -c "^release/.+" > /dev/null || echo "$BUILDKITE_BRANCH" | egrep -c "^feature/.+" > /dev/null ]]; then 
-        bash .scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle test
-      else
+        bash .scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
+    branches: "!master" "!develop" "!release/*" "!feature/*"
+    label: "Build & Publish Library"
+    agents:
+     - "queue=automation-android-builder-fleet"
+
+  - wait
+
+  - command: |
         bash .scripts/artifactory.sh -e scratch && gradle test
-      fi
+    branches: "!master" "!develop" "!release/*" "!feature/*"  
+    label: "Run Tests"
+    agents:
+     - "queue=automation-android-builder-fleet"
+
+  - wait
+
+    - command: |
+        bash .scripts/artifactory.sh -e ${BUILDKITE_BRANCH} && gradle test
+    branches: "master develop release/* feature/*
     label: "Run Tests"
     agents:
      - "queue=automation-android-builder-fleet"
