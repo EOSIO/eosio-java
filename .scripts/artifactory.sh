@@ -1,6 +1,6 @@
 set -e
 
-BRANCH=$1
+BRANCH=$2
 
 echo "$BRANCH" | grep -e "^release/.+" > /dev/null
 IS_RELEASE=$?
