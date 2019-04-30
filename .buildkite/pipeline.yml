@@ -10,7 +10,7 @@ steps:
   - wait
 
   - command: |
-      bash ./scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
+      bash ./scripts/artifactory.sh -e "scratch" && gradle assemble artifactoryPublish
     branches: !master !develop !release/* !feature/*
     label: "Build & Publish Library"
     agents:
