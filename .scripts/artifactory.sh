@@ -3,10 +3,10 @@ set -e -o pipefail
 
 BRANCH=$2
 
-echo "$BRANCH" | egrep "^release/.+" > /dev/null
+echo "$BRANCH" | grep -e "^release/.+" > /dev/null
 IS_RELEASE=$?
 
-echo "$BRANCH" | egrep "^feature/.+" > /dev/null
+echo "$BRANCH" | grep -e "^feature/.+" > /dev/null
 IS_FEATURE=$?
 
 
@@ -29,6 +29,7 @@ elif [ "$IS_FEATURE" -eq 0 ]; then
 elif [ "$BRANCH" == "scratch" ]; then
   echo "This is a Local build!"
   ARTIFACTORY_ENVIROMENT="android-libs-scratch-local"
+
 else
     echo "BAD"
 fi
