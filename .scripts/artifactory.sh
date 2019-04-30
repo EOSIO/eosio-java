@@ -2,35 +2,29 @@ set -e
 
 BRANCH=$2
 
-echo "$BRANCH" | grep -e "^release/.+" > /dev/null
+echo "$BRANCH" | egrep "^release/.+" > /dev/null
 IS_RELEASE=$?
 
-echo "$BRANCH" | grep -e "^feature/.+" > /dev/null
+echo "$BRANCH" | egrep "^feature/.+" > /dev/null
 IS_FEATURE=$?
 
 
-if [ "$BRANCH" == "develop" ]; then
-  echo "This is a Develop build!"
-  ARTIFACTORY_ENVIROMENT="android-libs-dev-local"
-
-elif [[ "$IS_RELEASE" -eq 0 ]]; then
-  echo "This is a Release build!"
-  ARTIFACTORY_ENVIROMENT="android-libs-staging-local"
-
-elif [ "$BRANCH" == "master" ]; then
-  echo "This is a Master build!"
-  ARTIFACTORY_ENVIROMENT="android-libs-release-local"
-
+if [ "$BRANCH" == "master" ]; then
+  echo "Branch is master"
+elif [ "$BRANCH" == "develop" ]; then
+  echo "Branch is develop"
+  export ARTIFACTORY_ENVIROMENT="android-libs-dev-local"
+elif [ "$BRANCH" == "scratch" ]; then
+  echo "Branch is scratch"
+  export ARTIFACTORY_ENVIROMENT="android-libs-scratch-local"
 elif [ "$IS_FEATURE" -eq 0 ]; then
   echo "Is feature"
-  ARTIFACTORY_ENVIROMENT="android-libs-feature-local"
-
-elif [ "$BRANCH" == "scratch" ]; then
-  echo "This is a Local build!"
-  ARTIFACTORY_ENVIROMENT="android-libs-scratch-local"
-
+  export ARTIFACTORY_ENVIROMENT="android-libs-feature-local"
+elif [[ "$IS_RELEASE" -eq 0 ]]; then
+  echo "Is Release"
+  export ARTIFACTORY_ENVIROMENT="android-libs-staging-local"
 else
-    echo "BAD"
+  echo "BAD"
 fi
 
 
