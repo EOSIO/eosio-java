@@ -1,7 +1,8 @@
 ![Java Logo](img/java-logo.png)
 # EOSIO SDK for Java ![EOSIO Alpha](https://img.shields.io/badge/EOSIO-Alpha-blue.svg)
+
 [![Software License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](./LICENSE)
-![Lagnuage Java](https://img.shields.io/badge/Language-Java-yellow.svg)
+![Language Java](https://img.shields.io/badge/Language-Java-yellow.svg)
 ![](https://img.shields.io/badge/Deployment%20Target-JVM-blue.svg)
 
 EOSIO SDK for Java is an API for integrating with EOSIO-based blockchains using the [EOSIO RPC API](https://developers.eos.io/eosio-nodeos/reference).
@@ -14,8 +15,8 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
+- [Android Example App](#android-example-app)
 - [Provider Interface Architecture](#provider-interface-architecture)
-- [What's Next for the SDK](#whats-next-for-the-sdk)
 - [Want to Help?](#want-to-help)
 - [License & Legal](#license)
 
@@ -33,8 +34,6 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 
 To use EOSIO SDK for Java in your app, add the following modules to your build.gradle:
 
-**TODO** This needs to be updated when the distribution strategy is finalized.
-
 ```groovy
 implementation 'one.block:eosiojava:0.0.1'
 implementation 'one.block:eosiojavasoftkeysignatureprovider:0.0.1'
@@ -42,7 +41,7 @@ implementation 'one.block:eosiojavaandroidabieosserializationprovider:0.0.1'
 implementation 'one.block:eosiojavarpcprovider:0.0.1'
 ```
 
-If you are using EOSIO SDK for Java, or any library that depends on it, in an Android application you must also add the following to your application's build.gradle file in the `android` section:
+If you are using EOSIO SDK for Java, or any library that depends on it, in an Android application, you must also add the following to your application's `build.gradle` file in the `android` section:
 
 ```groovy
 // Needed to get bitcoin-j to produce a valid apk for android.
@@ -53,11 +52,11 @@ packagingOptions {
 }
 ```
 
-Then refresh your gradle project.  Then you're all set for the [Basic Usage](#basic-usage) example!
+Then refresh your gradle project. Then you're all set for the [Basic Usage](#basic-usage) example!
 
 ## Basic Usage
 
-Transactions are instantiated via a `TransactionSession()` which must be configured with a number of providers and a `TransactionProcessor()`, which manipulates and performs actions on a Transaction, prior to use. The code below shows a very barebones flow.  Error handling has been omitted for clarity but should be handled in normal usage.  (See [Provider Interface Architecture](#provider-interface-architecture) below for more information about providers.)
+Transactions are instantiated via a `TransactionSession()` which must be configured with a number of providers and a `TransactionProcessor()`, which manipulates and performs actions on a Transaction, prior to use. The code below shows a very barebones flow. Error handling has been omitted for clarity but should be handled in normal usage. (See [Provider Interface Architecture](#provider-interface-architecture) below for more information about providers.)
 
 ```java
 IRPCProvider rpcProvider = new EosioJavaRpcProviderImpl("https://baseurl.com/v1/");
@@ -68,12 +67,14 @@ ISignatureProvider signatureProvider = new SoftKeySignatureProviderImpl();
 signatureProvider.importKey(privateKeyK1EOS);
 // or
 signatureProvider.importKey(privateKeyR1EOS);
-            
-TransactionSession session = new TransactionSession(serializationProvider,
+
+TransactionSession session = new TransactionSession(
+        serializationProvider,
         rpcProvider,
         abiProvider,
-        signatureProvider);
-        
+        signatureProvider
+);
+
 TransactionProcessor processor = session.getTransactionProcessor();
 
 String jsonData = "{\n" +
@@ -92,6 +93,10 @@ processor.prepare(actions);
 
 PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
 ```
+
+## Android Example App
+
+If you'd like to see EOSIO SDK for Java in action, check out our open source [Android Example App](https://github.com/EOSIO/eosio-java-android-example-app)--a working application that fetches an account's token balance and pushes a transfer action.
 
 ## Provider Interface Architecture
 
@@ -112,7 +117,7 @@ EOSIO SDK for Java _does not include_ a signature provider implementation; one m
 
 ### RPC Provider Protocol
 
-The RPC Provider is responsible for all [RPC calls to nodeos](https://developers.eos.io/eosio-nodeos/reference), as well as general network handling (offline detection, retry logic, etc.) 
+The RPC Provider is responsible for all [RPC calls to nodeos](https://developers.eos.io/eosio-nodeos/reference), as well as general network handling (offline detection, retry logic, etc.)
 
 EOSIO SDK for Java _does not include_ an RPC provider implementation; one must be installed separately.
 
@@ -127,7 +132,7 @@ EOSIO SDK for Java _does not include_ an RPC provider implementation; one must b
 The Serialization Provider is responsible for ABI-driven transaction and action serialization and deserialization between JSON and binary data representations. These implementations often contain platform-sensitive C++ code and larger dependencies. For those reasons, EOSIO SDK for Java _does not include_ a serialization provider implementation; one must be installed separately.
 
 * [ISerializationProvider](eosiojava/src/main/java/one/block/eosiojava/interfaces/ISerializationProvider.java)
-* [ABIEOS Serialization Provider Implementation](https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider) - Currently supports Android 6+
+* [ABIEOS Serialization Provider Implementation](https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider) - Currently supports Android 6 (Marshmallow)+
 
 ### ABI Provider Protocol
 
@@ -136,15 +141,11 @@ The ABI Provider is responsible for fetching and caching ABIs for use during ser
 * [IABIProvider](eosiojava/src/main/java/one/block/eosiojava/interfaces/IABIProvider.java)
 * [Default ABIProviderImpl Implementation](eosiojava/src/main/java/one/block/eosiojava/implementations/ABIProviderImpl.java)
 
-## What's Next for the SDK?
-
-We're always looking for ways to improve EOSIO SDK for Java. Here are a few ideas around how we'd like to see the library progress. Check out our [#enhancement Issues](/../../issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement) for more.
-
-* **TODO** add more items for what's next
-
 ## Want to help?
 
 Interested in contributing? That's awesome! Here are some [Contribution Guidelines](./CONTRIBUTING.md) and the [Code of Conduct](./CONTRIBUTING.md#conduct).
+
+We're always looking for ways to improve EOSIO SDK for Java. Check out our [#enhancement Issues](/../../issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement) for ways you can pitch in.
 
 ## License
 
