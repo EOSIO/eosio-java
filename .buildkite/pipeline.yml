@@ -1,7 +1,7 @@
 steps:
 
   - command:
-      bash ./scripts/artifactory.sh -e "${BUILDKITE_BRANCH}" && gradle assemble artifactoryPublish
+      bash .scripts/artifactory.sh -e "${BUILDKITE_BRANCH}" && gradle assemble artifactoryPublish
     branches: master develop release/* feature/*
     label: "Build & Publish Library"
     agents:
@@ -10,7 +10,7 @@ steps:
   - wait
 
   - command:
-      bash ./scripts/artifactory.sh -e "scratch" && gradle assemble artifactoryPublish
+      bash .scripts/artifactory.sh -e scratch && gradle assemble artifactoryPublish
     branches: "!master !develop !release/* !feature/*"
     label: "Build & Publish Library"
     agents:
@@ -19,7 +19,7 @@ steps:
   - wait
 
   - command:
-      bash ./scripts/artifactory.sh -e scratch && gradle test
+      bash .scripts/artifactory.sh -e scratch && gradle test
     branches: "!master !develop !release/* !feature/*"
     label: "Run Tests"
     agents:
@@ -28,7 +28,7 @@ steps:
   - wait
 
   - command:
-      bash ./scripts/artifactory.sh -e "${BUILDKITE_BRANCH}" && gradle test
+      bash .scripts/artifactory.sh -e "${BUILDKITE_BRANCH}" && gradle test
     branches: master develop release/* feature/*
     label: "Run Tests"
     agents:
