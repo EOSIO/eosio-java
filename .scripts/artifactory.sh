@@ -1,25 +1,15 @@
-set -e
+
+BRANCH=$2
 
 
-# Grab required args
-while true; do
-  case $1 in
-    -e | --env) BRANCH=$2; shift 2 ;;
-    *) break ;;
-  esac
-done
-
-echo "hi"
 
 echo "$BRANCH" | egrep "^release/.+" > /dev/null
 IS_RELEASE=$?
 
-echo "hi2"
+echo "$IS_RELEASE"
 
 echo "$BRANCH" | egrep "^feature/.+" > /dev/null
 IS_FEATURE=$?
-
-echo "hi3"
 
 
 if [ "$BRANCH" == "master" ]; then
