@@ -1,5 +1,4 @@
-#!/bin/bash
-set -e -o pipefail
+set -e
 
 BRANCH=$1
 

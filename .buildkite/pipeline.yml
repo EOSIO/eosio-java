@@ -1,7 +1,7 @@
 steps:
 
   - command:
-      bash .scripts/artifactory.sh BRANCH="${BUILDKITE_BRANCH}" && gradle assemble artifactoryPublish
+      bash .scripts/artifactory.sh -e "${BUILDKITE_BRANCH}" && gradle assemble artifactoryPublish
     branches: master develop release/* feature/*
     label: "Build & Publish Library"
     agents:
