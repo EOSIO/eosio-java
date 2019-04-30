@@ -1,6 +1,6 @@
 steps:
 
-  - command: |
+  - command:
       bash ./scripts/artifactory.sh -e "${BUILDKITE_BRANCH}" && gradle assemble artifactoryPublish
     branches: master develop release/* feature/*
     label: "Build & Publish Library"
@@ -9,7 +9,7 @@ steps:
 
   - wait
 
-  - command: |
+  - command:
       bash ./scripts/artifactory.sh -e "scratch" && gradle assemble artifactoryPublish
     branches: !master !develop !release/* !feature/*
     label: "Build & Publish Library"
@@ -18,7 +18,7 @@ steps:
 
   - wait
 
-  - command: |
+  - command:
       bash ./scripts/artifactory.sh -e scratch && gradle test
     branches: !master !develop !release/* !feature/*
     label: "Run Tests"
@@ -27,7 +27,7 @@ steps:
 
   - wait
 
-  - command: |
+  - command:
       bash ./scripts/artifactory.sh -e "${BUILDKITE_BRANCH}" && gradle test
     branches: master develop release/* feature/*
     label: "Run Tests"
