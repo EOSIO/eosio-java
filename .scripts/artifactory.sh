@@ -1,6 +1,14 @@
 set -e
 
-BRANCH=$2
+
+# Grab required args
+while true; do
+  case $1 in
+    -e | --env) BRANCH=$2; shift 2 ;;
+    *) break ;;
+  esac
+done
+
 echo "hi"
 
 echo "$BRANCH" | egrep "^release/.+" > /dev/null
