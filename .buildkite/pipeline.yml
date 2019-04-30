@@ -11,7 +11,7 @@ steps:
 
   - command:
       bash ./scripts/artifactory.sh -e "scratch" && gradle assemble artifactoryPublish
-    branches: !master !develop !release/* !feature/*
+    branches: "!master !develop !release/* !feature/*"
     label: "Build & Publish Library"
     agents:
      - "queue=automation-android-builder-fleet"
@@ -20,7 +20,7 @@ steps:
 
   - command:
       bash ./scripts/artifactory.sh -e scratch && gradle test
-    branches: !master !develop !release/* !feature/*
+    branches: "!master !develop !release/* !feature/*"
     label: "Run Tests"
     agents:
      - "queue=automation-android-builder-fleet"
