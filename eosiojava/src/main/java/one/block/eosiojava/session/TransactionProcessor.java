@@ -241,7 +241,7 @@ public class TransactionProcessor {
      * Check prepare() flow in "Complete Workflow" doc for more detail
      *
      * @param actions - List of actions with data. If the transaction is preset or has a value and it has its own actions, that list will be over-ridden by this input list.
-     * @param contextFreeActions - List of context free action with data.
+     * @param contextFreeActions - List of context free actions with data.
      *
      * @throws TransactionPrepareError thrown if:
      *          <br>
@@ -357,9 +357,9 @@ public class TransactionProcessor {
     /**
      * Prepare action's data from input and create new instance of Transaction if it is not set.
      * <p>
-     *     Use this method if don't want to provide context free action.
+     *     Use this method if you don't want to provide context free actions.
      * <p>
-     * Check prepare() flow in "Complete Workflow" doc for more detail
+     * Check prepare() flow in "Complete Workflow" doc for more detail.
      *
      * @param actions - List of actions with data. If the transaction is preset or has a value and it
      * has its own actions, that list will be over-ridden by this input list.
@@ -800,7 +800,7 @@ public class TransactionProcessor {
             action.setData(actionAbiEosSerializationObject.getHex());
         }
 
-        // Serialize each action of Transaction's context free actions if there is any
+        // Serialize each action of Transaction's context free actions if they exist.
         if (!clonedTransaction.getContextFreeActions().isEmpty()) {
             for (Action contextFreeAction : clonedTransaction.getContextFreeActions()) {
                 AbiEosSerializationObject actionAbiEosSerializationObject = this.serializeAction(contextFreeAction, this.chainId, this.abiProvider);
@@ -838,8 +838,8 @@ public class TransactionProcessor {
      *
      * @param action - input action to serialize.
      * @param chainId - the chain id.
-     * @param abiProvider - an Instant of ABI provider.
-     * @return A Serialized object from {@link ISerializationProvider} which contains the hex format of the action's JSON data.
+     * @param abiProvider - an instance of ABI provider.
+     * @return A serialized object from {@link ISerializationProvider} which contains the hex format of the action's JSON data.
      * @throws TransactionCreateSignatureRequestError thrown if there are any exceptions while serializing transaction:
      *      <br>
      *          - {@link TransactionCreateSignatureRequestAbiError}, which is thrown if any error
@@ -869,7 +869,7 @@ public class TransactionProcessor {
                 null, actionAbiJSON);
         actionAbiEosSerializationObject.setHex("");
 
-        // !!! At this step, the data field of the action still has JSON type value
+        // !!! At this step, the data field of the action is still in JSON format.
         actionAbiEosSerializationObject.setJson(action.getData());
 
         try {
