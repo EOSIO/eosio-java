@@ -1,12 +1,15 @@
 set -e
 
 BRANCH=$2
+echo "hi"
 
 echo "$BRANCH" | egrep "^release/.+" > /dev/null
 IS_RELEASE=$?
 
 echo "$BRANCH" | egrep "^feature/.+" > /dev/null
 IS_FEATURE=$?
+
+echo "hi2"
 
 
 if [ "$BRANCH" == "master" ]; then
