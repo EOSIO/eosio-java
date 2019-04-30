@@ -6,10 +6,12 @@ echo "hi"
 echo "$BRANCH" | egrep "^release/.+" > /dev/null
 IS_RELEASE=$?
 
+echo "hi2"
+
 echo "$BRANCH" | egrep "^feature/.+" > /dev/null
 IS_FEATURE=$?
 
-echo "hi2"
+echo "hi3"
 
 
 if [ "$BRANCH" == "master" ]; then
