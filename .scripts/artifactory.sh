@@ -1,37 +1,36 @@
 #!/bin/bash
 set -e -o pipefail
 
-#BUILDKITE_BRANCH=$ARTIFACTORY_ENVIROMENT
+BRANCH=$2
 
-while true; do
-  case $1 in
-    -e | --env) ARTIFACTORY_ENVIROMENT="$2"; shift 2 ;;
-    *) break ;;
-  esac
-done
+echo "$BRANCH" | egrep "^release/.+" > /dev/null
+IS_RELEASE=$?
 
-echo "$ARTIFACTORY_ENVIROMENT"
+echo "$BRANCH" | egrep "^feature/.+" > /dev/null
+IS_FEATURE=$?
 
-if [ "$ARTIFACTORY_ENVIROMENT" == "develop" ]; then
+
+if [ "$BRANCH" == "develop" ]; then
   echo "This is a Develop build!"
   ARTIFACTORY_ENVIROMENT="android-libs-dev-local"
 
-elif [ "$ARTIFACTORY_ENVIROMENT" == "release/*" ]; then
+elif [[ "$IS_RELEASE" -eq 0 ]]; then
   echo "This is a Release build!"
   ARTIFACTORY_ENVIROMENT="android-libs-staging-local"
 
-elif [ "$ARTIFACTORY_ENVIROMENT" == "master" ]; then
+elif [ "$BRANCH" == "master" ]; then
   echo "This is a Master build!"
   ARTIFACTORY_ENVIROMENT="android-libs-release-local"
 
-elif [ "$ARTIFACTORY_ENVIROMENT" == "feature/*" ]; then
-  echo "This is a Feature build!"
+elif [ "$IS_FEATURE" -eq 0 ]; then
+  echo "Is feature"
   ARTIFACTORY_ENVIROMENT="android-libs-feature-local"
 
-elif [ "$ARTIFACTORY_ENVIROMENT" == "scratch" ]; then
+elif [ "$BRANCH" == "scratch" ]; then
   echo "This is a Local build!"
   ARTIFACTORY_ENVIROMENT="android-libs-scratch-local"
-
+else
+    echo "BAD"
 fi
 
 
