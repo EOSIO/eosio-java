@@ -14,6 +14,7 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
+- [Android Example App](#android-example-app)
 - [Provider Interface Architecture](#provider-interface-architecture)
 - [What's Next for the SDK](#whats-next-for-the-sdk)
 - [Want to Help?](#want-to-help)
@@ -32,8 +33,6 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 ### Instructions
 
 To use EOSIO SDK for Java in your app, add the following modules to your build.gradle:
-
-**TODO** This needs to be updated when the distribution strategy is finalized.
 
 ```groovy
 implementation 'one.block:eosiojava:0.0.1'
@@ -93,6 +92,10 @@ processor.prepare(actions);
 PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
 ```
 
+## Android Example App
+
+If you'd like to see EOSIO SDK for Java in action, check out our open source [Android Example App](https://github.com/EOSIO/eosio-java-android-example-app) --a working application that fetches an account's token balance and pushes a transfer action.
+
 ## Provider Interface Architecture
 
 The core EOSIO SDK for Java library uses a provider-interface-driven architecture to provide maximum flexibility in a variety of environments and use cases. `TransactionSession` and `TransactionProcessor` leverages those providers to prepare and process transactions. EOSIO SDK for Java exposes four interfaces. You, the developer, get to choose which conforming implementations to use.
@@ -140,7 +143,8 @@ The ABI Provider is responsible for fetching and caching ABIs for use during ser
 
 We're always looking for ways to improve EOSIO SDK for Java. Here are a few ideas around how we'd like to see the library progress. Check out our [#enhancement Issues](/../../issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement) for more.
 
-* **TODO** add more items for what's next
+* Support WebAuthn.
+* Support `send_transaction` for nodes 1.8.
 
 ## Want to help?
 
