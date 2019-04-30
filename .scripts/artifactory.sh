@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e -o pipefail
 
+#BUILDKITE_BRANCH=$ARTIFACTORY_ENVIROMENT
 
 while true; do
   case $1 in
@@ -9,6 +10,7 @@ while true; do
   esac
 done
 
+echo "$ARTIFACTORY_ENVIROMENT"
 
 if [ "$ARTIFACTORY_ENVIROMENT" == "develop" ]; then
   echo "This is a Develop build!"
