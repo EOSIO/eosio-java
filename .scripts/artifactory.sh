@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -o pipefail
 
-BRANCH=$2
+BRANCH=$1
 
 echo "$BRANCH" | grep -e "^release/.+" > /dev/null
 IS_RELEASE=$?
