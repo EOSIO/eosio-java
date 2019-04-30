@@ -11,9 +11,13 @@
 .idea/**/encodings.xml
 .idea/**/misc.xml
 .idea/**/vcs.xml
+local.properties
 
 # Generated files
 .idea/**/contentModel.xml
+.idea/**/caches/
+.idea/**/modules.xml
+.idea/**/runConfigurations.xml
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
@@ -100,4 +104,9 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
+
+### Sonarlint ###
+.idea/sonarlint/
+
+gradle.properties
 
