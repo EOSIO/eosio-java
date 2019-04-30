@@ -14,6 +14,7 @@ IS_FEATURE=$?
 
 if [ "$BRANCH" == "master" ]; then
   echo "Branch is master"
+  export ARTIFACTORY_ENVIROMENT="android-libs-release-local"
 elif [ "$BRANCH" == "develop" ]; then
   echo "Branch is develop"
   export ARTIFACTORY_ENVIROMENT="android-libs-dev-local"
