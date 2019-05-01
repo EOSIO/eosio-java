@@ -65,7 +65,7 @@ IABIProvider abiProvider = new ABIProviderImpl(rpcProvider, serializationProvide
 ISignatureProvider signatureProvider = new SoftKeySignatureProviderImpl();
 
 signatureProvider.importKey(privateKeyK1EOS);
-// or
+// or...
 signatureProvider.importKey(privateKeyR1EOS);
 
 TransactionSession session = new TransactionSession(
