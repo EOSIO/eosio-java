@@ -30,7 +30,7 @@ public class DateFormatter {
 
     /**
      * Converting backend time to millisecond.
-     * <p/>
+     * <p>
      * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT.
      * @param backendTime input backend time.
      * @return Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by parsed input backend time.
@@ -59,7 +59,7 @@ public class DateFormatter {
 
     /**
      * Convert milliseconds to time string format used on blockchain.
-     * <p/>
+     * <p>
      * Backend time pattern "yyyy-MM-dd'T'HH:mm:ss.sss" in GMT
      * @param timeInMilliSeconds input number of milliseconds
      * @return String format of input number of milliseconds
