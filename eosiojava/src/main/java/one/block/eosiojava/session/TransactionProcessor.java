@@ -990,14 +990,9 @@ public class TransactionProcessor {
     }
 
     /**
-<<<<<<< HEAD
      * Sets chain id value. If the value has not been set yet, the getInfo() RPC call will be used
      * to get it.
-=======
-     * Sets chain id value. If the value has not set yet, then the code will call getInfo in Rpc
-     * provider to get it.
      * @param chainId - input chain id
->>>>>>> 531b424a0301ef41ce426c32f50de447c9dfa544
      */
     public void setChainId(@Nullable String chainId) {
         this.chainId = chainId;
@@ -1035,12 +1030,8 @@ public class TransactionProcessor {
     }
 
     /**
-<<<<<<< HEAD
      * Should the signature provider be able to modify the transaction?
-=======
-     * Whether allow transaction to be modified by Signature Provider.
-     * @return Whether allow transaction to be modified by Signature Provider.
->>>>>>> 531b424a0301ef41ce426c32f50de447c9dfa544
+     * @return Whether to allow transaction to be modified by Signature Provider.
      */
     public boolean isTransactionModificationAllowed() {
         return isTransactionModificationAllowed;
