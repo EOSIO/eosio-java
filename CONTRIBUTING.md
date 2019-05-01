@@ -77,10 +77,10 @@ To get it out of the way:
 By default, libraries are installed from remote Maven repositories through Gradle.
 
 ```groovy
-implementation 'one.block:eosiojava:0.0.1'
-implementation 'one.block:eosiojavasoftkeysignatureprovider:0.0.1'
-implementation 'one.block:eosiojavaandroidabieosserializationprovider:0.0.1'
-implementation 'one.block:eosiojavarpcprovider:0.0.1'
+implementation 'one.block:eosiojava:0.1.0'
+implementation 'one.block:eosiojavasoftkeysignatureprovider:0.1.0'
+implementation 'one.block:eosiojavaandroidabieosserializationprovider:0.1.0'
+implementation 'one.block:eosiojavarpcprovider:0.1.0'
 ```
 
 If, however, you wish to develop locally and you'd like to integrate with locally-cloned versions of EOSIO SDK for Java and/or other Providers, follow these instructions:
