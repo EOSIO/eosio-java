@@ -26,7 +26,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.61'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.61'
-    // This works on android and non-android but is necessary to keep us to 1.7 targets.
+    // This works on android and non-android, but is necessary to keep us to 1.7 targets.
     implementation 'com.google.guava:guava:27.1-android'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.26.0'
@@ -36,7 +36,7 @@ dependencies {
 
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '0.1.1'
+def libraryVersion = '0.1.0'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'
