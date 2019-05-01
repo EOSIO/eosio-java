@@ -18,7 +18,7 @@ public class GetRequiredKeysRequest {
     private List<String> availableKeys;
 
     /**
-     * The Transaction which will be broadcast to the blockchain. <br/> Actions of the
+     * The Transaction which will be broadcast to the blockchain. <br> Actions of the
      * transaction have to be serialized.
      */
     @SerializedName("transaction")
@@ -70,7 +70,7 @@ public class GetRequiredKeysRequest {
     }
 
     /**
-     * Sets transaction. The Transaction which will be broadcast to the blockchain. <br/> Actions
+     * Sets transaction. The Transaction which will be broadcast to the blockchain. <br> Actions
      * of the transaction have to be serialized.
      *
      * @param transaction the transaction

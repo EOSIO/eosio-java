@@ -782,9 +782,9 @@ public class EOSFormatter {
 
     /**
      * Extract serialized transaction from a signable transaction
-     * <p/>
+     * <p>
      * Signable signature structure:
-     * <p/>
+     * <p>
      * chainId (64 characters) + serialized transaction + 32 bytes of 0
      *
      * @param eosTransaction - the input signable transaction
@@ -815,9 +815,9 @@ public class EOSFormatter {
 
     /**
      * Preparing signable transaction for signing.
-     * <p/>
+     * <p>
      * Signable signature structure:
-     * <p/>
+     * <p>
      * chainId + serialized transaction + 32 bytes of 0
      *
      * @param serializedTransaction - the serialized transaction to be converted to signable transaction

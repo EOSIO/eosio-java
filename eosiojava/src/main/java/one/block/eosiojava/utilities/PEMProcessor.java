@@ -148,7 +148,7 @@ public class PEMProcessor {
      * Gets the algorithm used to generate the key from its PEM format.
      *
      * @return The algorithm used to generate the key.
-     * @throws {@link PEMProcessorError}
+     * @throws PEMProcessorError
      */
     @NotNull
     public AlgorithmEmployed getAlgorithm() throws PEMProcessorError {
@@ -179,7 +179,7 @@ public class PEMProcessor {
      * Gets the key as a byte array from its PEM format.
      *
      * @return key as byte[]
-     * @throws {@link PEMProcessorError}
+     * @throws PEMProcessorError
      */
     @NotNull
     public byte[] getKeyData() throws PEMProcessorError {
@@ -298,7 +298,7 @@ public class PEMProcessor {
      * Parses PEM object.
      *
      * @return Parsed PEM object as Object.
-     * @throws {@link PEMProcessorError}
+     * @throws PEMProcessorError
      */
     @NotNull
     private Object parsePEMObject() throws PEMProcessorError {

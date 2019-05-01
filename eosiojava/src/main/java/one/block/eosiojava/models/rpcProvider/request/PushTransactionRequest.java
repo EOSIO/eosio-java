@@ -30,7 +30,7 @@ public class PushTransactionRequest {
 
     /**
      * The Pack Transaction (Serialized Transaction).
-     * <br/> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
+     * <br> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      */
     @SerializedName("packed_trx")
     @NotNull
@@ -110,7 +110,7 @@ public class PushTransactionRequest {
 
     /**
      * Gets the packed transaction (serialized transaction).
-     * <br/> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
+     * <br> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      *
      * @return the Pack Transaction (Serialized Transaction).
      */
@@ -121,7 +121,7 @@ public class PushTransactionRequest {
 
     /**
      * Sets the packed transaction (serialized transaction).
-     * <br/> It is the serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
+     * <br> It is the serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      *
      * @param packTrx the packed transaction (serialized transaction).
      */
