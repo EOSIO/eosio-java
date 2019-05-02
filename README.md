@@ -14,6 +14,7 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 ## Contents
 
 - [Installation](#installation)
+- [Helpful Utilities](#helpful-utilities)
 - [Basic Usage](#basic-usage)
 - [Android Example App](#android-example-app)
 - [Provider Interface Architecture](#provider-interface-architecture)
@@ -53,6 +54,10 @@ packagingOptions {
 ```
 
 Then refresh your gradle project. Then you're all set for the [Basic Usage](#basic-usage) example!
+
+## Helpful Utilities
+
+One of the most complicated and time consuming tasks about encryption can be figuring out how to transform keys into a format that works on the target blockchain.  This library includes two utilities that make that process painless.  The `EOSFormatter` and `PEMProcessor` classes include methods that allow you to convert a PEM or DER encoded public or private key fo and from the standard EOS formats.  The `PEMProcessor` wraps a key and gives you the ability to extract the type, the DER format, the algorithm used to generate the key, and to perform a checksum validation.  The `EOSFormatter` utility converts keys between DER or PEM and the EOS format and formats signatures and transactions into an EOS compliant format as well.  There is an abundance of documentation on the Internet about converting keys and signatures to a DER encoded or PEM (Privacy Enhanced Mail) format (See [PEM](https://tools.ietf.org/html/rfc1421) and [DER](https://www.itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf)).  If you can get your key into one of these formats we provide a simple transition to the EOS format.
 
 ## Basic Usage
 
