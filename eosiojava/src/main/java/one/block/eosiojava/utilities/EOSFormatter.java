@@ -217,6 +217,7 @@ public class EOSFormatter {
      * @param requireLegacyFormOfSecp256k1Key - If the developer prefers a legacy version of a
      * secp256k1 key that uses a "EOS" prefix.
      * @return EOS formatted public key as string
+     * @throws EOSFormatterError if PEM conversion to EOS format fails.
      */
     @NotNull
     public static String convertPEMFormattedPublicKeyToEOSFormat(@NotNull String publicKeyPEM,
@@ -324,6 +325,7 @@ public class EOSFormatter {
      *
      * @param publicKeyEOS Public key in the EOS format
      * @return PEM formatted public key as string
+     * @throws EOSFormatterError if EOS conversion to PEM format fails.
      */
     @NotNull
     public static String convertEOSPublicKeyToPEMFormat(@NotNull String publicKeyEOS)
@@ -438,7 +440,9 @@ public class EOSFormatter {
      *
      * @param signatureDER ECDSA DER encoded signature as byte array
      * @param signableTransaction Transaction in signable format
+     * @param publicKeyPEM public key in PEM format
      * @return EOS format of signature
+     * @throws EOSFormatterError if DER conversion to EOS format fails.
      */
     @NotNull
     public static String convertDERSignatureToEOSFormat(@NotNull byte[] signatureDER,
@@ -527,6 +531,7 @@ public class EOSFormatter {
      * @param signableTransaction Transaction in signable format
      * @param publicKeyPEM Public Key used to sign in PEM format
      * @return EOS format of signature
+     * @throws EOSFormatterError if conversion to EOS format fails.
      */
     @NotNull
     public static String convertRawRandSofSignatureToEOSFormat(@NotNull String signatureR,
@@ -597,18 +602,12 @@ public class EOSFormatter {
         return eosFormattedSignature;
     }
 
-    public static String convertEOSSignatureToDERFormat(@NotNull String signatureEOS)
-            throws EOSFormatterError {
-        String pemFormattedSignature = signatureEOS;
-
-        return pemFormattedSignature;
-    }
-
     /**
      * This method converts a PEM formatted private key to the EOS format.
      *
      * @param privateKeyPEM Private key in PEM format
      * @return EOS formatted private key as string
+     * @throws EOSFormatterError if PEM conversion to EOS format fails.
      */
     @NotNull
     public static String convertPEMFormattedPrivateKeyToEOSFormat(@NotNull String privateKeyPEM)
@@ -700,6 +699,7 @@ public class EOSFormatter {
      *
      * @param privateKeyEOS Private key in EOS format
      * @return PEM formatted private key as a string
+     * @throws EOSFormatterError if EOS conversion to PEM format fails.
      */
     @NotNull
     public static String convertEOSPrivateKeyToPEMFormat(@NotNull String privateKeyEOS)
@@ -782,9 +782,9 @@ public class EOSFormatter {
 
     /**
      * Extract serialized transaction from a signable transaction
-     * <p/>
+     * <p>
      * Signable signature structure:
-     * <p/>
+     * <p>
      * chainId (64 characters) + serialized transaction + 32 bytes of 0
      *
      * @param eosTransaction - the input signable transaction
@@ -815,9 +815,9 @@ public class EOSFormatter {
 
     /**
      * Preparing signable transaction for signing.
-     * <p/>
+     * <p>
      * Signable signature structure:
-     * <p/>
+     * <p>
      * chainId + serialized transaction + 32 bytes of 0
      *
      * @param serializedTransaction - the serialized transaction to be converted to signable transaction
@@ -853,6 +853,7 @@ public class EOSFormatter {
      * @param pemObjectType The type of PEM object being created (i.e. Private Key, Public Key,
      * Signature).
      * @return PEM format as string.
+     * @throws DerToPemConversionError if DER to PEM conversion fails.
      */
     @NotNull
     private static String derToPEM(@NotNull byte[] derEncodedByteArray,
@@ -896,6 +897,7 @@ public class EOSFormatter {
      * @param strKey Base58 value of the key
      * @param keyType key type
      * @return Base58 decoded key minus checksum
+     * @throws Base58ManipulationError if private key decoding fails.
      */
     @NotNull
     private static byte[] decodePrivateKey(@NotNull String strKey, AlgorithmEmployed keyType)
@@ -963,6 +965,7 @@ public class EOSFormatter {
      * @param pemKey -  Private key as byte[] to encode
      * @param keyType - input key type
      * @return Base58 encoded private key as byte[]
+     * @throws Base58ManipulationError it private key encoding fails.
      */
     @NotNull
     public static String encodePrivateKey(@NotNull byte[] pemKey,
@@ -1007,6 +1010,7 @@ public class EOSFormatter {
      * @param isLegacy - If the developer prefers a legacy version of a secp256k1 key that uses an
      * "EOS" prefix.
      * @return - EOS format of public key
+     * @throws Base58ManipulationError if public key encoding fails.
      */
     @NotNull
     public static String encodePublicKey(@NotNull byte[] pemKey, @NotNull AlgorithmEmployed keyType,
@@ -1075,6 +1079,7 @@ public class EOSFormatter {
      * @param strKey Base58 encoded public key in string format.
      * @param keyPrefix EOS specific key type prefix (i.e. PUB_R1_, PUB_K1_, or EOS).
      * @return Base58 decoded public key as byte[]
+     * @throws Base58ManipulationError if public key decoding fails.
      */
     @NotNull
     public static byte[] decodePublicKey(@NotNull String strKey, String keyPrefix)
@@ -1227,6 +1232,7 @@ public class EOSFormatter {
      * @param compressedPublicKey Compressed public key as byte[]
      * @param algorithmEmployed Algorithm used during key creation
      * @return Decompressed public key as byte[]
+     * @throws EOSFormatterError when public key decompression fails.
      */
     @NotNull
     private static byte[] decompressPublickey(byte[] compressedPublicKey,
@@ -1253,6 +1259,7 @@ public class EOSFormatter {
      * @param compressedPublicKey Decompressed public key as byte[]
      * @param algorithmEmployed Algorithm used during key creation
      * @return Compressed public key as byte[]
+     * @throws EOSFormatterError when public key compression fails.
      */
     @NotNull
     private static byte[] compressPublickey(byte[] compressedPublicKey,
@@ -1289,6 +1296,7 @@ public class EOSFormatter {
      * @param s S value from signature
      * @param keyType Algorithm used to generate private key that signed the message.
      * @return Low S value
+     * @throws LowSVerificationError when the S value determination fails.
      */
     private static BigInteger checkAndHandleLowS(BigInteger s, AlgorithmEmployed keyType)
             throws LowSVerificationError {
@@ -1311,6 +1319,7 @@ public class EOSFormatter {
      * @param s S value from signature
      * @param keyType Algorithm used to generate private key that signed the message.
      * @return boolean indicating whether S value is low
+     * @throws LowSVerificationError when the S value determination fails.
      */
     private static boolean isLowS(BigInteger s, AlgorithmEmployed keyType)
             throws LowSVerificationError {

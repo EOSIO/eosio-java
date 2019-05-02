@@ -65,7 +65,7 @@ IABIProvider abiProvider = new ABIProviderImpl(rpcProvider, serializationProvide
 ISignatureProvider signatureProvider = new SoftKeySignatureProviderImpl();
 
 signatureProvider.importKey(privateKeyK1EOS);
-// or
+// or...
 signatureProvider.importKey(privateKeyR1EOS);
 
 TransactionSession session = new TransactionSession(
@@ -111,7 +111,7 @@ By simply switching out the signature provider on a transaction, signature reque
 EOSIO SDK for Java _does not include_ a signature provider implementation; one must be installed separately.
 
 * [ISignatureProvider](eosiojava/src/main/java/one/block/eosiojava/interfaces/ISignatureProvider.java)
-* [Softkey Signature Provider](https://github.com/EOSIO/eosio-java-softkey-signature-provider) - Example signature provider for signing transactions using R1 and K1 keys in memory.*
+* [Softkey Signature Provider](https://github.com/EOSIO/eosio-java-softkey-signature-provider) - Example signature provider for signing transactions using SECP256R1 and SECP256R1 keys in memory.*
 
 *_Softkey Signature Provider stores keys in memory and is therefore not secure. It should only be used for development purposes. In production, we strongly recommend using a signature provider that interfaces with a secure vault, authenticator or wallet._
 
@@ -140,6 +140,12 @@ The ABI Provider is responsible for fetching and caching ABIs for use during ser
 
 * [IABIProvider](eosiojava/src/main/java/one/block/eosiojava/interfaces/IABIProvider.java)
 * [Default ABIProviderImpl Implementation](eosiojava/src/main/java/one/block/eosiojava/implementations/ABIProviderImpl.java)
+
+### Design document
+
+For more details about the complete workflow of EOSIO SDK for Java, see [`EOSIO SDK for Java - Complete workflow`](https://github.com/EOSIO/eosio-java/tree/master/documents/complete_workflow.pdf).
+
+An overview of the error model used in this library can be found in the [`EOSIO SDK for Java - Error Model`](https://github.com/EOSIO/eosio-java/tree/master/documents/error_model.pdf)
 
 ## Want to help?
 

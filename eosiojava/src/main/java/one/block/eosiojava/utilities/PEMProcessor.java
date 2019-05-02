@@ -148,7 +148,7 @@ public class PEMProcessor {
      * Gets the algorithm used to generate the key from its PEM format.
      *
      * @return The algorithm used to generate the key.
-     * @throws {@link PEMProcessorError}
+     * @throws PEMProcessorError if the algorithm fetch leads to an exception.
      */
     @NotNull
     public AlgorithmEmployed getAlgorithm() throws PEMProcessorError {
@@ -179,7 +179,7 @@ public class PEMProcessor {
      * Gets the key as a byte array from its PEM format.
      *
      * @return key as byte[]
-     * @throws {@link PEMProcessorError}
+     * @throws PEMProcessorError when key data is unobtainable.
      */
     @NotNull
     public byte[] getKeyData() throws PEMProcessorError {
@@ -222,7 +222,7 @@ public class PEMProcessor {
      * to prefix the key data and only applies to keys generated with the secp256k1 algorithm.  The
      * new format prefixes the key data with "PUB_K1_".
      * @return EOS format public key of the current private key
-     * @throws PEMProcessorError
+     * @throws PEMProcessorError when the public key extraction fails.
      */
     public String extractEOSPublicKeyFromPrivateKey(boolean isLegacy) throws PEMProcessorError {
         if (!this.getType().equals(PRIVATE_KEY_TYPE)) {
@@ -266,6 +266,7 @@ public class PEMProcessor {
      * to prefix the key data and only applies to keys generated with the secp256k1 algorithm.  The
      * new format prefixes the key data with "PUB_K1_".
      * @return EOS format public key of the current private key
+     * @throws PEMProcessorError when public key extraction fails.
      */
     public String extractPEMPublicKeyFromPrivateKey(boolean isLegacy) throws PEMProcessorError {
         try {
@@ -298,7 +299,7 @@ public class PEMProcessor {
      * Parses PEM object.
      *
      * @return Parsed PEM object as Object.
-     * @throws {@link PEMProcessorError}
+     * @throws PEMProcessorError when PEM parsing fails.
      */
     @NotNull
     private Object parsePEMObject() throws PEMProcessorError {

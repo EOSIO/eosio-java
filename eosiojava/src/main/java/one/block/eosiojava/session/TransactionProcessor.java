@@ -106,7 +106,7 @@ public class TransactionProcessor {
 
     /**
      * Transaction instance that holds all data relating to an EOS Transaction.
-     * <p/>
+     * <p>
      * This object holds the non-serialized version of the transaction.  However, the serialized
      * version can be extracted by calling the serialize() {@link TransactionProcessor#serialize()}
      * method.
@@ -135,9 +135,9 @@ public class TransactionProcessor {
     /**
      * The serialized version of the Transaction that is used to determine whether or not the
      * signature provider modified the transaction.
-     * <p/>
+     * <p>
      *     If the transaction is updated, this object needs to be cleared or updated.
-     * <p/>
+     * <p>
      *     Check getSignature() flow in "Complete Workflow" document for more detail
      * about the value assigned and usages.
      */
@@ -169,9 +169,9 @@ public class TransactionProcessor {
 
     /**
      * Configuration for transaction which offers ability to set:
-     * <p/>
+     * <p>
      * - The expiration period for the transaction in seconds
-     * <p/>
+     * <p>
      * - How many blocks behind
      */
     @NotNull
@@ -186,7 +186,7 @@ public class TransactionProcessor {
 
     /**
      * Whether or not to allow the signature provider to modify the transaction.
-     * <p/>
+     * <p>
      * Default is false.
      */
     private boolean isTransactionModificationAllowed;
@@ -917,7 +917,7 @@ public class TransactionProcessor {
 
     /**
      * Gets transaction instance which holds all data relating to EOS Transaction
-     * <p/>
+     * <p>
      * This object holds the non-serialized version of Transaction
      * @return the current transaction
      */
@@ -953,9 +953,9 @@ public class TransactionProcessor {
     /**
      * Gets serialized version of Transaction.  This is stored to later determine whether the
      * signature provider modified the transaction.
-     * <p/>
+     * <p>
      *     If the transaction has been modified, this object needs to be cleared or updated.
-     * <p/>
+     * <p>
      *     Check getSignature() flow in "Complete Workflow" document for more details.
      * @return the serialized transaction.
      */
@@ -966,9 +966,9 @@ public class TransactionProcessor {
 
     /**
      * Gets configuration for Transaction which offers ability to set:
-     * <p/>
+     * <p>
      * - The expiration period for the transaction in seconds
-     * <p/>
+     * <p>
      * - How many blocks behind
      * @return the configuration for transaction
      */
@@ -979,9 +979,9 @@ public class TransactionProcessor {
 
     /**
      * Sets configuration for Transaction which offers ability to set:
-     * <p/>
+     * <p>
      * - The expiration period for the transaction in seconds
-     * <p/>
+     * <p>
      * - How many blocks behind
      * @param transactionConfig the input configuration for transaction
      */
@@ -990,14 +990,9 @@ public class TransactionProcessor {
     }
 
     /**
-<<<<<<< HEAD
      * Sets chain id value. If the value has not been set yet, the getInfo() RPC call will be used
      * to get it.
-=======
-     * Sets chain id value. If the value has not set yet, then the code will call getInfo in Rpc
-     * provider to get it.
      * @param chainId - input chain id
->>>>>>> 531b424a0301ef41ce426c32f50de447c9dfa544
      */
     public void setChainId(@Nullable String chainId) {
         this.chainId = chainId;
@@ -1035,12 +1030,8 @@ public class TransactionProcessor {
     }
 
     /**
-<<<<<<< HEAD
      * Should the signature provider be able to modify the transaction?
-=======
-     * Whether allow transaction to be modified by Signature Provider.
-     * @return Whether allow transaction to be modified by Signature Provider.
->>>>>>> 531b424a0301ef41ce426c32f50de447c9dfa544
+     * @return Whether to allow transaction to be modified by Signature Provider.
      */
     public boolean isTransactionModificationAllowed() {
         return isTransactionModificationAllowed;
@@ -1049,7 +1040,7 @@ public class TransactionProcessor {
     /**
      * True: The transaction could be modified and updated to current transaction by Signature
      * provider.
-     * <p/>
+     * <p>
      * False: No modification. {@link TransactionGetSignatureNotAllowModifyTransactionError} will be
      * thrown if transaction is modified.
      * @param isTransactionModificationAllowed Whether allow transaction to be modified by Signature Provider.
