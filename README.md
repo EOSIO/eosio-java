@@ -14,6 +14,7 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 ## Contents
 
 - [Installation](#installation)
+- [Helpful Utilities](#helpful-utilities)
 - [Basic Usage](#basic-usage)
 - [Android Example App](#android-example-app)
 - [Provider Interface Architecture](#provider-interface-architecture)
