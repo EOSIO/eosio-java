@@ -53,6 +53,17 @@ packagingOptions {
 }
 ```
 
+If you are using EOSIO SDK for Java, or any library that depends on it, with gradle plugin 5+ then you can't access the libraries's dependencies without declare them in your `build.gradle`
+
+Example:
+* Accessing `okhttp` classes on your code:
+```java
+
+implementation 'com.squareup.okhttp3:okhttp:version'
+
+```
+
+
 Then refresh your gradle project. Then you're all set for the [Basic Usage](#basic-usage) example!
 
 ## Helpful Utilities
