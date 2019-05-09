@@ -31,6 +31,8 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 
 ***Note:** Android 6 (Marshmallow) was selected as the minimum target level due to Keystore security concerns in older versions of Android.
 
+Since EOSIO SDK for Java is not an Android specific project, we recommend using IntelliJ if you are going to work on it.  You can use Android Studio but be aware that some of the menu options under Build like `Rebuild Project` and `Clean Project` will not work correctly.  You may still compile within Android Studio using `Make Project` under the Build menu, or by using Gradle from the command line.
+
 ### Instructions
 
 To use EOSIO SDK for Java in your app, add the following modules to your build.gradle:
