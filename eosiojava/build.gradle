@@ -22,16 +22,16 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:16.0.1'
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.61'
-    implementation 'org.bouncycastle:bcpkix-jdk15on:1.61'
+    api 'org.jetbrains:annotations:16.0.1'
+    api 'com.google.code.gson:gson:2.8.5'
+    api 'org.bouncycastle:bcprov-jdk15on:1.61'
+    api 'org.bouncycastle:bcpkix-jdk15on:1.61'
     // This works on android and non-android, but is necessary to keep us to 1.7 targets.
-    implementation 'com.google.guava:guava:27.1-android'
+    api 'com.google.guava:guava:27.1-android'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.26.0'
-    implementation 'org.bitcoinj:bitcoinj-core:0.15.1'
-    implementation 'org.slf4j:slf4j-jdk14:1.7.25'
+    api 'org.bitcoinj:bitcoinj-core:0.15.1'
+    api 'org.slf4j:slf4j-jdk14:1.7.25'
 }
 
 def libraryGroupId = 'one.block'
