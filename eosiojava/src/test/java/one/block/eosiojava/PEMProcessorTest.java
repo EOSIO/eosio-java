@@ -134,7 +134,7 @@ public class PEMProcessorTest {
     }
 
     /*
-    Verify that we are extracting the correct public key from a private key.
+    Verify that we are extracting the correct public key from a private key
     */
     @Test
     public void validatePublicKeyExtractionFromPrivateKey(){
