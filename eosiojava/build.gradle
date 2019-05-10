@@ -30,7 +30,7 @@ dependencies {
     api 'com.google.guava:guava:27.1-android'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.26.0'
-    api 'org.bitcoinj:bitcoinj-core:0.15.1'
+    api 'org.bitcoinj:bitcoinj-core:0.15.2'
     api 'org.slf4j:slf4j-jdk14:1.7.25'
 }
 
