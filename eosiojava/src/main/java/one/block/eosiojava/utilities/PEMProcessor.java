@@ -81,6 +81,11 @@ public class PEMProcessor {
      */
     private static final ECDomainParameters CURVE_K1;
 
+    /**
+     * Signum to convert a negative value to a positive Big Integer
+     */
+    private static final int BIG_INTEGER_POSITIVE = 1;
+
 
     static {
         // secp256r1
@@ -230,7 +235,7 @@ public class PEMProcessor {
         }
 
         AlgorithmEmployed keyCurve = this.getAlgorithm();
-        BigInteger privateKeyBI = new BigInteger(this.getKeyData());
+        BigInteger privateKeyBI = new BigInteger(BIG_INTEGER_POSITIVE, this.getKeyData());
         BigInteger n;
         ECPoint g;
 
@@ -304,7 +309,7 @@ public class PEMProcessor {
     @NotNull
     private Object parsePEMObject() throws PEMProcessorError {
         try (Reader reader = new CharArrayReader(this.pemObjectString.toCharArray());
-                PEMParser pemParser = new PEMParser(reader);) {
+                PEMParser pemParser = new PEMParser(reader)) {
             return pemParser.readObject();
         } catch (IOException e) {
             throw new PEMProcessorError(ErrorConstants.ERROR_READING_PEM_OBJECT, e);

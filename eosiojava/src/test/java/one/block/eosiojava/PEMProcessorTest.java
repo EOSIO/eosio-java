@@ -11,6 +11,7 @@ import java.io.IOException;
 import one.block.eosiojava.enums.AlgorithmEmployed;
 import one.block.eosiojava.error.utilities.EOSFormatterError;
 import one.block.eosiojava.error.utilities.PEMProcessorError;
+import one.block.eosiojava.utilities.EOSFormatter;
 import one.block.eosiojava.utilities.PEMProcessor;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
@@ -128,6 +129,48 @@ public class PEMProcessorTest {
             assert(e instanceof PEMProcessorError);
         } catch (Exception e){
             fail("Expecting a PEMProcessorError to be thrown!");
+        }
+
+    }
+
+    /*
+    Verify that we are extracting the correct public key from a private key
+    */
+    @Test
+    public void validatePublicKeyExtractionFromPrivateKey(){
+        //Positive key values
+        String privateKey1 = "PVT_R1_GrfEfbv5at9kbeHcGagQmvbFLdm6jqEpgE1wsGbrfbZNjpVgT";
+        String publicKey1 = "PUB_R1_4ztaVy8L9zbmzTdpfq5GcaFYwGwXTNmN3qW7qcgHMmfUZhpzQQ";
+        String privateKey2 = "PVT_R1_wCpPsaY9o8NU9ZsuwaYVQUDkCfj1aWJZGVcmMM6XyYHJVqvqp";
+        String publicKey2 = "PUB_R1_5xawnnr3mWayv2wkiqBGWqu4RQLNJffLSXHiL3BofdY7ortMy4";
+        //Negative key values
+        String privateKey3 = "PVT_R1_2sXhBwN8hCLSWRxxfZg6hqwGymKSudtQ7Qa5wUWyuW54E1Gd7P";
+        String publicKey3 = "PUB_R1_6UYnNnXv2CutCtTLgCQxJbHBeWDG3JZaSQJK9tQ7K3JUdzXw9p";
+        String privateKey4 = "PVT_R1_2fJmPgaik4rUeU1NDchQjnSPkQkga4iKzdK5hhdbKf2PQFJ57t";
+        String publicKey4 = "PUB_R1_5MVdX3uzs6qDHUYpdSksZFc5rAu5P4ba6MDaySuYyzQqmCw96Q";
+        String privateKey5 = "PVT_R1_2FBMJryipxmAeiwFYXvBTRhX1y5tdepDYBjCm4VqBWcsmdy1xD";
+        String publicKey5 = "PUB_R1_5qjeAbU6mUM4PLRQBw8V4kxuc5pAjnJFpcMrdZmHF6L6uH57dk";
+        String privateKey6 = "PVT_R1_2tjkXAnQPi5Jte8H5SihUQDRnJDPTny5hoiWxxeKm7uC1osiet";
+        String publicKey6 = "PUB_R1_5BpFt4f1PXzvU2SVmwZdtCiFWbwDRHPzh8Fiao8PCd1R17pH5S";
+
+        try {
+            PEMProcessor pemProcessor1 = new PEMProcessor(EOSFormatter.convertEOSPrivateKeyToPEMFormat(privateKey1));
+            assertEquals(publicKey1, pemProcessor1.extractEOSPublicKeyFromPrivateKey(false));
+            PEMProcessor pemProcessor2 = new PEMProcessor(EOSFormatter.convertEOSPrivateKeyToPEMFormat(privateKey2));
+            assertEquals(publicKey2, pemProcessor2.extractEOSPublicKeyFromPrivateKey(false));
+            PEMProcessor pemProcessor3 = new PEMProcessor(EOSFormatter.convertEOSPrivateKeyToPEMFormat(privateKey3));
+            assertEquals(publicKey3, pemProcessor3.extractEOSPublicKeyFromPrivateKey(false));
+            PEMProcessor pemProcessor4 = new PEMProcessor(EOSFormatter.convertEOSPrivateKeyToPEMFormat(privateKey4));
+            assertEquals(publicKey4, pemProcessor4.extractEOSPublicKeyFromPrivateKey(false));
+            PEMProcessor pemProcessor5 = new PEMProcessor(EOSFormatter.convertEOSPrivateKeyToPEMFormat(privateKey5));
+            assertEquals(publicKey5, pemProcessor5.extractEOSPublicKeyFromPrivateKey(false));
+            PEMProcessor pemProcessor6 = new PEMProcessor(EOSFormatter.convertEOSPrivateKeyToPEMFormat(privateKey6));
+            assertEquals(publicKey6, pemProcessor6.extractEOSPublicKeyFromPrivateKey(false));
+
+        } catch (PEMProcessorError e) {
+            fail("Not expecting a PEMProcessorError to be thrown!");
+        } catch (Exception e){
+            fail("Not expecting an Exception to be thrown!");
         }
 
     }
