@@ -6,6 +6,7 @@
 ![](https://img.shields.io/badge/Deployment%20Target-JVM-blue.svg)
 
 EOSIO SDK for Java is an API for integrating with EOSIO-based blockchains using the [EOSIO RPC API](https://developers.eos.io/eosio-nodeos/reference).  For a high-level introduction to our Swift and Java SDKs, check out our announcement on Medium: [EOSIO™ Software Release: Native SDKs for Swift and Java](https://medium.com/eosio/eosio-software-release-native-sdks-for-swift-and-java-e6086ddd37b8).
+
 To date, EOSIO SDK for Java has only been tested on Android. The goal, however, is for the core library to run anywhere Java runs, adding other targets (server, desktop, embedded) as the library matures.
 
 *All product and company names are trademarks™ or registered® trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them.*
