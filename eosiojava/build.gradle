@@ -1,7 +1,9 @@
 
 plugins {
     id 'java-library'
+    //Remove 'com.jfrog.artifactory' plugin if you are not using Artifactory
     id 'com.jfrog.artifactory' version '4.9.5'
+    //Remove 'com.jfrog.bintray' plugin if you are not using Bintray
     id 'com.jfrog.bintray' version '1.7.3'
     id 'maven-publish'
 
@@ -12,6 +14,8 @@ group 'one.block'
 repositories {
     jcenter()
     mavenCentral()
+    
+    //Remove maven{} block if you are not using Artifactory 
     maven {
         credentials{
             username artifactory_username
@@ -76,6 +80,7 @@ publishing {
     }
 }
 
+//Remove artifactory{} block if you are not using Artifactory
 artifactory {
     contextUrl = artifactory_contextURL
     publish {
@@ -94,7 +99,7 @@ artifactory {
         }
     }
 }
-
+//Remove deleteOldVersion{} block if you are not using Artifactory
 task deleteOldVersion(){
     def auth = artifactory_username + ':' + artifactory_password
     def repo = artifactory_contextURL + '/android-libs-scratch-local' + '/one/block/eosiojava'
