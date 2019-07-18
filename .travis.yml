@@ -3,16 +3,53 @@ before_cache:
   - "rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock"
   - "rm -fr $HOME/.gradle/caches/*/plugin-resolution/"
 before_install: 
-  - echo "artifactory_username=$ARTIFACTORY_USER" > gradle.properties
-  - echo "artifactory_password=$ARTIFACTORY_PW" >> gradle.properties
-  - echo "artifactory_contextURL=https://blockone.jfrog.io/blockone" >> gradle.properties
-  - echo "artifactory_repo=android-libs-scratch-local" >> gradle.properties
+  - echo "artifactory_username=$ARTIFACTORY_USERNAME" > gradle.properties
+  - echo "artifactory_password=$ARTIFACTORY_PASSWORD" >> gradle.properties
   - echo "artifactory_path_android_libraries=https://blockone.jfrog.io/blockone/android-libs" >> gradle.properties
-  - echo "set gradle.properties"
-  - cat gradle.properties
-after_script: 
-  - echo 'cleaning up properties'
+  - echo "artifactory_contextURL=https://blockone.jfrog.io/blockone" >> gradle.properties
+  - echo "artifactory_repo=default" >> gradle.properties
+
+deploy:
+  - skip_cleanup: true
+  - provider: script
+    script: bash scripts/veracode-scan.sh
+    on:
+      branch:
+        - develop
+        - /^release.*$/
+  - provider: script
+    skip_cleanup: true
+    script: "bash scripts/deploy-artifactory.sh 'android-libs-feature-local'"
+    on:
+      branch:
+        - /^feature.*$/
+  # develop deploys      
+  - provider: script
+    skip_cleanup: true
+    script: "bash scripts/deploy-artifactory.sh 'android-libs-dev-local'"
+    on:
+      branch: 
+        - develop
+  # release branches and      
+  - provider: script
+    skip_cleanup: true
+    script: "bash scripts/deploy-artifactory.sh 'android-libs-release-local'"
+    on:
+      branch: 
+        - master
+        - /^release.*$/
+  # tagged releases from master, go to distribution
+  - provider: script
+    skip_cleanup: true
+    script: "bash scripts/deploy-artifactory.sh 'eosiojava-product-eosio-dist'" 
+    on:
+      tags: true
+      branch: master
+
+after_deploy: 
+  - echo "cleaning up properties"
   - rm gradle.properties
+
 cache: 
   directories: 
     - $HOME/.gradle/caches/
