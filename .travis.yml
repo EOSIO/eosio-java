@@ -16,13 +16,13 @@ deploy:
     on:
       branch:
         - develop
-        - /^release.*$/
+        - /release\/.+/
   - provider: script
     skip_cleanup: true
     script: "bash scripts/deploy-artifactory.sh 'android-libs-feature-local'"
     on:
       branch:
-        - /^feature.*$/
+        - /feature\/.+/
   # develop deploys      
   - provider: script
     skip_cleanup: true
@@ -37,7 +37,7 @@ deploy:
     on:
       branch: 
         - master
-        - /^release.*$/
+        - /release\/.+/
   # tagged releases from master, go to distribution
   - provider: script
     skip_cleanup: true
