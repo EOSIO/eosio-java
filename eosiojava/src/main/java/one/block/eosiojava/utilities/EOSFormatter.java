@@ -1262,7 +1262,7 @@ public class EOSFormatter {
      * @throws EOSFormatterError when public key compression fails.
      */
     @NotNull
-    private static byte[] compressPublickey(byte[] compressedPublicKey,
+    public static byte[] compressPublickey(byte[] compressedPublicKey,
             AlgorithmEmployed algorithmEmployed)
             throws EOSFormatterError {
         byte compressionPrefix;
