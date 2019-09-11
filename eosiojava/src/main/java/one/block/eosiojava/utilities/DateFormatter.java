@@ -14,12 +14,12 @@ public class DateFormatter {
     /**
      * Blockchain pattern for SimpleDateFormat
      */
-    public static final String BACKEND_DATE_PATTERN = "yyyy-MM-dd'T'kk:mm:ss.SSS";
+    public static final String BACKEND_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     /**
      * Blockchain pattern for SimpleDateFormat.  It includes timezone.
      */
-    public static final String BACKEND_DATE_PATTERN_WITH_TIMEZONE = "yyyy-MM-dd'T'kk:mm:ss.SSS zzz";
+    public static final String BACKEND_DATE_PATTERN_WITH_TIMEZONE = "yyyy-MM-dd'T'HH:mm:ss.SSS zzz";
 
     /**
      * Blockchain timezone/time standard for SimpleDateFormat
