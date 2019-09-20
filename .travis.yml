@@ -19,11 +19,6 @@ before_deploy:
 
 deploy:
   - skip_cleanup: true
-  - provider: script
-    script: bash scripts/veracode-scan.sh
-    on:
-      all_branches: true
-      condition: $TRAVIS_BRANCH == develop || ${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH} =~ ^release\/.*$
   # feature branches deploy to feature-local    
   - provider: script
     skip_cleanup: true
