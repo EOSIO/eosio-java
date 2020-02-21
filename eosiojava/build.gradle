@@ -33,14 +33,14 @@ dependencies {
     // This works on android and non-android, but is necessary to keep us to 1.7 targets.
     api 'com.google.guava:guava:27.1-android'
     testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.26.0'
+    testCompile 'org.mockito:mockito-core:3.0.0'
     api 'org.bitcoinj:bitcoinj-core:0.15.2'
     api 'org.slf4j:slf4j-jdk14:1.7.25'
 }
 
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '0.1.1'
+def libraryVersion = '0.1.1-an-try-to-fix-build-issue-2'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'
