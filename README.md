@@ -13,6 +13,7 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 
 ## Contents
 
+- [Updates](#updates)
 - [Installation](#installation)
 - [Helpful Utilities](#helpful-utilities)
 - [Basic Usage](#basic-usage)
@@ -20,6 +21,10 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 - [Provider Interface Architecture](#provider-interface-architecture)
 - [Want to Help?](#want-to-help)
 - [License & Legal](#license)
+
+## Updates
+
+Current version number is 0.1.1.  The new version fixes a transaction expiration error.
 
 ## Installation
 
@@ -38,10 +43,10 @@ Since EOSIO SDK for Java is not an Android specific project, we recommend using 
 To use EOSIO SDK for Java in your app, add the following modules to your build.gradle:
 
 ```groovy
-implementation 'one.block:eosiojava:0.1.0'
-implementation 'one.block:eosiojavasoftkeysignatureprovider:0.1.0'
+implementation 'one.block:eosiojava:0.1.1'
+implementation 'one.block:eosiojavasoftkeysignatureprovider:0.1.2'
 implementation 'one.block:eosiojavaandroidabieosserializationprovider:0.1.0'
-implementation 'one.block:eosiojavarpcprovider:0.1.0'
+implementation 'one.block:eosiojavarpcprovider:0.1.1'
 ```
 
 If you are using EOSIO SDK for Java, or any library that depends on it, in an Android application, you must also add the following to your application's `build.gradle` file in the `android` section:
