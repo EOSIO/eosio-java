@@ -14,8 +14,8 @@ group 'one.block'
 repositories {
     jcenter()
     mavenCentral()
-    
-    //Remove maven{} block if you are not using Artifactory 
+
+    //Remove maven{} block if you are not using Artifactory
     maven {
         credentials{
             username artifactory_username
@@ -40,7 +40,7 @@ dependencies {
 
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '0.1.1'
+def libraryVersion = '0.1.2'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'
