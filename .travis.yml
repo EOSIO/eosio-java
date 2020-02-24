@@ -18,6 +18,10 @@ before_deploy:
   - echo "artifactory_contextURL=https://blockone.jfrog.io/blockone" >> gradle.properties
   - echo "artifactory_repo=default" >> gradle.properties
 
+script:
+  - "echo no-op build step"
+
+
 
 deploy:
   - skip_cleanup: true
