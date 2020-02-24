@@ -24,6 +24,12 @@ repositories {
         url artifactory_contextURL
     }
 }
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+// compileJava {
+//     sourceCompatibility JavaVersion.VERSION_1_8
+//     targetCompatibility JavaVersion.VERSION_1_8
+// }
 
 dependencies {
     api 'org.jetbrains:annotations:16.0.1'
