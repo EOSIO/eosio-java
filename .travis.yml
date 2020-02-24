@@ -1,5 +1,5 @@
-language: android
-jdk: oraclejdk8
+language: java
+jdk: oraclejdk11
 dist: trusty
 before_cache:
   - "rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock"
@@ -17,11 +17,6 @@ before_deploy:
   - echo "artifactory_path_android_libraries=https://blockone.jfrog.io/blockone/android-libs" >> gradle.properties
   - echo "artifactory_contextURL=https://blockone.jfrog.io/blockone" >> gradle.properties
   - echo "artifactory_repo=default" >> gradle.properties
-
-script:
-  - "echo no-op build step"
-
-
 
 deploy:
   - skip_cleanup: true
