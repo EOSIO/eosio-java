@@ -25,9 +25,12 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 ## Updates
 
 2/25/20
-version 0.1.2 Uses JDK11 to build and targets 1.8 for source and target compatibility
+
+Version 0.1.2 Uses JDK11 to build and targets 1.8 for source and target compatibility.
+
 2/21/20
-version 0.1.1 Fixes a transaction expiration error.
+
+Version 0.1.1 Fixes a transaction expiration error.
 
 ## Installation
 
