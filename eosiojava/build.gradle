@@ -14,8 +14,8 @@ group 'one.block'
 repositories {
     jcenter()
     mavenCentral()
-    
-    //Remove maven{} block if you are not using Artifactory 
+
+    //Remove maven{} block if you are not using Artifactory
     maven {
         credentials{
             username artifactory_username
@@ -24,7 +24,8 @@ repositories {
         url artifactory_contextURL
     }
 }
-
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 dependencies {
     api 'org.jetbrains:annotations:16.0.1'
     api 'com.google.code.gson:gson:2.8.5'
@@ -40,7 +41,7 @@ dependencies {
 
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '0.1.1'
+def libraryVersion = '0.1.2'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'
