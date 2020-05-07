@@ -368,17 +368,17 @@ public class TransactionProcessorTest {
         processor.setIsTransactionModificationAllowed(true);
         assertTrue(processor.isTransactionModificationAllowed());
 
-        try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+       try {
+           PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
+           assertNotNull(pushTransactionResponse);
+           assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
 
-            // after signing and broadcast, serialized transaction is updated
-            assertEquals(MOCKED_TRANSACTION_HEX_MODIFIED, processor.getSerializedTransaction());
-        } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
-            transactionSignAndBroadCastError.printStackTrace();
-            fail("Exception should not be thrown here for calling signAndBroadcast");
-        }
+           // after signing and broadcast, serialized transaction is updated
+           assertEquals(MOCKED_TRANSACTION_HEX_MODIFIED, processor.getSerializedTransaction());
+       } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
+           transactionSignAndBroadCastError.printStackTrace();
+           fail("Exception should not be thrown here for calling signAndBroadcast");
+       }
     }
 
     @Test

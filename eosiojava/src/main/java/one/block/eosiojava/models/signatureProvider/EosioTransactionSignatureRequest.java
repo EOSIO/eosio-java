@@ -17,6 +17,11 @@ public class EosioTransactionSignatureRequest {
     private String serializedTransaction;
 
     /**
+     * The serialized (Hex) version all concatenated context free data
+     */
+    private String contextFreeData;
+
+    /**
      * The EOSIO public keys which will be used to find the private keys (or key identities) to sign
      * the serialized transaction.
      */
@@ -53,15 +58,33 @@ public class EosioTransactionSignatureRequest {
      * @param abis the ABIs
      * @param isModifiable boolean to indicate whether the signature provider is able to modify the
      * transaction
+     * @param contextFreeData the serialized contextFreeData
      */
     public EosioTransactionSignatureRequest(String serializedTransaction,
             List<String> signingPublicKeys, String chainId, List<BinaryAbi> abis,
-            boolean isModifiable) {
+            boolean isModifiable, String contextFreeData) {
         this.serializedTransaction = serializedTransaction;
         this.signingPublicKeys = signingPublicKeys;
         this.chainId = chainId;
         this.abis = abis;
         this.isModifiable = isModifiable;
+        this.contextFreeData = contextFreeData;
+    }
+
+    /**
+     * Instantiates a new Eosio transaction signature request.
+     *
+     * @param serializedTransaction the serialized transaction
+     * @param signingPublicKeys the signing public keys
+     * @param chainId the chain id
+     * @param abis the ABIs
+     * @param isModifiable boolean to indicate whether the signature provider is able to modify the
+     * transaction
+     */
+    public EosioTransactionSignatureRequest(String serializedTransaction,
+            List<String> signingPublicKeys, String chainId, List<BinaryAbi> abis,
+            boolean isModifiable) {
+        this(serializedTransaction, signingPublicKeys, chainId, abis, isModifiable, "");
     }
 
     /**
@@ -88,6 +111,26 @@ public class EosioTransactionSignatureRequest {
      */
     public void setSerializedTransaction(String serializedTransaction) {
         this.serializedTransaction = serializedTransaction;
+    }
+
+    /**
+     * Gets the serialized contextFreeData.
+     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(String)}
+     *
+     * @return the serialized contextFreeData
+     */
+    public String getContextFreeData() {
+        return contextFreeData;
+    }
+
+    /**
+     * Sets the serialized contextFreeData.
+     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(String)}
+     *
+     * @param contextFreeData the serialized contextFreeData
+     */
+    public void setContextFreeData(String contextFreeData) {
+        this.contextFreeData = contextFreeData;
     }
 
     /**
