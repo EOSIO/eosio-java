@@ -37,8 +37,10 @@ public class ContextFreeData implements Serializable {
         this.originalContextFreeData = contextFreeData;
     }
 
-    // This will need to be updated to be dynamic
     public String getPackedContextFreeData() {
+        if (this.contextFreeData.size() == 0) {
+            return "";
+        }
         String packedContextFreeData = String.format("%02X", this.contextFreeData.size());
 
         for(int i = 0; i < this.contextFreeData.size(); i++) {
@@ -75,7 +77,7 @@ public class ContextFreeData implements Serializable {
 //    }
 
     private Integer getTotalBytes() {
-        int bytes = this.originalContextFreeData.size();
+        int bytes = 1;
         for(String cfd : this.originalContextFreeData) {
             bytes += 1 + cfd.getBytes().length;
         }

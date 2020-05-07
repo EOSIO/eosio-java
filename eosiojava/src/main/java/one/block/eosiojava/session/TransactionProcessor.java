@@ -147,6 +147,12 @@ public class TransactionProcessor {
     private String serializedTransaction;
 
     /**
+     * The serialized version of the Context Free Data.
+     */
+    @Nullable
+    private String serializedContextFreeData;
+
+    /**
      * List of available keys that may be provided by SignatureProvider.
      * <p>
      * If this list is already set, the TransactionProcessor won't ask for available keys from
@@ -554,7 +560,6 @@ public class TransactionProcessor {
      */
     @Nullable
     public String serialize() throws TransactionSerializeError {
-        System.out.println("Got in to serialize()");
         // Return serialized version of the Transaction, if it exists, otherwise serialize the
         // transaction and return the result.
         if (this.serializedTransaction != null && !this.serializedTransaction.isEmpty()) {
@@ -593,17 +598,16 @@ public class TransactionProcessor {
         }
 
         // Cache the serialized version of transaction in the TransactionProcessor
-        //String contextFreeData = this.transaction.getContextFreeData();
         this.serializedTransaction = this.serializeTransaction();
-        String serializedContextFreeData = this.serializeContextFreeData();
+        this.serializedContextFreeData = this.serializeContextFreeData();
 
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest = new EosioTransactionSignatureRequest(
-                this.serializedTransaction,
+                this.getSerializedTransaction(),
                 null,
                 this.chainId,
                 null,
                 this.isTransactionModificationAllowed,
-                serializedContextFreeData);
+                this.getSerializedContextFreeData());
 
         // Assign required keys to signing public keys if it was set.
         if (this.requiredKeys != null && !this.requiredKeys.isEmpty()) {
@@ -1071,6 +1075,10 @@ public class TransactionProcessor {
      */
     public void setIsTransactionModificationAllowed(boolean isTransactionModificationAllowed) {
         this.isTransactionModificationAllowed = isTransactionModificationAllowed;
+    }
+
+    public String getSerializedContextFreeData() {
+        return this.serializedContextFreeData;
     }
 
     //endregion
