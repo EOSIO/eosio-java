@@ -49,25 +49,30 @@ public class ContextFreeData implements Serializable {
         return packedContextFreeData;
     }
 
+    // Shell to keep track of below implementation in ISerializationProvider
     public String getHexContextFreeData() {
-        if (this.contextFreeData.size() == 0) {
-            return "";
-        }
-        byte[] bytes = new byte[this.getTotalBytes()];
-        bytes[0] = Byte.parseByte(String.valueOf(this.contextFreeData.size()));
-        int index = 1;
-        for(String cfd : this.originalContextFreeData) {
-            byte[] cfdBytes = cfd.getBytes();
-            bytes[index] = Byte.parseByte(String.valueOf(cfdBytes.length));
-            index++;
-            for (int i = 0; i < cfdBytes.length; i++) {
-                bytes[index] = cfdBytes[i];
-                index++;
-            }
-        }
-
-        return Hex.toHexString(Sha256Hash.hash(bytes));
+        return "";
     }
+
+//    public String getHexContextFreeData() {
+//        if (this.contextFreeData.size() == 0) {
+//            return "";
+//        }
+//        byte[] bytes = new byte[this.getTotalBytes()];
+//        bytes[0] = Byte.parseByte(String.valueOf(this.contextFreeData.size()));
+//        int index = 1;
+//        for(String cfd : this.originalContextFreeData) {
+//            byte[] cfdBytes = cfd.getBytes();
+//            bytes[index] = Byte.parseByte(String.valueOf(cfdBytes.length));
+//            index++;
+//            for (int i = 0; i < cfdBytes.length; i++) {
+//                bytes[index] = cfdBytes[i];
+//                index++;
+//            }
+//        }
+//
+//        return Hex.toHexString(Sha256Hash.hash(bytes));
+//    }
 
     private Integer getTotalBytes() {
         int bytes = this.originalContextFreeData.size();

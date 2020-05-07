@@ -41,6 +41,13 @@ public class TransactionTest {
     }
 
     @Test
+    public void testGetContextFreeDataWithNullContextFreeDataReturnsEmptyString() {
+        transaction.contextFreeData = null;
+
+        assertEquals(transaction.getContextFreeData(), new ArrayList<String>());
+    }
+
+    @Test
     public void testGetPackedContextFreeDataWithNonNullContextFreeDataCallsMethod() {
         transaction.contextFreeData = mock(ContextFreeData.class);
 
@@ -56,5 +63,14 @@ public class TransactionTest {
         transaction.getHexContextFreeData();
 
         verify(transaction.contextFreeData).getHexContextFreeData();
+    }
+
+    @Test
+    public void testGetContextFreeDataWithNonNullContextFreeDataCallsMethod() {
+        transaction.contextFreeData = mock(ContextFreeData.class);
+
+        transaction.getContextFreeData();
+
+        verify(transaction.contextFreeData).getContextFreeData();
     }
 }

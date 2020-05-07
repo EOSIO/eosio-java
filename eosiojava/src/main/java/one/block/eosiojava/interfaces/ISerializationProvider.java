@@ -1,9 +1,12 @@
 package one.block.eosiojava.interfaces;
 
+import java.util.List;
 import one.block.eosiojava.error.serializationProvider.DeserializeAbiError;
+import one.block.eosiojava.error.serializationProvider.DeserializeDataError;
 import one.block.eosiojava.error.serializationProvider.DeserializeError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeAbiError;
+import one.block.eosiojava.error.serializationProvider.SerializeDataError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.models.AbiEosSerializationObject;
@@ -76,4 +79,24 @@ public interface ISerializationProvider {
      * conversion process.
      */
     String serializeAbi(String json) throws SerializeAbiError;
+
+    /**
+     * Convenience method to transform hex string with arbitrary data to an array of data.
+     *
+     * @param hex Hex string representing the arbitrary data to deserialize.
+     * @return Deserialized JSON string representing the data hex.
+     * @throws DeserializeDataError A deserialization error is thrown if there are any exceptions during the
+     * conversion process.
+     */
+    List<String> deserializeData(String hex) throws DeserializeDataError;
+
+    /**
+     * Convenience method to transform an array of data to a hex string.
+     *
+     * @param data JSON string representing the array of data to serialize.
+     * @return Serialized hex string representing the array of data.
+     * @throws SerializeDataError A serialization error is thrown if there are any exceptions during the
+     * conversion process.
+     */
+    String serializeData(List<String> data) throws SerializeDataError;
 }
