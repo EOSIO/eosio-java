@@ -36,13 +36,17 @@ public class ContextFreeData implements Serializable {
             return "";
         }
         List<String> hexContextFreeData = this.getHexContextFreeData();
-        String packedContextFreeData = String.format("%02X", hexContextFreeData.size());
+        String packedContextFreeData = this.getHexPrefix(hexContextFreeData.size());
 
         for(int i = 0; i < hexContextFreeData.size(); i++) {
-            String cfd = hexContextFreeData.get(i);
-            packedContextFreeData += String.format("%02X", cfd.length() / 2) + cfd;
+            String hexData = hexContextFreeData.get(i);
+            packedContextFreeData += this.getHexPrefix(hexData.length() / 2) + hexData;
         }
 
         return packedContextFreeData;
+    }
+
+    private String getHexPrefix(int length) {
+        return String.format("%02X", length);
     }
 }

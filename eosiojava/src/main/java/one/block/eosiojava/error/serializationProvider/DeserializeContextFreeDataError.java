@@ -1,10 +1,10 @@
 package one.block.eosiojava.error.serializationProvider;
 
+import one.block.eosiojava.interfaces.ISerializationProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Error class is used when there is an exception while attempting to call deserializeAbi() of
- * Serialization Provider
+ * Error class is used when there is an exception while attempting to call {@link ISerializationProvider#deserializeContextFreeData(String)}
  */
 public class DeserializeContextFreeDataError extends SerializationProviderError {
 
