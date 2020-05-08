@@ -1,9 +1,5 @@
 package one.block.eosiojava.models.rpcProvider;
 
-import com.google.gson.annotations.SerializedName;
-
-import java.lang.reflect.Array;
-import org.bitcoinj.core.Sha256Hash;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,33 +43,5 @@ public class ContextFreeData implements Serializable {
         }
 
         return packedContextFreeData;
-    }
-
-//    public String getSerializedContextFreeData() {
-//        if (this.originalContextFreeData.size() == 0) {
-//            return "";
-//        }
-//        byte[] bytes = new byte[this.getTotalBytes()];
-//        bytes[0] = Byte.parseByte(String.valueOf(this.originalContextFreeData.size()));
-//        int index = 1;
-//        for(String cfd : this.originalContextFreeData) {
-//            byte[] cfdBytes = cfd.getBytes();
-//            bytes[index] = Byte.parseByte(String.valueOf(cfdBytes.length));
-//            index++;
-//            for (int i = 0; i < cfdBytes.length; i++) {
-//                bytes[index] = cfdBytes[i];
-//                index++;
-//            }
-//        }
-//
-//        return Hex.toHexString(Sha256Hash.hash(bytes));
-//    }
-
-    private Integer getTotalBytes() {
-        int bytes = 1;
-        for(String cfd : this.rawContextFreeData) {
-            bytes += 1 + cfd.getBytes().length;
-        }
-        return bytes;
     }
 }
