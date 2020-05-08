@@ -19,7 +19,7 @@ public class EosioTransactionSignatureRequest {
     /**
      * The serialized (Hex) version of all concatenated context free data
      */
-    private String contextFreeData;
+    private String serializedContextFreeData;
 
     /**
      * The EOSIO public keys which will be used to find the private keys (or key identities) to sign
@@ -58,17 +58,17 @@ public class EosioTransactionSignatureRequest {
      * @param abis the ABIs
      * @param isModifiable boolean to indicate whether the signature provider is able to modify the
      * transaction
-     * @param contextFreeData the serialized contextFreeData
+     * @param serializedContextFreeData the serialized contextFreeData
      */
     public EosioTransactionSignatureRequest(String serializedTransaction,
             List<String> signingPublicKeys, String chainId, List<BinaryAbi> abis,
-            boolean isModifiable, String contextFreeData) {
+            boolean isModifiable, String serializedContextFreeData) {
         this.serializedTransaction = serializedTransaction;
         this.signingPublicKeys = signingPublicKeys;
         this.chainId = chainId;
         this.abis = abis;
         this.isModifiable = isModifiable;
-        this.contextFreeData = contextFreeData;
+        this.serializedContextFreeData = serializedContextFreeData;
     }
 
     /**
@@ -119,18 +119,18 @@ public class EosioTransactionSignatureRequest {
      *
      * @return the serialized contextFreeData
      */
-    public String getContextFreeData() {
-        return contextFreeData;
+    public String getSerializedContextFreeData() {
+        return serializedContextFreeData;
     }
 
     /**
      * Sets the serialized contextFreeData.
      * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(List)}
      *
-     * @param contextFreeData the serialized contextFreeData
+     * @param serializedContextFreeData the serialized contextFreeData
      */
-    public void setContextFreeData(String contextFreeData) {
-        this.contextFreeData = contextFreeData;
+    public void setSerializedContextFreeData(String serializedContextFreeData) {
+        this.serializedContextFreeData = serializedContextFreeData;
     }
 
     /**
