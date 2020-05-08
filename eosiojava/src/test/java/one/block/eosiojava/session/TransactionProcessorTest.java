@@ -21,9 +21,9 @@ import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
-import one.block.eosiojava.error.serializationProvider.DeserializeDataError;
+import one.block.eosiojava.error.serializationProvider.DeserializeContextFreeDataError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
-import one.block.eosiojava.error.serializationProvider.SerializeDataError;
+import one.block.eosiojava.error.serializationProvider.SerializeContextFreeDataError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.error.session.TransactionBroadCastError;
@@ -711,8 +711,8 @@ public class TransactionProcessorTest {
 
         if (mockedContextFreeDataHex != null) {
             try {
-                when(this.mockedSerializationProvider.serializeData(any(ArrayList.class))).thenReturn(mockedContextFreeDataHex);
-            } catch (SerializeDataError deserializeTransactionError) {
+                when(this.mockedSerializationProvider.serializeContextFreeData(any(ArrayList.class))).thenReturn(mockedContextFreeDataHex);
+            } catch (SerializeContextFreeDataError deserializeTransactionError) {
                 deserializeTransactionError.printStackTrace();
                 fail("Exception should not be thrown here for mocking serializeData");
             }

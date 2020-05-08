@@ -263,10 +263,6 @@ public class Transaction implements Serializable {
         return this.contextFreeData != null ? this.contextFreeData.getPackedContextFreeData() : "";
     }
 
-    public String getHexContextFreeData() {
-        return this.contextFreeData != null ? this.contextFreeData.getHexContextFreeData() : "";
-    }
-
     public List<String> getContextFreeData() {
         return this.contextFreeData != null ? this.contextFreeData.getContextFreeData() : new ArrayList<String>();
     }

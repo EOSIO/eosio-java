@@ -12,56 +12,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContextFreeData implements Serializable {
-    @SerializedName("context_free_data")
     @NotNull
-    public List<String> contextFreeData;
-
-    @NotNull
-    public List<String> originalContextFreeData;
+    public List<String> rawContextFreeData;
 
     public ContextFreeData(@NotNull List<String> contextFreeData) {
         this.setContextFreeData(contextFreeData);
     }
 
     @NotNull
-    public List<String> getContextFreeData() { return contextFreeData; }
+    public List<String> getContextFreeData() {
+        List<String> hexedContextFreeData = new ArrayList<String>();
 
-    public void setContextFreeData(@NotNull List<String> contextFreeData) {
-        List<String> serializedContextFreeData = new ArrayList<String>();
-
-        for(String cfd : contextFreeData) {
-            serializedContextFreeData.add(Hex.toHexString(cfd.getBytes()));
+        for(String cfd : rawContextFreeData) {
+            hexedContextFreeData.add(Hex.toHexString(cfd.getBytes()));
         }
 
-        this.contextFreeData = serializedContextFreeData;
-        this.originalContextFreeData = contextFreeData;
+        return hexedContextFreeData;
+    }
+
+    public void setContextFreeData(@NotNull List<String> contextFreeData) {
+        this.rawContextFreeData = contextFreeData;
     }
 
     public String getPackedContextFreeData() {
-        if (this.contextFreeData.size() == 0) {
+        if (this.rawContextFreeData.size() == 0) {
             return "";
         }
-        String packedContextFreeData = String.format("%02X", this.contextFreeData.size());
+        List<String> hexedContextFreeData = this.getContextFreeData();
+        String packedContextFreeData = String.format("%02X", hexedContextFreeData.size());
 
-        for(int i = 0; i < this.contextFreeData.size(); i++) {
-            String cfd = this.contextFreeData.get(i);
+        for(int i = 0; i < hexedContextFreeData.size(); i++) {
+            String cfd = hexedContextFreeData.get(i);
             packedContextFreeData += String.format("%02X", cfd.length() / 2) + cfd;
         }
 
         return packedContextFreeData;
     }
 
-    // Shell to keep track of below implementation in ISerializationProvider
-    public String getHexContextFreeData() {
-        return "";
-    }
-
-//    public String getHexContextFreeData() {
-//        if (this.contextFreeData.size() == 0) {
+//    public String getSerializedContextFreeData() {
+//        if (this.originalContextFreeData.size() == 0) {
 //            return "";
 //        }
 //        byte[] bytes = new byte[this.getTotalBytes()];
-//        bytes[0] = Byte.parseByte(String.valueOf(this.contextFreeData.size()));
+//        bytes[0] = Byte.parseByte(String.valueOf(this.originalContextFreeData.size()));
 //        int index = 1;
 //        for(String cfd : this.originalContextFreeData) {
 //            byte[] cfdBytes = cfd.getBytes();
@@ -78,7 +71,7 @@ public class ContextFreeData implements Serializable {
 
     private Integer getTotalBytes() {
         int bytes = 1;
-        for(String cfd : this.originalContextFreeData) {
+        for(String cfd : this.rawContextFreeData) {
             bytes += 1 + cfd.getBytes().length;
         }
         return bytes;

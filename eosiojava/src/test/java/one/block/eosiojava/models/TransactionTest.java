@@ -34,13 +34,6 @@ public class TransactionTest {
     }
 
     @Test
-    public void testGetHexContextFreeDataWithNullContextFreeDataReturnsEmptyString() {
-        transaction.contextFreeData = null;
-
-        assertEquals(transaction.getHexContextFreeData(), "");
-    }
-
-    @Test
     public void testGetContextFreeDataWithNullContextFreeDataReturnsEmptyString() {
         transaction.contextFreeData = null;
 
@@ -54,15 +47,6 @@ public class TransactionTest {
         transaction.getPackedContextFreeData();
 
         verify(transaction.contextFreeData).getPackedContextFreeData();
-    }
-
-    @Test
-    public void testGetHexContextFreeDataWithNonNullContextFreeDataCallsMethod() {
-        transaction.contextFreeData = mock(ContextFreeData.class);
-
-        transaction.getHexContextFreeData();
-
-        verify(transaction.contextFreeData).getHexContextFreeData();
     }
 
     @Test
