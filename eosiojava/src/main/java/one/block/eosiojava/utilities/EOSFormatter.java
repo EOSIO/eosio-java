@@ -818,6 +818,33 @@ public class EOSFormatter {
      * <p>
      * Signable signature structure:
      * <p>
+     * chainId + serialized transaction + 32 bytes of serializedContextFreeData
+     *
+     * @param serializedTransaction - the serialized transaction to be converted to signable transaction
+     * @param chainId - the chain id will be used inside the signature transaction structure.
+     * @param serializedContextFreeData - the serialized context free data to be converted with transaction
+     * @return - Signable transaction
+     * @throws EOSFormatterError if inputs are invalid
+     */
+    public static String prepareSerializedTransactionForSigning(@NotNull String serializedTransaction,
+            @NotNull String chainId, @NotNull String serializedContextFreeData) throws EOSFormatterError {
+        if (serializedTransaction.isEmpty() || chainId.isEmpty()) {
+            throw new EOSFormatterError(ErrorConstants.EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING);
+        }
+
+        String signableTransaction = chainId + serializedTransaction + serializedContextFreeData;
+        if (signableTransaction.length() <= MINIMUM_SIGNABLE_TRANSACTION_LENGTH) {
+            throw new EOSFormatterError(String.format(ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE, MINIMUM_SIGNABLE_TRANSACTION_LENGTH));
+        }
+
+        return signableTransaction;
+    }
+
+    /**
+     * Preparing signable transaction for signing.
+     * <p>
+     * Signable signature structure:
+     * <p>
      * chainId + serialized transaction + 32 bytes of 0
      *
      * @param serializedTransaction - the serialized transaction to be converted to signable transaction
@@ -827,16 +854,7 @@ public class EOSFormatter {
      */
     public static String prepareSerializedTransactionForSigning(@NotNull String serializedTransaction,
             @NotNull String chainId) throws EOSFormatterError {
-        if (serializedTransaction.isEmpty() || chainId.isEmpty()) {
-            throw new EOSFormatterError(ErrorConstants.EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING);
-        }
-
-        String signableTransaction = chainId + serializedTransaction + Hex.toHexString(new byte[32]);
-        if (signableTransaction.length() <= MINIMUM_SIGNABLE_TRANSACTION_LENGTH) {
-            throw new EOSFormatterError(String.format(ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE, MINIMUM_SIGNABLE_TRANSACTION_LENGTH));
-        }
-
-        return signableTransaction;
+        return EOSFormatter.prepareSerializedTransactionForSigning(serializedTransaction, chainId, Hex.toHexString(new byte[32]));
     }
 
     /**
