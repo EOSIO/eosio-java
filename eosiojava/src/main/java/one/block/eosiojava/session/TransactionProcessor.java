@@ -627,12 +627,12 @@ public class TransactionProcessor {
         this.serializedContextFreeData = this.serializeContextFreeData();
 
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest = new EosioTransactionSignatureRequest(
-                this.getSerializedTransaction(),
+                this.serializedTransaction,
                 null,
                 this.chainId,
                 null,
                 this.isTransactionModificationAllowed,
-                this.getSerializedContextFreeData());
+                this.serializedContextFreeData);
 
         // Assign required keys to signing public keys if it was set.
         if (this.requiredKeys != null && !this.requiredKeys.isEmpty()) {
