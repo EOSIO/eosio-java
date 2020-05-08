@@ -29,15 +29,7 @@ public class EosioTransactionSignatureResponse {
     /**
      * The serialized (Hex) version of {@link one.block.eosiojava.models.rpcProvider.ContextFreeData}.
      * <br>
-     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeTransaction(String)}
-     * <br>
-     * The transaction could have been modified by the signature provider.
-     * <br>
-     * If signature provider modifies the serialized transaction returned in the response {@link
-     * EosioTransactionSignatureResponse#getSerializeTransaction()} but {@link
-     * EosioTransactionSignatureRequest#isModifiable()} is false then {@link
-     * one.block.eosiojava.error.session.TransactionGetSignatureNotAllowModifyTransactionError} will
-     * be thrown
+     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(List)}
      */
     @NotNull
     private String serializedContextFreeData;
