@@ -14,7 +14,7 @@ import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
-import one.block.eosiojava.error.serializationProvider.SerializeDataError;
+import one.block.eosiojava.error.serializationProvider.SerializeContextFreeDataError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.error.session.TransactionBroadCastEmptySignatureError;
@@ -412,7 +412,7 @@ public class TransactionProcessor {
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest;
         try {
             eosioTransactionSignatureRequest = this.createSignatureRequest();
-        } catch (TransactionCreateSignatureRequestError | SerializeDataError transactionCreateSignatureRequestError) {
+        } catch (TransactionCreateSignatureRequestError | SerializeContextFreeDataError transactionCreateSignatureRequestError) {
             throw new TransactionSignError(
                     ErrorConstants.TRANSACTION_PROCESSOR_SIGN_CREATE_SIGN_REQUEST_ERROR,
                     transactionCreateSignatureRequestError);
@@ -492,7 +492,7 @@ public class TransactionProcessor {
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest;
         try {
             eosioTransactionSignatureRequest = this.createSignatureRequest();
-        } catch (TransactionCreateSignatureRequestError | SerializeDataError transactionCreateSignatureRequestError) {
+        } catch (TransactionCreateSignatureRequestError | SerializeContextFreeDataError transactionCreateSignatureRequestError) {
             throw new TransactionSignAndBroadCastError(transactionCreateSignatureRequestError);
         }
 
@@ -586,7 +586,7 @@ public class TransactionProcessor {
      */
     @NotNull
     private EosioTransactionSignatureRequest createSignatureRequest()
-            throws TransactionCreateSignatureRequestError, SerializeDataError {
+            throws TransactionCreateSignatureRequestError, SerializeContextFreeDataError {
         if (this.transaction == null) {
             throw new TransactionCreateSignatureRequestError(
                     ErrorConstants.TRANSACTION_PROCESSOR_TRANSACTION_HAS_TO_BE_INITIALIZED);
@@ -902,12 +902,12 @@ public class TransactionProcessor {
     }
 
     @NotNull
-    private String serializeContextFreeData() throws SerializeDataError {
+    private String serializeContextFreeData() throws SerializeContextFreeDataError {
         String _serializedContextFreeData;
         try {
-            _serializedContextFreeData = this.serializationProvider.serializeData(this.transaction.getContextFreeData());
-        } catch (SerializeDataError serializeDataError) {
-            throw new SerializeDataError(
+            _serializedContextFreeData = this.serializationProvider.serializeContextFreeData(this.transaction.getContextFreeData());
+        } catch (SerializeContextFreeDataError serializeDataError) {
+            throw new SerializeContextFreeDataError(
                     ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_CONTEXT_FREE_DATA_ERROR, serializeDataError
             );
         }
