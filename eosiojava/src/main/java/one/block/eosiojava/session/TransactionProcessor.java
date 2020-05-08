@@ -712,7 +712,7 @@ public class TransactionProcessor {
                     signatureProviderError);
         }
 
-        if (Strings.isNullOrEmpty(eosioTransactionSignatureResponse.getSerializeTransaction())) {
+        if (Strings.isNullOrEmpty(eosioTransactionSignatureResponse.getSerializedTransaction())) {
             throw new TransactionGetSignatureSigningError(
                     ErrorConstants.TRANSACTION_PROCESSOR_SIGN_TRANSACTION_TRANS_EMPTY_ERROR);
         }
@@ -727,7 +727,7 @@ public class TransactionProcessor {
 
         if (this.serializedTransaction != null
                 && !this.serializedTransaction
-                .equals(eosioTransactionSignatureResponse.getSerializeTransaction())) {
+                .equals(eosioTransactionSignatureResponse.getSerializedTransaction())) {
             // Throw error if an unmodifiable transaction is modified
             if (!this.isTransactionModificationAllowed) {
                 throw new TransactionGetSignatureNotAllowModifyTransactionError(
@@ -740,7 +740,7 @@ public class TransactionProcessor {
             try {
                 transactionJSON = this.serializationProvider
                         .deserializeTransaction(
-                                eosioTransactionSignatureResponse.getSerializeTransaction());
+                                eosioTransactionSignatureResponse.getSerializedTransaction());
                 if (transactionJSON == null || transactionJSON.isEmpty()) {
                     throw new DeserializeTransactionError(
                             ErrorConstants.TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_EMPTY_ERROR);
@@ -756,7 +756,7 @@ public class TransactionProcessor {
 
         this.signatures = new ArrayList<>();
         this.signatures.addAll(eosioTransactionSignatureResponse.getSignatures());
-        this.serializedTransaction = eosioTransactionSignatureResponse.getSerializeTransaction();
+        this.serializedTransaction = eosioTransactionSignatureResponse.getSerializedTransaction();
         return eosioTransactionSignatureResponse;
     }
 

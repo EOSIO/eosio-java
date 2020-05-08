@@ -18,13 +18,13 @@ public class EosioTransactionSignatureResponse {
      * The transaction could have been modified by the signature provider.
      * <br>
      * If signature provider modifies the serialized transaction returned in the response {@link
-     * EosioTransactionSignatureResponse#getSerializeTransaction()} but {@link
+     * EosioTransactionSignatureResponse#getSerializedTransaction()} but {@link
      * EosioTransactionSignatureRequest#isModifiable()} is false then {@link
      * one.block.eosiojava.error.session.TransactionGetSignatureNotAllowModifyTransactionError} will
      * be thrown
      */
     @NotNull
-    private String serializeTransaction;
+    private String serializedTransaction;
 
     /**
      * The serialized (Hex) version of {@link one.block.eosiojava.models.rpcProvider.ContextFreeData}.
@@ -46,17 +46,17 @@ public class EosioTransactionSignatureResponse {
     @Nullable
     private SignatureProviderError error;
 
-    public EosioTransactionSignatureResponse(@NotNull String serializeTransaction, @NotNull String serializedContextFreeData,
+    public EosioTransactionSignatureResponse(@NotNull String serializedTransaction, @NotNull String serializedContextFreeData,
             @NotNull List<String> signatures, @Nullable SignatureProviderError error) {
-        this.serializeTransaction = serializeTransaction;
+        this.serializedTransaction = serializedTransaction;
         this.serializedContextFreeData = serializedContextFreeData;
         this.signatures = signatures;
         this.error = error;
     }
 
-    public EosioTransactionSignatureResponse(@NotNull String serializeTransaction,
+    public EosioTransactionSignatureResponse(@NotNull String serializedTransaction,
             @NotNull List<String> signatures, @Nullable SignatureProviderError error) {
-        this(serializeTransaction, "", signatures, error);
+        this(serializedTransaction, "", signatures, error);
     }
 
     /**
@@ -65,8 +65,8 @@ public class EosioTransactionSignatureResponse {
      * @return the serialize transaction
      */
     @NotNull
-    public String getSerializeTransaction() {
-        return serializeTransaction;
+    public String getSerializedTransaction() {
+        return serializedTransaction;
     }
 
     /**

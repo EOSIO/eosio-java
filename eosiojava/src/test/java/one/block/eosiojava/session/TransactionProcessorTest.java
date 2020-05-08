@@ -794,12 +794,12 @@ public class TransactionProcessorTest {
             + "}";
 
     private static final String mockedEosioTransactionSignatureResponseJSON = "{"
-            + "\"serializeTransaction\": \"" + MOCKED_TRANSACTION_HEX + "\","
+            + "\"serializedTransaction\": \"" + MOCKED_TRANSACTION_HEX + "\","
             + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
             + "}";
 
     private static final String mockedEosioTransactionSignatureResponseModifiedTransactionJSON = "{"
-            + "\"serializeTransaction\": \"" + MOCKED_TRANSACTION_HEX_MODIFIED + "\","
+            + "\"serializedTransaction\": \"" + MOCKED_TRANSACTION_HEX_MODIFIED + "\","
             + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
             + "}";
 
