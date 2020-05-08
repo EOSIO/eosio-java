@@ -27,6 +27,22 @@ public class EosioTransactionSignatureResponse {
     private String serializeTransaction;
 
     /**
+     * The serialized (Hex) version of {@link one.block.eosiojava.models.rpcProvider.ContextFreeData}.
+     * <br>
+     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeTransaction(String)}
+     * <br>
+     * The transaction could have been modified by the signature provider.
+     * <br>
+     * If signature provider modifies the serialized transaction returned in the response {@link
+     * EosioTransactionSignatureResponse#getSerializeTransaction()} but {@link
+     * EosioTransactionSignatureRequest#isModifiable()} is false then {@link
+     * one.block.eosiojava.error.session.TransactionGetSignatureNotAllowModifyTransactionError} will
+     * be thrown
+     */
+    @NotNull
+    private String serializedContextFreeData;
+
+    /**
      * The signatures that are signed by private keys of {@link EosioTransactionSignatureRequest#getSigningPublicKeys()}
      */
     @NotNull
@@ -38,11 +54,17 @@ public class EosioTransactionSignatureResponse {
     @Nullable
     private SignatureProviderError error;
 
-    public EosioTransactionSignatureResponse(@NotNull String serializeTransaction,
+    public EosioTransactionSignatureResponse(@NotNull String serializeTransaction, @NotNull String serializedContextFreeData,
             @NotNull List<String> signatures, @Nullable SignatureProviderError error) {
         this.serializeTransaction = serializeTransaction;
+        this.serializedContextFreeData = serializedContextFreeData;
         this.signatures = signatures;
         this.error = error;
+    }
+
+    public EosioTransactionSignatureResponse(@NotNull String serializeTransaction,
+            @NotNull List<String> signatures, @Nullable SignatureProviderError error) {
+        this(serializeTransaction, "", signatures, error);
     }
 
     /**
@@ -74,4 +96,12 @@ public class EosioTransactionSignatureResponse {
     public SignatureProviderError getError() {
         return error;
     }
+
+    /**
+     * Gets serialized context free data.
+     *
+     * @return the serialized context free data
+     */
+    @NotNull
+    public String getSerializedContextFreeData() { return serializedContextFreeData; }
 }
