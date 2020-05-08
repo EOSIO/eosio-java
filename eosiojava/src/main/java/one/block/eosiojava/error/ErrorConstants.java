@@ -91,7 +91,7 @@ public class ErrorConstants {
     /**
      * Chain id or serialized transaction parameter was empty.
      */
-    public static final String EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING = "Chain id and serialized transaction can't be empty!";
+    public static final String EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING = "Chain id, serialized transaction, and serialized context free data can't be empty!";
     /**
      * The signable transaction parameter was empty.
      */

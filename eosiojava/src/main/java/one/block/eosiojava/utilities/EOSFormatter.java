@@ -828,7 +828,7 @@ public class EOSFormatter {
      */
     public static String prepareSerializedTransactionForSigning(@NotNull String serializedTransaction,
             @NotNull String chainId, @NotNull String serializedContextFreeData) throws EOSFormatterError {
-        if (serializedTransaction.isEmpty() || chainId.isEmpty()) {
+        if (serializedTransaction.isEmpty() || chainId.isEmpty() || serializedContextFreeData.isEmpty()) {
             throw new EOSFormatterError(ErrorConstants.EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING);
         }
 
