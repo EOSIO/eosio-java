@@ -218,7 +218,7 @@ public class TransactionProcessor {
     }
 
     /**
-     * Constructor with all provider references from
+     * Constructor with all provider references from {@link TransactionSession} and preset
      * Transaction
      * @param serializationProvider the serialization provider.
      * @param rpcProvider the rpc provider.
@@ -243,6 +243,59 @@ public class TransactionProcessor {
 
     //region public methods
 
+    /**
+     * Prepare action's data from input and create new instance of Transaction if it is not set.
+     * <p>
+     *     Use this method if you don't want to provide context free actions or context free data.
+     * <p>
+     * Check prepare() flow in "Complete Workflow" doc for more detail.
+     *
+     * @param actions - List of actions with data. If the transaction is preset or has a value and it
+     * has its own actions, that list will be over-ridden by this input list.
+     * @throws TransactionPrepareError thrown if:
+     *          <br>
+     *              - chainId from {@link IRPCProvider#getInfo()} is blank
+     *          <br>
+     *              - chainId returned from the chain does not match with input chainId
+     *          <br>
+     *              - There is a problem with parsing head block time from {@link GetInfoResponse#getHeadBlockTime()}
+     *          <br>
+     *          It throws a base error class if:
+     *          <br>
+     *              {@link TransactionPrepareInputError} thrown if input is invalid
+     *              <br>
+     *              {@link TransactionPrepareRpcError} thrown if any RPC call ({@link IRPCProvider#getInfo()}
+     *              and {@link IRPCProvider#getBlock(GetBlockRequest)}) return or throw an error
+     */
+    public void prepare(@NotNull List<Action> actions) throws TransactionPrepareError {
+        this.prepare(actions, new ArrayList<Action>());
+    }
+
+    /**
+     * Prepare action's data from input and create new instance of Transaction if it is not set.
+     * <p>
+     *     Use this method if you don't want to provide context free data.
+     * <p>
+     * Check prepare() flow in "Complete Workflow" doc for more detail.
+     *
+     * @param actions - List of actions with data. If the transaction is preset or has a value and it
+     * has its own actions, that list will be over-ridden by this input list.
+     * @param contextFreeActions - List of context free actions with data.
+     * @throws TransactionPrepareError thrown if:
+     *          <br>
+     *              - chainId from {@link IRPCProvider#getInfo()} is blank
+     *          <br>
+     *              - chainId returned from the chain does not match with input chainId
+     *          <br>
+     *              - There is a problem with parsing head block time from {@link GetInfoResponse#getHeadBlockTime()}
+     *          <br>
+     *          It throws a base error class if:
+     *          <br>
+     *              {@link TransactionPrepareInputError} thrown if input is invalid
+     *              <br>
+     *              {@link TransactionPrepareRpcError} thrown if any RPC call ({@link IRPCProvider#getInfo()}
+     *              and {@link IRPCProvider#getBlock(GetBlockRequest)}) return or throw an error
+     */
     public void prepare(@NotNull List<Action> actions, @NotNull List<Action> contextFreeActions) throws TransactionPrepareError {
         prepare(actions, contextFreeActions, new ArrayList<String>());
     }
@@ -365,34 +418,6 @@ public class TransactionProcessor {
         preparingTransaction.setRefBlockPrefix(refBlockPrefix);
 
         this.finishPreparing(preparingTransaction);
-    }
-
-    /**
-     * Prepare action's data from input and create new instance of Transaction if it is not set.
-     * <p>
-     *     Use this method if you don't want to provide context free actions.
-     * <p>
-     * Check prepare() flow in "Complete Workflow" doc for more detail.
-     *
-     * @param actions - List of actions with data. If the transaction is preset or has a value and it
-     * has its own actions, that list will be over-ridden by this input list.
-     * @throws TransactionPrepareError thrown if:
-     *          <br>
-     *              - chainId from {@link IRPCProvider#getInfo()} is blank
-     *          <br>
-     *              - chainId returned from the chain does not match with input chainId
-     *          <br>
-     *              - There is a problem with parsing head block time from {@link GetInfoResponse#getHeadBlockTime()}
-     *          <br>
-     *          It throws a base error class if:
-     *          <br>
-     *              {@link TransactionPrepareInputError} thrown if input is invalid
-     *              <br>
-     *              {@link TransactionPrepareRpcError} thrown if any RPC call ({@link IRPCProvider#getInfo()}
-     *              and {@link IRPCProvider#getBlock(GetBlockRequest)}) return or throw an error
-     */
-    public void prepare(@NotNull List<Action> actions) throws TransactionPrepareError {
-        this.prepare(actions, new ArrayList<Action>());
     }
 
     /**

@@ -17,7 +17,7 @@ public class EosioTransactionSignatureRequest {
     private String serializedTransaction;
 
     /**
-     * The serialized (Hex) version all concatenated context free data
+     * The serialized (Hex) version of all concatenated context free data
      */
     private String contextFreeData;
 
@@ -115,7 +115,7 @@ public class EosioTransactionSignatureRequest {
 
     /**
      * Gets the serialized contextFreeData.
-     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(String)}
+     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(List)}
      *
      * @return the serialized contextFreeData
      */
@@ -125,7 +125,7 @@ public class EosioTransactionSignatureRequest {
 
     /**
      * Sets the serialized contextFreeData.
-     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(String)}
+     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(List)}
      *
      * @param contextFreeData the serialized contextFreeData
      */
