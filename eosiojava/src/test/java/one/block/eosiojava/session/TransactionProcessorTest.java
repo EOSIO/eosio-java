@@ -8,9 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -551,8 +549,9 @@ public class TransactionProcessorTest {
         }
 
         try {
-            assertNotEquals("", processor.serialize());
-        } catch (TransactionSerializeError transactionSerializeError) {
+            assertNotEquals("", processor.serializeContextFreeData());
+            verify(mockedSerializationProvider).serializeContextFreeData(this.defaultContextFreeData());
+        } catch (SerializeContextFreeDataError transactionSerializeError) {
             transactionSerializeError.printStackTrace();
             fail("Exception should not be thrown here for calling serialize.");
         }

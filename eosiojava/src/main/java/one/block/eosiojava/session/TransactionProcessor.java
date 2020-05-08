@@ -927,10 +927,10 @@ public class TransactionProcessor {
     }
 
     @NotNull
-    private String serializeContextFreeData() throws SerializeContextFreeDataError {
+    public String serializeContextFreeData() throws SerializeContextFreeDataError {
         String _serializedContextFreeData;
         try {
-            _serializedContextFreeData = this.serializationProvider.serializeContextFreeData(this.transaction.getHexContextFreeData());
+            _serializedContextFreeData = this.serializationProvider.serializeContextFreeData(this.transaction.getContextFreeData());
         } catch (SerializeContextFreeDataError serializeDataError) {
             throw new SerializeContextFreeDataError(
                     ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_CONTEXT_FREE_DATA_ERROR, serializeDataError
