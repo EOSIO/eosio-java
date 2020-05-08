@@ -23,13 +23,8 @@ public class TransactionTest {
     @Test
     public void testCreateTransactionWithEmptyContextFreeData() {
         assertNotNull(transaction.contextFreeData);
-        assertTrue(transaction.contextFreeData.getContextFreeData().isEmpty());
-    }
-
-    @Test
-    public void testGetPackedContextFreeDataWithNullContextFreeDataReturnsEmptyString() {
-        transaction.contextFreeData = null;
-
+        assertTrue(transaction.getContextFreeData().isEmpty());
+        assertTrue(transaction.getHexContextFreeData().isEmpty());
         assertEquals(transaction.getPackedContextFreeData(), "");
     }
 
@@ -41,12 +36,17 @@ public class TransactionTest {
     }
 
     @Test
-    public void testGetPackedContextFreeDataWithNonNullContextFreeDataCallsMethod() {
-        transaction.contextFreeData = mock(ContextFreeData.class);
+    public void testGetHexContextFreeDataWithNullContextFreeDataReturnsEmptyString() {
+        transaction.contextFreeData = null;
 
-        transaction.getPackedContextFreeData();
+        assertEquals(transaction.getHexContextFreeData(), new ArrayList<String>());
+    }
 
-        verify(transaction.contextFreeData).getPackedContextFreeData();
+    @Test
+    public void testGetPackedContextFreeDataWithNullContextFreeDataReturnsEmptyString() {
+        transaction.contextFreeData = null;
+
+        assertEquals(transaction.getPackedContextFreeData(), "");
     }
 
     @Test
@@ -56,5 +56,23 @@ public class TransactionTest {
         transaction.getContextFreeData();
 
         verify(transaction.contextFreeData).getContextFreeData();
+    }
+
+    @Test
+    public void testGetHexContextFreeDataWithNonNullContextFreeDataCallsMethod() {
+        transaction.contextFreeData = mock(ContextFreeData.class);
+
+        transaction.getHexContextFreeData();
+
+        verify(transaction.contextFreeData).getHexContextFreeData();
+    }
+
+    @Test
+    public void testGetPackedContextFreeDataWithNonNullContextFreeDataCallsMethod() {
+        transaction.contextFreeData = mock(ContextFreeData.class);
+
+        transaction.getPackedContextFreeData();
+
+        verify(transaction.contextFreeData).getPackedContextFreeData();
     }
 }

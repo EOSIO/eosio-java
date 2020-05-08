@@ -12,11 +12,16 @@ public class ContextFreeData implements Serializable {
     public List<String> rawContextFreeData;
 
     public ContextFreeData(@NotNull List<String> contextFreeData) {
-        this.setContextFreeData(contextFreeData);
+        this.rawContextFreeData = contextFreeData;
     }
 
     @NotNull
     public List<String> getContextFreeData() {
+        return this.rawContextFreeData;
+    }
+
+    @NotNull
+    public List<String> getHexContextFreeData() {
         List<String> hexedContextFreeData = new ArrayList<String>();
 
         for(String cfd : rawContextFreeData) {
@@ -26,19 +31,15 @@ public class ContextFreeData implements Serializable {
         return hexedContextFreeData;
     }
 
-    public void setContextFreeData(@NotNull List<String> contextFreeData) {
-        this.rawContextFreeData = contextFreeData;
-    }
-
     public String getPackedContextFreeData() {
         if (this.rawContextFreeData.size() == 0) {
             return "";
         }
-        List<String> hexedContextFreeData = this.getContextFreeData();
-        String packedContextFreeData = String.format("%02X", hexedContextFreeData.size());
+        List<String> hexContextFreeData = this.getHexContextFreeData();
+        String packedContextFreeData = String.format("%02X", hexContextFreeData.size());
 
-        for(int i = 0; i < hexedContextFreeData.size(); i++) {
-            String cfd = hexedContextFreeData.get(i);
+        for(int i = 0; i < hexContextFreeData.size(); i++) {
+            String cfd = hexContextFreeData.get(i);
             packedContextFreeData += String.format("%02X", cfd.length() / 2) + cfd;
         }
 
