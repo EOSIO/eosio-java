@@ -9,9 +9,6 @@ import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import org.jetbrains.annotations.NotNull;
 
-import org.bitcoinj.core.Sha256Hash;
-import org.bouncycastle.util.encoders.Hex;
-
 /**
  * The Transaction class which has data of actions for each transaction. It holds the serialized
  * action data that will be pushed to the blockchain.
