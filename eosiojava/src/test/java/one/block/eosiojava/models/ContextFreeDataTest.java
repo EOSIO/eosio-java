@@ -24,6 +24,7 @@ public class ContextFreeDataTest {
         assertTrue(contextFreeData.getRaw().isEmpty());
         assertTrue(contextFreeData.getHexed().isEmpty());
         assertEquals(contextFreeData.getPacked(), "");
+        assertEquals(contextFreeData.getSerialized(), "");
     }
 
     @Test
@@ -45,6 +46,13 @@ public class ContextFreeDataTest {
         setup(this.defaultContextFreeData());
 
         assertEquals(contextFreeData.getPacked(), this.packedContextFreeData());
+    }
+
+    @Test
+    public void testGetSerializedContextFreeDataReturnsCorrectlyFormattedSerializedContextFreeData() {
+        setup(this.defaultContextFreeData());
+
+        assertEquals(contextFreeData.getSerialized(), this.serializedContextFreeData());
     }
 
     private List<String> defaultContextFreeData() {
@@ -79,5 +87,9 @@ public class ContextFreeDataTest {
 
     private String packedContextFreeData() {
         return "040474657374147b22736f6d65223a20226a736f6e44617461227d0C21402324255e262a28295f2b19D5468697320697320736f6d65206c6f6e6720636f6e746578742066726565206461746120696e7075742e2049742063616e2068617665207768617465766572206461746120796f752077616e7420696e2069742e2049742077696c6c20626520636f70696564206d756c7469706c652074696d657320746f20696e637265617365206c656e6774682e205468697320697320736f6d65206c6f6e6720636f6e746578742066726565206461746120696e7075742e2049742063616e2068617665207768617465766572206461746120796f752077616e7420696e2069742e2049742077696c6c20626520636f70696564206d756c7469706c652074696d657320746f20696e637265617365206c656e6774682e205468697320697320736f6d65206c6f6e6720636f6e746578742066726565206461746120696e7075742e2049742063616e2068617665207768617465766572206461746120796f752077616e7420696e2069742e2049742077696c6c20626520636f70696564206d756c7469706c652074696d657320746f20696e637265617365206c656e6774682e";
+    }
+
+    private String serializedContextFreeData() {
+        return "";
     }
 }

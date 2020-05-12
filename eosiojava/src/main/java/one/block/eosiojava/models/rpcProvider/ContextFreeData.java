@@ -45,6 +45,10 @@ public class ContextFreeData {
         return packedContextFreeData;
     }
 
+    public String getSerialized() {
+        return "";
+    }
+
     private String getHexPrefix(int length) {
         return String.format("%02X", length);
     }

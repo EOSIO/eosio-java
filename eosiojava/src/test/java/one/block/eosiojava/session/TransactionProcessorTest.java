@@ -293,22 +293,6 @@ public class TransactionProcessorTest {
     }
 
     @Test
-    public void getSerializedContextFreeData() {
-        this.mockDefaultSuccessData();
-        // Prepare has to be called before sign
-        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions(), this.defaultContextFreeData());
-        assertNotNull(processor);
-
-        try {
-            assertTrue(processor.sign());
-            assertEquals(MOCKED_CONTEXT_FREE_DATA_HEX, processor.getSerializedContextFreeData());
-        } catch (TransactionSignError transactionSignError) {
-            transactionSignError.printStackTrace();
-            fail("Exception should not be thrown here for calling sign");
-        }
-    }
-
-    @Test
     public void getTransactionConfig() {
         this.mockDefaultSuccessData();
         TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
@@ -380,7 +364,7 @@ public class TransactionProcessorTest {
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_PUSHTRANSACTION_RESPONE_JSON, PushTransactionResponse.class));
 
         this.mockAbiProvider(EOSIOTOKENABIJSON);
-        this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction, MOCKED_CONTEXT_FREE_DATA_HEX);
+        this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction);
         this.mockSignatureProvider(Arrays.asList("Key1", "Key2"),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN)
                         .fromJson(mockedEosioTransactionSignatureResponseModifiedTransactionJSON, EosioTransactionSignatureResponse.class));
@@ -547,29 +531,6 @@ public class TransactionProcessorTest {
         }
     }
 
-    @Test
-    public void testContextFreeDataPrepare() {
-        // Prepare and sign
-        this.mockDefaultSuccessData();
-
-        // Context free actions
-        TransactionProcessor processor = session.getTransactionProcessor();
-        try {
-            processor.prepare(this.defaultActions(), this.defaultActions(), this.defaultContextFreeData());
-        } catch (TransactionPrepareError transactionPrepareError) {
-            transactionPrepareError.printStackTrace();
-            fail("Exception should not be thrown here for calling prepare.");
-        }
-
-        try {
-            assertNotEquals("", processor.serializeContextFreeData());
-            verify(mockedSerializationProvider).serializeContextFreeData(this.defaultContextFreeData());
-        } catch (SerializeContextFreeDataError transactionSerializeError) {
-            transactionSerializeError.printStackTrace();
-            fail("Exception should not be thrown here for calling serialize.");
-        }
-    }
-
     private void mockDefaultSuccessData() {
         this.mockRPC(
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
@@ -578,7 +539,7 @@ public class TransactionProcessorTest {
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_PUSHTRANSACTION_RESPONE_JSON, PushTransactionResponse.class));
 
         this.mockAbiProvider(EOSIOTOKENABIJSON);
-        this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction, MOCKED_CONTEXT_FREE_DATA_HEX);
+        this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction);
         this.mockSignatureProvider(Arrays.asList("Key1", "Key2"),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedEosioTransactionSignatureResponseJSON, EosioTransactionSignatureResponse.class));
     }
@@ -683,8 +644,7 @@ public class TransactionProcessorTest {
     private void mockSerializationProvider(
             @Nullable final String mockedActionHex,
             @Nullable String mockedTransactionHex,
-            @Nullable String mockedDeserializedTransaction,
-            @Nullable String mockedContextFreeDataHex) {
+            @Nullable String mockedDeserializedTransaction) {
 
         if (mockedActionHex != null) {
             try {
@@ -717,15 +677,6 @@ public class TransactionProcessorTest {
             } catch (DeserializeTransactionError deserializeTransactionError) {
                 deserializeTransactionError.printStackTrace();
                 fail("Exception should not be thrown here for mocking deserializeTransaction");
-            }
-        }
-
-        if (mockedContextFreeDataHex != null) {
-            try {
-                when(this.mockedSerializationProvider.serializeContextFreeData(any(ArrayList.class))).thenReturn(mockedContextFreeDataHex);
-            } catch (SerializeContextFreeDataError deserializeTransactionError) {
-                deserializeTransactionError.printStackTrace();
-                fail("Exception should not be thrown here for mocking serializeData");
             }
         }
     }
