@@ -494,7 +494,7 @@ public class TransactionProcessor {
         }
 
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
-                0, this.contextFreeData.getPackedContextFreeData(), this.serializedTransaction);
+                0, this.contextFreeData.getPacked(), this.serializedTransaction);
         try {
             return this.pushTransaction(pushTransactionRequest);
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
@@ -547,7 +547,7 @@ public class TransactionProcessor {
 
         // Signatures and serializedTransaction are assigned and finalized in getSignature() method
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
-                0, this.contextFreeData.getPackedContextFreeData(), this.serializedTransaction);
+                0, this.contextFreeData.getPacked(), this.serializedTransaction);
         try {
             return this.pushTransaction(pushTransactionRequest);
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
@@ -938,7 +938,7 @@ public class TransactionProcessor {
     public String serializeContextFreeData() throws SerializeContextFreeDataError {
         String _serializedContextFreeData;
         try {
-            _serializedContextFreeData = this.serializationProvider.serializeContextFreeData(this.contextFreeData.getContextFreeData());
+            _serializedContextFreeData = this.serializationProvider.serializeContextFreeData(this.contextFreeData.getRaw());
         } catch (SerializeContextFreeDataError serializeDataError) {
             throw new SerializeContextFreeDataError(
                     ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_CONTEXT_FREE_DATA_ERROR, serializeDataError

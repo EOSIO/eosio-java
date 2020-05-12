@@ -15,12 +15,12 @@ public class ContextFreeData {
     }
 
     @NotNull
-    public List<String> getContextFreeData() {
+    public List<String> getRaw() {
         return this.rawContextFreeData;
     }
 
     @NotNull
-    public List<String> getHexContextFreeData() {
+    public List<String> getHexed() {
         List<String> hexedContextFreeData = new ArrayList<String>();
 
         for(String cfd : rawContextFreeData) {
@@ -30,11 +30,11 @@ public class ContextFreeData {
         return hexedContextFreeData;
     }
 
-    public String getPackedContextFreeData() {
+    public String getPacked() {
         if (this.rawContextFreeData.size() == 0) {
             return "";
         }
-        List<String> hexContextFreeData = this.getHexContextFreeData();
+        List<String> hexContextFreeData = this.getHexed();
         String packedContextFreeData = this.getHexPrefix(hexContextFreeData.size());
 
         for(int i = 0; i < hexContextFreeData.size(); i++) {

@@ -284,12 +284,12 @@ public class TransactionProcessorTest {
 
         ContextFreeData contextFreeData = processor.getContextFreeData();
         assertNotNull(contextFreeData);
-        assertNotNull(contextFreeData.getPackedContextFreeData());
-        assertNotNull(contextFreeData.getContextFreeData());
-        assertNotNull(contextFreeData.getHexContextFreeData());
-        assertNotEquals(contextFreeData.getPackedContextFreeData(), "");
-        assertEquals(contextFreeData.getContextFreeData().size(), 3);
-        assertEquals(contextFreeData.getHexContextFreeData().size(), 3);
+        assertNotNull(contextFreeData.getRaw());
+        assertNotNull(contextFreeData.getHexed());
+        assertNotNull(contextFreeData.getPacked());
+        assertEquals(contextFreeData.getRaw().size(), 3);
+        assertEquals(contextFreeData.getHexed().size(), 3);
+        assertNotEquals(contextFreeData.getPacked(), "");
     }
 
     @Test

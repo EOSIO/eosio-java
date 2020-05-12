@@ -21,30 +21,30 @@ public class ContextFreeDataTest {
 
     @Test
     public void testCreateContextFreeDataWithEmptyData() {
-        assertTrue(contextFreeData.getContextFreeData().isEmpty());
-        assertTrue(contextFreeData.getHexContextFreeData().isEmpty());
-        assertEquals(contextFreeData.getPackedContextFreeData(), "");
+        assertTrue(contextFreeData.getRaw().isEmpty());
+        assertTrue(contextFreeData.getHexed().isEmpty());
+        assertEquals(contextFreeData.getPacked(), "");
     }
 
     @Test
     public void testGetContextFreeDataReturnsRawContextFreeData() {
         setup(this.defaultContextFreeData());
 
-        assertEquals(contextFreeData.getContextFreeData(), this.defaultContextFreeData());
+        assertEquals(contextFreeData.getRaw(), this.defaultContextFreeData());
     }
 
     @Test
     public void testGetHexContextFreeDataReturnsCorrectlyFormattedHexContextFreeData() {
         setup(this.defaultContextFreeData());
 
-        assertEquals(contextFreeData.getHexContextFreeData(), this.hexedContextFreeData());
+        assertEquals(contextFreeData.getHexed(), this.hexedContextFreeData());
     }
 
     @Test
     public void testGetPackedContextFreeDataReturnsCorrectlyFormattedPackedContextFreeData() {
         setup(this.defaultContextFreeData());
 
-        assertEquals(contextFreeData.getPackedContextFreeData(), this.packedContextFreeData());
+        assertEquals(contextFreeData.getPacked(), this.packedContextFreeData());
     }
 
     private List<String> defaultContextFreeData() {
