@@ -40,6 +40,7 @@ import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.Action;
 import one.block.eosiojava.models.rpcProvider.Authorization;
+import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
@@ -203,8 +204,6 @@ public class TransactionProcessorTest {
         assertEquals(expectedRefBlockNum, transaction.getRefBlockNum());
         assertEquals(refBlockPrefix, transaction.getRefBlockPrefix());
         assertNotNull(transaction.getRefBlockPrefix());
-        assertNotNull(transaction.getContextFreeData());
-        assertTrue(transaction.getContextFreeData().isEmpty());
     }
 
     @Test
@@ -234,8 +233,6 @@ public class TransactionProcessorTest {
             assertEquals(expectedRefBlockNum, transaction.getRefBlockNum());
             assertEquals(refBlockPrefix, transaction.getRefBlockPrefix());
             assertNotNull(transaction.getRefBlockPrefix());
-            assertNotNull(transaction.getContextFreeData());
-            assertTrue(transaction.getContextFreeData().isEmpty());
         } catch (TransactionSignError transactionSignError) {
             transactionSignError.printStackTrace();
             fail("Exception should not be thrown here for calling sign");
@@ -277,6 +274,22 @@ public class TransactionProcessorTest {
             transactionSignError.printStackTrace();
             fail("Exception should not be thrown here for calling sign");
         }
+    }
+
+    @Test
+    public void getContextFreeData() {
+        this.mockDefaultSuccessData();
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions(), this.defaultContextFreeData());
+        assertNotNull(processor);
+
+        ContextFreeData contextFreeData = processor.getContextFreeData();
+        assertNotNull(contextFreeData);
+        assertNotNull(contextFreeData.getPackedContextFreeData());
+        assertNotNull(contextFreeData.getContextFreeData());
+        assertNotNull(contextFreeData.getHexContextFreeData());
+        assertNotEquals(contextFreeData.getPackedContextFreeData(), "");
+        assertEquals(contextFreeData.getContextFreeData().size(), 3);
+        assertEquals(contextFreeData.getHexContextFreeData().size(), 3);
     }
 
     @Test

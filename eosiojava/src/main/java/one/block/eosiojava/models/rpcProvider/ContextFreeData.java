@@ -3,11 +3,10 @@ package one.block.eosiojava.models.rpcProvider;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContextFreeData implements Serializable {
+public class ContextFreeData {
     @NotNull
     public List<String> rawContextFreeData;
 

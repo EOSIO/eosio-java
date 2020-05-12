@@ -126,6 +126,12 @@ public class TransactionProcessor {
     private Transaction originalTransaction;
 
     /**
+     * Context Free Data instance that holds all raw, serialized, and packed CFD.
+     */
+    @Nullable
+    private ContextFreeData contextFreeData;
+
+    /**
      * List of signatures used to sign the transaction.  This is populated after the transaction
      * has been signed and the signatures have been return by the signature provider.
      * <p>
@@ -338,7 +344,9 @@ public class TransactionProcessor {
         */
         Transaction preparingTransaction = new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
                 BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, contextFreeActions, actions,
-                new ArrayList<String>(), contextFreeData);
+                new ArrayList<String>());
+
+        ContextFreeData preparingContextFreeData = new ContextFreeData(contextFreeData);
 
         // Assigning values for transaction expiration, refBlockNum and refBlockPrefix
         GetInfoResponse getInfoResponse;
@@ -417,7 +425,7 @@ public class TransactionProcessor {
         preparingTransaction.setRefBlockNum(refBlockNum);
         preparingTransaction.setRefBlockPrefix(refBlockPrefix);
 
-        this.finishPreparing(preparingTransaction);
+        this.finishPreparing(preparingTransaction, preparingContextFreeData);
     }
 
     /**
@@ -486,7 +494,7 @@ public class TransactionProcessor {
         }
 
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
-                0, this.transaction.getPackedContextFreeData(), this.serializedTransaction);
+                0, this.contextFreeData.getPackedContextFreeData(), this.serializedTransaction);
         try {
             return this.pushTransaction(pushTransactionRequest);
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
@@ -539,7 +547,7 @@ public class TransactionProcessor {
 
         // Signatures and serializedTransaction are assigned and finalized in getSignature() method
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
-                0, this.transaction.getPackedContextFreeData(), this.serializedTransaction);
+                0, this.contextFreeData.getPackedContextFreeData(), this.serializedTransaction);
         try {
             return this.pushTransaction(pushTransactionRequest);
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
@@ -930,7 +938,7 @@ public class TransactionProcessor {
     public String serializeContextFreeData() throws SerializeContextFreeDataError {
         String _serializedContextFreeData;
         try {
-            _serializedContextFreeData = this.serializationProvider.serializeContextFreeData(this.transaction.getContextFreeData());
+            _serializedContextFreeData = this.serializationProvider.serializeContextFreeData(this.contextFreeData.getContextFreeData());
         } catch (SerializeContextFreeDataError serializeDataError) {
             throw new SerializeContextFreeDataError(
                     ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_CONTEXT_FREE_DATA_ERROR, serializeDataError
@@ -956,11 +964,16 @@ public class TransactionProcessor {
      *
      * @param preparingTransaction - prepared transaction
      */
-    private void finishPreparing(Transaction preparingTransaction) {
+    private void finishPreparing(Transaction preparingTransaction, ContextFreeData preparingContextFreeData) {
         this.transaction = preparingTransaction;
+        this.contextFreeData = preparingContextFreeData;
         // Clear serialized transaction if it was serialized.
         if (!Strings.isNullOrEmpty(this.serializedTransaction)) {
             this.serializedTransaction = "";
+        }
+        // Clear serialized context free data if it was serialized.
+        if (!Strings.isNullOrEmpty(this.serializedContextFreeData)) {
+            this.serializedContextFreeData = "";
         }
     }
 
@@ -1102,8 +1115,20 @@ public class TransactionProcessor {
         this.isTransactionModificationAllowed = isTransactionModificationAllowed;
     }
 
+    /**
+     * Gets serialized version of Context Free Data.
+     * @return the serialized context free data.
+     */
     public String getSerializedContextFreeData() {
         return this.serializedContextFreeData;
+    }
+
+    /**
+     * Gets context free data instance.
+     * @return the context free data instance.
+     */
+    public ContextFreeData getContextFreeData() {
+        return this.contextFreeData;
     }
 
     //endregion

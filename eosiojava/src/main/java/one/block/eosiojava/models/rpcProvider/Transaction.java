@@ -67,43 +67,6 @@ public class Transaction implements Serializable {
     @NotNull
     private List<String> transactionExtensions;
 
-    @SerializedName("context_free_data")
-    @NotNull
-    public ContextFreeData contextFreeData;
-
-    /**
-     * Instantiates a new Transaction.
-     *
-     * @param expiration the expiration
-     * @param refBlockNum the ref block num
-     * @param refBlockPrefix the ref block prefix
-     * @param maxNetUsageWords the max net usage words
-     * @param maxCpuUsageMs the max cpu usage ms
-     * @param delaySec the delay sec
-     * @param contextFreeActions the context free actions
-     * @param actions the actions
-     * @param transactionExtensions the transaction extensions
-     * @param contextFreeData the context free data
-     */
-    public Transaction(@NotNull String expiration, @NotNull BigInteger refBlockNum,
-            @NotNull BigInteger refBlockPrefix,
-            @NotNull BigInteger maxNetUsageWords,
-            @NotNull BigInteger maxCpuUsageMs, @NotNull BigInteger delaySec,
-            @NotNull List<Action> contextFreeActions,
-            @NotNull List<Action> actions, @NotNull List<String> transactionExtensions,
-            @NotNull List<String> contextFreeData) {
-        this.expiration = expiration;
-        this.refBlockNum = refBlockNum;
-        this.refBlockPrefix = refBlockPrefix;
-        this.maxNetUsageWords = maxNetUsageWords;
-        this.maxCpuUsageMs = maxCpuUsageMs;
-        this.delaySec = delaySec;
-        this.contextFreeActions = contextFreeActions;
-        this.actions = actions;
-        this.transactionExtensions = transactionExtensions;
-        this.contextFreeData = new ContextFreeData(contextFreeData);
-    }
-
     /**
      * Instantiates a new Transaction.
      *
@@ -123,8 +86,15 @@ public class Transaction implements Serializable {
             @NotNull BigInteger maxCpuUsageMs, @NotNull BigInteger delaySec,
             @NotNull List<Action> contextFreeActions,
             @NotNull List<Action> actions, @NotNull List<String> transactionExtensions) {
-        this(expiration, refBlockNum, refBlockPrefix, maxNetUsageWords, maxCpuUsageMs, delaySec,
-                contextFreeActions, actions, transactionExtensions, new ArrayList<String>());
+        this.expiration = expiration;
+        this.refBlockNum = refBlockNum;
+        this.refBlockPrefix = refBlockPrefix;
+        this.maxNetUsageWords = maxNetUsageWords;
+        this.maxCpuUsageMs = maxCpuUsageMs;
+        this.delaySec = delaySec;
+        this.contextFreeActions = contextFreeActions;
+        this.actions = actions;
+        this.transactionExtensions = transactionExtensions;
     }
 
     /**
@@ -254,17 +224,5 @@ public class Transaction implements Serializable {
 
     public void setTransactionExtensions(@NotNull List<String> transactionExtensions) {
         this.transactionExtensions = transactionExtensions;
-    }
-
-    public List<String> getContextFreeData() {
-        return this.contextFreeData != null ? this.contextFreeData.getContextFreeData() : new ArrayList<String>();
-    }
-
-    public List<String> getHexContextFreeData() {
-        return this.contextFreeData != null ? this.contextFreeData.getHexContextFreeData() : new ArrayList<String>();
-    }
-
-    public String getPackedContextFreeData() {
-        return this.contextFreeData != null ? this.contextFreeData.getPackedContextFreeData() : "";
     }
 }
