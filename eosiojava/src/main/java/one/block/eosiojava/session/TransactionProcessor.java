@@ -493,7 +493,7 @@ public class TransactionProcessor {
         }
 
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
-                0, this.contextFreeData.getPacked(), this.serializedTransaction);
+                0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
             return this.pushTransaction(pushTransactionRequest);
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
@@ -546,7 +546,7 @@ public class TransactionProcessor {
 
         // Signatures and serializedTransaction are assigned and finalized in getSignature() method
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
-                0, this.contextFreeData.getPacked(), this.serializedTransaction);
+                0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
             return this.pushTransaction(pushTransactionRequest);
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
@@ -638,7 +638,7 @@ public class TransactionProcessor {
                 this.chainId,
                 null,
                 this.isTransactionModificationAllowed,
-                this.contextFreeData.getSerialized());
+                this.contextFreeData.getPacked());
 
         // Assign required keys to signing public keys if it was set.
         if (this.requiredKeys != null && !this.requiredKeys.isEmpty()) {

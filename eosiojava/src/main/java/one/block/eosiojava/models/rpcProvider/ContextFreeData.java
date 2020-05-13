@@ -1,55 +1,110 @@
 package one.block.eosiojava.models.rpcProvider;
 
+import java.nio.ByteBuffer;
+import org.bitcoinj.core.Sha256Hash;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ContextFreeData {
     @NotNull
-    public List<String> rawContextFreeData;
+    public List<String> data;
+
+    @NotNull
+    public byte[] rawBytes;
 
     public ContextFreeData(@NotNull List<String> contextFreeData) {
-        this.rawContextFreeData = contextFreeData;
+        this.setData(contextFreeData);
     }
 
     @NotNull
-    public List<String> getRaw() {
-        return this.rawContextFreeData;
+    public List<String> getData() {
+        return this.data;
     }
 
     @NotNull
-    public List<String> getHexed() {
-        List<String> hexedContextFreeData = new ArrayList<String>();
+    public byte[] getBytes() {
+        return this.rawBytes;
+    }
 
-        for(String cfd : rawContextFreeData) {
-            hexedContextFreeData.add(Hex.toHexString(cfd.getBytes()));
+    public void setBytes(byte[] bytes) {
+        this.rawBytes = bytes;
+    }
+
+    public void setData(List<String> contextFreeData) {
+        this.data = contextFreeData;
+        if (!this.hasData()) {
+            this.setBytes(new byte[0]);
+            return;
         }
 
-        return hexedContextFreeData;
+        ByteBuffer buffer = ByteBuffer.allocate(this.getTotalBytes(this.data));
+
+        pushPrefix(buffer, this.data.size());
+
+        for(String cfd : this.data) {
+            byte[] cfdBytes = cfd.getBytes();
+            pushPrefix(buffer, cfdBytes.length);
+            buffer.put(cfdBytes);
+        }
+
+        this.setBytes(buffer.array());
+    }
+
+    public String getHexed() {
+        if (!this.hasData()) {
+            return "";
+        }
+
+        return Hex.toHexString(this.getBytes()).toUpperCase();
     }
 
     public String getPacked() {
-        if (this.rawContextFreeData.size() == 0) {
+        if (!this.hasData()) {
             return "";
         }
-        List<String> hexContextFreeData = this.getHexed();
-        String packedContextFreeData = this.getHexPrefix(hexContextFreeData.size());
 
-        for(int i = 0; i < hexContextFreeData.size(); i++) {
-            String hexData = hexContextFreeData.get(i);
-            packedContextFreeData += this.getHexPrefix(hexData.length() / 2) + hexData;
+        return Hex.toHexString(Sha256Hash.hash(this.getBytes()));
+    }
+
+    public boolean hasData() {
+        return this.data.size() > 0;
+    }
+
+    private void pushPrefix(ByteBuffer buffer, int length) {
+        while(true) {
+            if (length >>> 7 == 0) {
+                buffer.put((byte)length);
+                break;
+            } else {
+                buffer.put((byte)(0x80 | (length & 0x7f)));
+                length = length >>> 7;
+            }
+        }
+    }
+
+    private Integer getTotalBytes(List<String> contextFreeData) {
+        int bytes =  this.getByteSizePrefix(contextFreeData.size());
+        for(String cfd : contextFreeData) {
+            byte[] cfdBytes = cfd.getBytes();
+            bytes += this.getByteSizePrefix(cfdBytes.length) + cfdBytes.length;
+        }
+        return bytes;
+    }
+
+    private Integer getByteSizePrefix(int length) {
+        int size = 0;
+        while(true) {
+            if (length >>> 7 == 0) {
+                size++;
+                break;
+            } else {
+                size++;
+                length = length >>> 7;
+            }
         }
 
-        return packedContextFreeData;
-    }
-
-    public String getSerialized() {
-        return "";
-    }
-
-    private String getHexPrefix(int length) {
-        return String.format("%02X", length);
+        return size;
     }
 }

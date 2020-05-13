@@ -21,17 +21,24 @@ public class ContextFreeDataTest {
 
     @Test
     public void testCreateContextFreeDataWithEmptyData() {
-        assertTrue(contextFreeData.getRaw().isEmpty());
-        assertTrue(contextFreeData.getHexed().isEmpty());
+        assertTrue(contextFreeData.getData().isEmpty());
+        assertEquals(contextFreeData.getBytes().length, 0);
+        assertEquals(contextFreeData.getHexed(), "");
         assertEquals(contextFreeData.getPacked(), "");
-        assertEquals(contextFreeData.getSerialized(), "");
     }
 
     @Test
-    public void testGetContextFreeDataReturnsRawContextFreeData() {
+    public void testGetDataReturnsRawContextFreeData() {
         setup(this.defaultContextFreeData());
 
-        assertEquals(contextFreeData.getRaw(), this.defaultContextFreeData());
+        assertEquals(contextFreeData.getData(), this.defaultContextFreeData());
+    }
+
+    @Test
+    public void testGetBytesReturnsFormattedBytes() {
+        setup(this.defaultContextFreeData());
+
+        assertEquals(contextFreeData.getBytes().length, 1281);
     }
 
     @Test
@@ -42,24 +49,17 @@ public class ContextFreeDataTest {
     }
 
     @Test
-    public void testGetPackedContextFreeDataReturnsCorrectlyFormattedPackedContextFreeData() {
-        setup(this.defaultContextFreeData());
-
-        assertEquals(contextFreeData.getPacked(), this.packedContextFreeData());
-    }
-
-    @Test
     public void testGetSerializedContextFreeDataReturnsCorrectlyFormattedSerializedContextFreeData() {
         setup(this.defaultContextFreeData());
 
-        assertEquals(contextFreeData.getSerialized(), this.serializedContextFreeData());
+        assertEquals(contextFreeData.getPacked(), this.packedContextFreeData());
     }
 
     private List<String> defaultContextFreeData() {
         String contextFreeData1 = "test";
         String contextFreeData2 = "{\"some\": \"jsonData\"}";
         String contextFreeData3 = "!@#$%^&*()_+";
-        String contextFreeData4 = "This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length. This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length. This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length.";
+        String contextFreeData4 = "This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length. This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length. This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length.This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length. This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length. This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length.This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length. This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length. This is some long context free data input. It can have whatever data you want in it. It will be copied multiple times to increase length.";
 
         ArrayList<String> contextFreeData = new ArrayList<String>();
         contextFreeData.add(contextFreeData1);
@@ -70,26 +70,11 @@ public class ContextFreeDataTest {
         return contextFreeData;
     }
 
-    private List<String> hexedContextFreeData() {
-        String hexedContextFreeData1 = "74657374";
-        String hexedContextFreeData2 = "7b22736f6d65223a20226a736f6e44617461227d";
-        String hexedContextFreeData3 = "21402324255e262a28295f2b";
-        String hexedContextFreeData4 = "5468697320697320736f6d65206c6f6e6720636f6e746578742066726565206461746120696e7075742e2049742063616e2068617665207768617465766572206461746120796f752077616e7420696e2069742e2049742077696c6c20626520636f70696564206d756c7469706c652074696d657320746f20696e637265617365206c656e6774682e205468697320697320736f6d65206c6f6e6720636f6e746578742066726565206461746120696e7075742e2049742063616e2068617665207768617465766572206461746120796f752077616e7420696e2069742e2049742077696c6c20626520636f70696564206d756c7469706c652074696d657320746f20696e637265617365206c656e6774682e205468697320697320736f6d65206c6f6e6720636f6e746578742066726565206461746120696e7075742e2049742063616e2068617665207768617465766572206461746120796f752077616e7420696e2069742e2049742077696c6c20626520636f70696564206d756c7469706c652074696d657320746f20696e637265617365206c656e6774682e";
-
-        ArrayList<String> hexedContextFreeData = new ArrayList<String>();
-        hexedContextFreeData.add(hexedContextFreeData1);
-        hexedContextFreeData.add(hexedContextFreeData2);
-        hexedContextFreeData.add(hexedContextFreeData3);
-        hexedContextFreeData.add(hexedContextFreeData4);
-
-        return hexedContextFreeData;
+    private String hexedContextFreeData() {
+        return "040474657374147B22736F6D65223A20226A736F6E44617461227D0C21402324255E262A28295F2BD7095468697320697320736F6D65206C6F6E6720636F6E746578742066726565206461746120696E7075742E2049742063616E2068617665207768617465766572206461746120796F752077616E7420696E2069742E2049742077696C6C20626520636F70696564206D756C7469706C652074696D657320746F20696E637265617365206C656E6774682E205468697320697320736F6D65206C6F6E6720636F6E746578742066726565206461746120696E7075742E2049742063616E2068617665207768617465766572206461746120796F752077616E7420696E2069742E2049742077696C6C20626520636F70696564206D756C7469706C652074696D657320746F20696E637265617365206C656E6774682E205468697320697320736F6D65206C6F6E6720636F6E746578742066726565206461746120696E7075742E2049742063616E2068617665207768617465766572206461746120796F752077616E7420696E2069742E2049742077696C6C20626520636F70696564206D756C7469706C652074696D657320746F20696E637265617365206C656E6774682E5468697320697320736F6D65206C6F6E6720636F6E746578742066726565206461746120696E7075742E2049742063616E2068617665207768617465766572206461746120796F752077616E7420696E2069742E2049742077696C6C20626520636F70696564206D756C7469706C652074696D657320746F20696E637265617365206C656E6774682E205468697320697320736F6D65206C6F6E6720636F6E746578742066726565206461746120696E7075742E2049742063616E2068617665207768617465766572206461746120796F752077616E7420696E2069742E2049742077696C6C20626520636F70696564206D756C7469706C652074696D657320746F20696E637265617365206C656E6774682E205468697320697320736F6D65206C6F6E6720636F6E746578742066726565206461746120696E7075742E2049742063616E2068617665207768617465766572206461746120796F752077616E7420696E2069742E2049742077696C6C20626520636F70696564206D756C7469706C652074696D657320746F20696E637265617365206C656E6774682E5468697320697320736F6D65206C6F6E6720636F6E746578742066726565206461746120696E7075742E2049742063616E2068617665207768617465766572206461746120796F752077616E7420696E2069742E2049742077696C6C20626520636F70696564206D756C7469706C652074696D657320746F20696E637265617365206C656E6774682E205468697320697320736F6D65206C6F6E6720636F6E746578742066726565206461746120696E7075742E2049742063616E2068617665207768617465766572206461746120796F752077616E7420696E2069742E2049742077696C6C20626520636F70696564206D756C7469706C652074696D657320746F20696E637265617365206C656E6774682E205468697320697320736F6D65206C6F6E6720636F6E746578742066726565206461746120696E7075742E2049742063616E2068617665207768617465766572206461746120796F752077616E7420696E2069742E2049742077696C6C20626520636F70696564206D756C7469706C652074696D657320746F20696E637265617365206C656E6774682E";
     }
 
     private String packedContextFreeData() {
-        return "040474657374147b22736f6d65223a20226a736f6e44617461227d0C21402324255e262a28295f2b19D5468697320697320736f6d65206c6f6e6720636f6e746578742066726565206461746120696e7075742e2049742063616e2068617665207768617465766572206461746120796f752077616e7420696e2069742e2049742077696c6c20626520636f70696564206d756c7469706c652074696d657320746f20696e637265617365206c656e6774682e205468697320697320736f6d65206c6f6e6720636f6e746578742066726565206461746120696e7075742e2049742063616e2068617665207768617465766572206461746120796f752077616e7420696e2069742e2049742077696c6c20626520636f70696564206d756c7469706c652074696d657320746f20696e637265617365206c656e6774682e205468697320697320736f6d65206c6f6e6720636f6e746578742066726565206461746120696e7075742e2049742063616e2068617665207768617465766572206461746120796f752077616e7420696e2069742e2049742077696c6c20626520636f70696564206d756c7469706c652074696d657320746f20696e637265617365206c656e6774682e";
-    }
-
-    private String serializedContextFreeData() {
-        return "";
+        return "6595140530fcbd94469196e5e6d73af65693910df8fcf5d3088c3616bff5ee9f";
     }
 }
