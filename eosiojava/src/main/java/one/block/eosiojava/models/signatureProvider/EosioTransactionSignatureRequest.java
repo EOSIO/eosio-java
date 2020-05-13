@@ -1,6 +1,7 @@
 package one.block.eosiojava.models.signatureProvider;
 
 import java.util.List;
+import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 
 /**
@@ -43,7 +44,7 @@ public class EosioTransactionSignatureRequest {
      * Whether the serialized transaction is modifiable.
      * <br>
      * If the signature provider modifies the serialized transaction and returns it in the response {@link
-     * EosioTransactionSignatureResponse#getSerializeTransaction()} and this field is false then
+     * EosioTransactionSignatureResponse#getSerializedTransaction()} and this field is false then
      * {@link one.block.eosiojava.error.session.TransactionGetSignatureNotAllowModifyTransactionError}
      * will be thrown.
      */
@@ -115,7 +116,7 @@ public class EosioTransactionSignatureRequest {
 
     /**
      * Gets the serialized contextFreeData.
-     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(List)}
+     * It is the result of {@link ContextFreeData#getSerialized()}
      *
      * @return the serialized contextFreeData
      */
@@ -125,7 +126,7 @@ public class EosioTransactionSignatureRequest {
 
     /**
      * Sets the serialized contextFreeData.
-     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(List)}
+     * It is the result of {@link ContextFreeData#getSerialized()}
      *
      * @param serializedContextFreeData the serialized contextFreeData
      */
@@ -209,7 +210,7 @@ public class EosioTransactionSignatureRequest {
      * isModifiable boolean.
      * <br>
      * If the signature provider modifies the serialized transaction and returns it in the response {@link
-     * EosioTransactionSignatureResponse#getSerializeTransaction()} but this field is false then
+     * EosioTransactionSignatureResponse#getSerializedTransaction()} but this field is false then
      * {@link one.block.eosiojava.error.session.TransactionGetSignatureNotAllowModifyTransactionError}
      * will be thrown.
      *
@@ -223,7 +224,7 @@ public class EosioTransactionSignatureRequest {
      * Sets isModifiable.
      * <br>
      * If the signature provider modifies the serialized transaction and returns it in the response {@link
-     * EosioTransactionSignatureResponse#getSerializeTransaction()} but this field is false then
+     * EosioTransactionSignatureResponse#getSerializedTransaction()} but this field is false then
      * {@link one.block.eosiojava.error.session.TransactionGetSignatureNotAllowModifyTransactionError}
      * will be thrown.
      *

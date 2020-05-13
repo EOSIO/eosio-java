@@ -60,7 +60,7 @@ public class ContextFreeData {
         return Hex.toHexString(this.getBytes()).toUpperCase();
     }
 
-    public String getPacked() {
+    public String getSerialized() {
         if (!this.hasData()) {
             return "";
         }

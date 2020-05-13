@@ -2,6 +2,7 @@ package one.block.eosiojava.models.signatureProvider;
 
 import java.util.List;
 import one.block.eosiojava.error.signatureProvider.SignatureProviderError;
+import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +30,7 @@ public class EosioTransactionSignatureResponse {
     /**
      * The serialized (Hex) version of {@link one.block.eosiojava.models.rpcProvider.ContextFreeData}.
      * <br>
-     * It is the result of {@link one.block.eosiojava.interfaces.ISerializationProvider#serializeContextFreeData(List)}
+     * It is the result of {@link ContextFreeData#getSerialized()}
      */
     @NotNull
     private String serializedContextFreeData;

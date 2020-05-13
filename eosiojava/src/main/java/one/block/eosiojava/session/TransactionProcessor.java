@@ -638,7 +638,7 @@ public class TransactionProcessor {
                 this.chainId,
                 null,
                 this.isTransactionModificationAllowed,
-                this.contextFreeData.getPacked());
+                this.contextFreeData.getSerialized());
 
         // Assign required keys to signing public keys if it was set.
         if (this.requiredKeys != null && !this.requiredKeys.isEmpty()) {

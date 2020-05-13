@@ -225,11 +225,6 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_ERROR = "Error happened on serializing transaction";
 
     /**
-     * Error message get thrown if Context Free Data's serialization process get error by calling {@link ISerializationProvider#serializeContextFreeData(List)}
-     */
-    public static final String TRANSACTION_PROCESSOR_SERIALIZE_CONTEXT_FREE_DATA_ERROR = "Error happened on serializing context free data";
-
-    /**
      * Error message get thrown if {@link ISignatureProvider#getAvailableKeys()} returns error.
      */
     public static final String TRANSACTION_PROCESSOR_GET_AVAILABLE_KEY_ERROR = "Error happened on getAvailableKeys from SignatureProvider!";

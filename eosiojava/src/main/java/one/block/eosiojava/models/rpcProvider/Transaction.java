@@ -3,7 +3,6 @@ package one.block.eosiojava.models.rpcProvider;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;

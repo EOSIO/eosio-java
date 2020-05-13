@@ -301,10 +301,10 @@ public class TransactionProcessorTest {
         assertNotNull(contextFreeData);
         assertNotNull(contextFreeData.getData());
         assertNotNull(contextFreeData.getHexed());
-        assertNotNull(contextFreeData.getPacked());
+        assertNotNull(contextFreeData.getSerialized());
         assertEquals(contextFreeData.getData().size(), 0);
         assertEquals(contextFreeData.getHexed(), "");
-        assertEquals(contextFreeData.getPacked(), "");
+        assertEquals(contextFreeData.getSerialized(), "");
     }
 
     @Test
@@ -317,10 +317,10 @@ public class TransactionProcessorTest {
         assertNotNull(contextFreeData);
         assertNotNull(contextFreeData.getData());
         assertNotNull(contextFreeData.getHexed());
-        assertNotNull(contextFreeData.getPacked());
+        assertNotNull(contextFreeData.getSerialized());
         assertEquals(contextFreeData.getData().size(), 3);
         assertNotEquals(contextFreeData.getHexed(), "");
-        assertNotEquals(contextFreeData.getPacked(), "");
+        assertNotEquals(contextFreeData.getSerialized(), "");
     }
 
     @Test
