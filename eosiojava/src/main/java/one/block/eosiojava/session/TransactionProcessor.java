@@ -152,12 +152,6 @@ public class TransactionProcessor {
     private String serializedTransaction;
 
     /**
-     * The serialized version of the Context Free Data.
-     */
-    @Nullable
-    private String serializedContextFreeData;
-
-    /**
      * List of available keys that may be provided by SignatureProvider.
      * <p>
      * If this list is already set, the TransactionProcessor won't ask for available keys from
@@ -955,10 +949,6 @@ public class TransactionProcessor {
         if (!Strings.isNullOrEmpty(this.serializedTransaction)) {
             this.serializedTransaction = "";
         }
-        // Clear serialized context free data if it was serialized.
-        if (!Strings.isNullOrEmpty(this.serializedContextFreeData)) {
-            this.serializedContextFreeData = "";
-        }
     }
 
     //endregion
@@ -1097,14 +1087,6 @@ public class TransactionProcessor {
      */
     public void setIsTransactionModificationAllowed(boolean isTransactionModificationAllowed) {
         this.isTransactionModificationAllowed = isTransactionModificationAllowed;
-    }
-
-    /**
-     * Gets serialized version of Context Free Data.
-     * @return the serialized context free data.
-     */
-    public String getSerializedContextFreeData() {
-        return this.serializedContextFreeData;
     }
 
     /**
