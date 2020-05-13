@@ -74,12 +74,12 @@ public class ContextFreeData {
 
     private void pushPrefix(ByteBuffer buffer, int length) {
         while(true) {
-            if (length >>> 7 == 0) {
+            if (this.isLessThan128(length)) {
                 buffer.put((byte)length);
                 break;
             } else {
                 buffer.put((byte)(0x80 | (length & 0x7f)));
-                length = length >>> 7;
+                length = this.subtract128(length);
             }
         }
     }
@@ -96,15 +96,23 @@ public class ContextFreeData {
     private Integer getByteSizePrefix(int length) {
         int size = 0;
         while(true) {
-            if (length >>> 7 == 0) {
+            if (this.isLessThan128(length)) {
                 size++;
                 break;
             } else {
                 size++;
-                length = length >>> 7;
+                length = this.subtract128(length);
             }
         }
 
         return size;
+    }
+
+    private boolean isLessThan128(int length) {
+        return length >>> 7 == 0;
+    }
+
+    private int subtract128(int length) {
+        return length >>> 7;
     }
 }

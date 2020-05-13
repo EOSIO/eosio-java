@@ -2,7 +2,6 @@ package one.block.eosiojava.session;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -20,7 +19,6 @@ import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
-import one.block.eosiojava.error.serializationProvider.SerializeContextFreeDataError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.error.session.TransactionBroadCastError;
@@ -207,6 +205,23 @@ public class TransactionProcessorTest {
     }
 
     @Test
+    public void getTransactionWithContextFreeActions() {
+        this.mockDefaultSuccessData();
+        List<Action> actions = this.defaultActions();
+        TransactionProcessor processor = createAndPrepareTransaction(actions, actions, new ArrayList<String>());
+        assertNotNull(processor);
+
+        Transaction transaction = processor.getTransaction();
+        assertNotNull(transaction);
+
+        List<Action> contextFreeActions = transaction.getContextFreeActions();
+
+        assertNotNull(contextFreeActions);
+        assertArrayEquals(actions.toArray(), contextFreeActions.toArray());
+        assertArrayEquals(actions.get(0).getAuthorization().toArray(), contextFreeActions.get(0).getAuthorization().toArray());
+    }
+
+    @Test
     public void getOriginalTransaction() {
         // Original Transaction value will be set in sign method
         this.mockDefaultSuccessData();
@@ -277,6 +292,22 @@ public class TransactionProcessorTest {
     }
 
     @Test
+    public void getNoContextFreeData() {
+        this.mockDefaultSuccessData();
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
+        assertNotNull(processor);
+
+        ContextFreeData contextFreeData = processor.getContextFreeData();
+        assertNotNull(contextFreeData);
+        assertNotNull(contextFreeData.getData());
+        assertNotNull(contextFreeData.getHexed());
+        assertNotNull(contextFreeData.getPacked());
+        assertEquals(contextFreeData.getData().size(), 0);
+        assertEquals(contextFreeData.getHexed(), "");
+        assertEquals(contextFreeData.getPacked(), "");
+    }
+
+    @Test
     public void getContextFreeData() {
         this.mockDefaultSuccessData();
         TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions(), this.defaultContextFreeData());
@@ -288,7 +319,7 @@ public class TransactionProcessorTest {
         assertNotNull(contextFreeData.getHexed());
         assertNotNull(contextFreeData.getPacked());
         assertEquals(contextFreeData.getData().size(), 3);
-        assertEquals(contextFreeData.getHexed(), "");
+        assertNotEquals(contextFreeData.getHexed(), "");
         assertNotEquals(contextFreeData.getPacked(), "");
     }
 
@@ -573,16 +604,20 @@ public class TransactionProcessorTest {
         return contextFreeData;
     }
 
-    private TransactionProcessor createAndPrepareTransaction(List<Action> actions, List<String> contextFreeData) {
+    private TransactionProcessor createAndPrepareTransaction(List<Action> actions, List<Action> contextFreeActions, List<String> contextFreeData) {
         try {
             TransactionProcessor processor = session.getTransactionProcessor();
-            processor.prepare(actions, new ArrayList<Action>(), contextFreeData);
+            processor.prepare(actions, contextFreeActions, contextFreeData);
             return processor;
         } catch (TransactionPrepareError transactionPrepareError) {
             transactionPrepareError.printStackTrace();
             fail("Exception should not be thrown here for calling prepare");
             return null;
         }
+    }
+
+    private TransactionProcessor createAndPrepareTransaction(List<Action> actions, List<String> contextFreeData) {
+        return this.createAndPrepareTransaction(actions, new ArrayList<Action>(), contextFreeData);
     }
 
     private TransactionProcessor createAndPrepareTransaction(List<Action> actions) {
