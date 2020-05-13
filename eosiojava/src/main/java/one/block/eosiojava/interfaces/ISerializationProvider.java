@@ -1,12 +1,9 @@
 package one.block.eosiojava.interfaces;
 
-import java.util.List;
 import one.block.eosiojava.error.serializationProvider.DeserializeAbiError;
-import one.block.eosiojava.error.serializationProvider.DeserializeContextFreeDataError;
 import one.block.eosiojava.error.serializationProvider.DeserializeError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeAbiError;
-import one.block.eosiojava.error.serializationProvider.SerializeContextFreeDataError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.models.AbiEosSerializationObject;
@@ -79,24 +76,4 @@ public interface ISerializationProvider {
      * conversion process.
      */
     String serializeAbi(String json) throws SerializeAbiError;
-
-    /**
-     * Convenience method to transform hex string with context free data to an array of data.
-     *
-     * @param hex Hex string representing the context free data to deserialize.
-     * @return Deserialized String representing the data hex.
-     * @throws DeserializeContextFreeDataError A deserialization error is thrown if there are any exceptions during the
-     * conversion process.
-     */
-    List<String> deserializeContextFreeData(String hex) throws DeserializeContextFreeDataError;
-
-    /**
-     * Convenience method to transform an array of data to a hex string.
-     *
-     * @param contextFreeData Array of data to serialize.
-     * @return Serialized hex string representing the array of data.
-     * @throws SerializeContextFreeDataError A serialization error is thrown if there are any exceptions during the
-     * conversion process.
-     */
-    String serializeContextFreeData(List<String> contextFreeData) throws SerializeContextFreeDataError;
 }
