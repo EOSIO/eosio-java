@@ -69,7 +69,7 @@ public class ContextFreeData {
     }
 
     public boolean hasData() {
-        return this.data.size() > 0;
+        return this.data.isEmpty();
     }
 
     private void pushPrefix(ByteBuffer buffer, int length) {
