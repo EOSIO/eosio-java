@@ -56,6 +56,38 @@ public class ContextFreeData {
     }
 
     /**
+     * Gets the hex representation of the data to be used by {@link IRPCProvider#pushTransaction(PushTransactionRequest)}
+     * @return the hexed data
+     */
+    public String getHexed() {
+        if (!this.hasData()) {
+            return "";
+        }
+
+        return Hex.toHexString(this.getBytes()).toUpperCase();
+    }
+
+    /**
+     * Gets the 32 byte serialized representation of the data to be used by {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)}
+     * @return the 32 byte serialized data
+     */
+    public String getSerialized() {
+        if (!this.hasData()) {
+            return "";
+        }
+
+        return Hex.toHexString(Sha256Hash.hash(this.getBytes()));
+    }
+
+    /**
+     * Determines whether or not the instance contains data
+     * @return boolean to determine if instance contains data
+     */
+    public boolean hasData() {
+        return !this.data.isEmpty();
+    }
+
+    /**
      * Sets the raw data converted to bytes.
      * @param bytes the converted raw data in bytes
      */
@@ -85,38 +117,6 @@ public class ContextFreeData {
         }
 
         this.setBytes(buffer.array());
-    }
-
-    /**
-     * Gets the hex representation of the data to be used by {@link IRPCProvider#pushTransaction(PushTransactionRequest)}
-     * @return the hexed data
-     */
-    public String getHexed() {
-        if (!this.hasData()) {
-            return "";
-        }
-
-        return Hex.toHexString(this.getBytes()).toUpperCase();
-    }
-
-    /**
-     * Gets the 32 byte serialized representation of the data to be used by {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)}
-     * @return the 32 byte serialized data
-     */
-    public String getSerialized() {
-        if (!this.hasData()) {
-            return "";
-        }
-
-        return Hex.toHexString(Sha256Hash.hash(this.getBytes()));
-    }
-
-    /**
-     * Determines whether or not the instance contains data
-     * @return boolean to determine if instance contains data
-     */
-    private boolean hasData() {
-        return this.data.isEmpty();
     }
 
     /**
