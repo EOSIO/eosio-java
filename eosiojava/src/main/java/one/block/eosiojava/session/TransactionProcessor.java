@@ -127,7 +127,7 @@ public class TransactionProcessor {
     /**
      * Context Free Data instance that holds all raw, serialized, and packed CFD.
      */
-    @Nullable
+    @NotNull
     private ContextFreeData contextFreeData;
 
     /**

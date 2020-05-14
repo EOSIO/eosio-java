@@ -1,38 +1,73 @@
 package one.block.eosiojava.models.rpcProvider;
 
 import java.nio.ByteBuffer;
+import one.block.eosiojava.interfaces.IRPCProvider;
+import one.block.eosiojava.interfaces.ISignatureProvider;
+import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import org.bitcoinj.core.Sha256Hash;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * The ContextFreeData class which holds raw context free data, its bytes, and methods to format
+ * the data to pass to the signatureProvider and rpcProvider.
+ */
 public class ContextFreeData {
+    /**
+     * The list of raw data being added as context free data.
+     */
     @NotNull
-    public List<String> data;
+    private List<String> data;
 
+    /**
+     * The raw data converted to bytes to be used later for formatting.
+     */
     @NotNull
-    public byte[] rawBytes;
+    private byte[] rawBytes;
 
+    /**
+     * Instantiates a new ContextFreeData.
+     *
+     * @param contextFreeData the list of raw data to be added
+     */
     public ContextFreeData(@NotNull List<String> contextFreeData) {
         this.setData(contextFreeData);
     }
 
+    /**
+     * Gets the list of raw data.
+     * @return the raw data
+     */
     @NotNull
     public List<String> getData() {
         return this.data;
     }
 
+    /**
+     * Gets the raw data converted to bytes.
+     * @return the converted raw data in bytes
+     */
     @NotNull
     public byte[] getBytes() {
         return this.rawBytes;
     }
 
-    public void setBytes(byte[] bytes) {
+    /**
+     * Sets the raw data converted to bytes.
+     * @param bytes the converted raw data in bytes
+     */
+    private void setBytes(byte[] bytes) {
         this.rawBytes = bytes;
     }
 
-    public void setData(List<String> contextFreeData) {
+    /**
+     * Sets both raw data and its bytes with prefixes.
+     * @param contextFreeData list of raw data to be set
+     */
+    private void setData(List<String> contextFreeData) {
         this.data = contextFreeData;
         if (!this.hasData()) {
             this.setBytes(new byte[0]);
@@ -52,6 +87,10 @@ public class ContextFreeData {
         this.setBytes(buffer.array());
     }
 
+    /**
+     * Gets the hex representation of the data to be used by {@link IRPCProvider#pushTransaction(PushTransactionRequest)}
+     * @return the hexed data
+     */
     public String getHexed() {
         if (!this.hasData()) {
             return "";
@@ -60,6 +99,10 @@ public class ContextFreeData {
         return Hex.toHexString(this.getBytes()).toUpperCase();
     }
 
+    /**
+     * Gets the 32 byte serialized representation of the data to be used by {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)}
+     * @return the 32 byte serialized data
+     */
     public String getSerialized() {
         if (!this.hasData()) {
             return "";
@@ -68,10 +111,19 @@ public class ContextFreeData {
         return Hex.toHexString(Sha256Hash.hash(this.getBytes()));
     }
 
-    public boolean hasData() {
+    /**
+     * Determines whether or not the instance contains data
+     * @return boolean to determine if instance contains data
+     */
+    private boolean hasData() {
         return this.data.isEmpty();
     }
 
+    /**
+     * Add the prefix for the data to the end of the buffer.
+     * @param buffer the buffer to append bytes to
+     * @param length the length of the data to determine prefix length
+     */
     private void pushPrefix(ByteBuffer buffer, int length) {
         while(true) {
             if (this.isLessThan128(length)) {
@@ -84,6 +136,11 @@ public class ContextFreeData {
         }
     }
 
+    /**
+     * Determines how many bytes to allocate to the ByteBuffer
+     * @param contextFreeData list of raw data
+     * @return integer representing the number of bytes to allocate to the ByteBuffer
+     */
     private Integer getTotalBytes(List<String> contextFreeData) {
         int bytes =  this.getByteSizePrefix(contextFreeData.size());
         for(String cfd : contextFreeData) {
@@ -93,6 +150,11 @@ public class ContextFreeData {
         return bytes;
     }
 
+    /**
+     * Determines the number of bytes in the prefix
+     * @param length the length of the bytes
+     * @return the number of bytes in the prefix
+     */
     private Integer getByteSizePrefix(int length) {
         int size = 0;
         while(true) {
@@ -108,10 +170,20 @@ public class ContextFreeData {
         return size;
     }
 
+    /**
+     * Determines whether or not there needs to be a bitwise shift to increase prefix size
+     * @param length the length of the bytes
+     * @return whether or not there needs to be a bitwise shift to increase prefix size
+     */
     private boolean isLessThan128(int length) {
         return length >>> 7 == 0;
     }
 
+    /**
+     * Conducts bitwise shift to increase prefix size
+     * @param length the length of the bytes
+     * @return the updated length
+     */
     private int subtract128(int length) {
         return length >>> 7;
     }
