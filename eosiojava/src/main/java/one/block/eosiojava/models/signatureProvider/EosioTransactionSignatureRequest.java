@@ -3,6 +3,7 @@ package one.block.eosiojava.models.signatureProvider;
 import java.util.List;
 import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
+import org.bouncycastle.util.encoders.Hex;
 
 /**
  * The request object that will be sent to SignatureProvider.  It contains the transaction that will
@@ -85,7 +86,7 @@ public class EosioTransactionSignatureRequest {
     public EosioTransactionSignatureRequest(String serializedTransaction,
             List<String> signingPublicKeys, String chainId, List<BinaryAbi> abis,
             boolean isModifiable) {
-        this(serializedTransaction, signingPublicKeys, chainId, abis, isModifiable, "");
+        this(serializedTransaction, signingPublicKeys, chainId, abis, isModifiable, Hex.toHexString(new byte[32]));
     }
 
     /**
