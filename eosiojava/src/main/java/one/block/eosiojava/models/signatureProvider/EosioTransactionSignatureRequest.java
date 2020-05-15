@@ -70,7 +70,7 @@ public class EosioTransactionSignatureRequest {
         this.chainId = chainId;
         this.abis = abis;
         this.isModifiable = isModifiable;
-        this.serializedContextFreeData = serializedContextFreeData;
+        this.setSerializedContextFreeData(serializedContextFreeData);
     }
 
     /**
@@ -86,7 +86,7 @@ public class EosioTransactionSignatureRequest {
     public EosioTransactionSignatureRequest(String serializedTransaction,
             List<String> signingPublicKeys, String chainId, List<BinaryAbi> abis,
             boolean isModifiable) {
-        this(serializedTransaction, signingPublicKeys, chainId, abis, isModifiable, Hex.toHexString(new byte[32]));
+        this(serializedTransaction, signingPublicKeys, chainId, abis, isModifiable, "");
     }
 
     /**
@@ -132,7 +132,7 @@ public class EosioTransactionSignatureRequest {
      * @param serializedContextFreeData the serialized contextFreeData
      */
     public void setSerializedContextFreeData(String serializedContextFreeData) {
-        this.serializedContextFreeData = serializedContextFreeData;
+        this.serializedContextFreeData = serializedContextFreeData.isEmpty() ? Hex.toHexString(new byte[32]) : serializedContextFreeData;
     }
 
     /**

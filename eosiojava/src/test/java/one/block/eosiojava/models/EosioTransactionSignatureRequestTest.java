@@ -36,4 +36,24 @@ public class EosioTransactionSignatureRequestTest {
 
         assertEquals(request.getSerializedContextFreeData(), serializedContextFreeData);
     }
+
+    @Test
+    public void testSetSerializedContextFreeDataWithEmptyStringSetsTo32Zeros() {
+        String serializedContextFreeData = Hex.toHexString(new byte[32]);
+        this.setup();
+
+        request.setSerializedContextFreeData("");
+
+        assertEquals(request.getSerializedContextFreeData(), serializedContextFreeData);
+    }
+
+    @Test
+    public void testSetSerializedContextFreeDataWithDataReturnsData() {
+        String serializedContextFreeData = "6595140530fcbd94469196e5e6d73af65693910df8fcf5d3088c3616bff5ee9f";
+        this.setup();
+
+        request.setSerializedContextFreeData(serializedContextFreeData);
+
+        assertEquals(request.getSerializedContextFreeData(), serializedContextFreeData);
+    }
 }
