@@ -600,6 +600,25 @@ Test uses output of one way conversion as input for return conversion.
     }
 
     /**
+     * Validate positive ExtractSerializedTransactionFromSignable with Context Free Data
+     */
+    @Test
+    public void validateExtractSerializedTransactionFromSignableWithContextFreeData() {
+        String chainId = "687fa513e18843ad3e820744f4ffcf93b1354036d80737db8dc444fe4b15ad17";
+        String expectedSerializedTransaction = "8BC2A35CF56E6CC25F7F000000000100A6823403EA3055000000572D3CCDCD01000000000000C03400000000A8ED32322A000000000000C034000000000000A682A08601000000000004454F530000000009536F6D657468696E6700";
+        String contextFreeData = "6595140530fcbd94469196e5e6d73af65693910df8fcf5d3088c3616bff5ee9f";
+        String signableTransaction = chainId + expectedSerializedTransaction + contextFreeData;
+
+        try {
+            String serializedTransaction = EOSFormatter.extractSerializedTransactionFromSignable(signableTransaction);
+            assertEquals(expectedSerializedTransaction, serializedTransaction);
+        } catch (EOSFormatterError eosFormatterError) {
+            eosFormatterError.printStackTrace();
+            fail("Should not throw exception here");
+        }
+    }
+
+    /**
      * Negative test ExtractSerializedTransactionFromSignable with empty input
      * Expect to get EosFormatError with message at ErrorConstants.EMPTY_INPUT_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE
      */
@@ -720,24 +739,6 @@ Test uses output of one way conversion as input for return conversion.
             fail("Expected EOSFormatterError to be thrown!");
         } catch (EOSFormatterError eosFormatterError) {
             assertEquals(String.format(ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE, 129), eosFormatterError.getMessage());
-        }
-    }
-
-    /**
-     * Negative test ExtractSerializedTransactionFromSignable with invalid structure input
-     * Expect to get EosFormatError with message at ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE
-     */
-    @Test
-    public void validateExtractSerializedTransactionFromSignable_thenThrowInvalidStructureError() {
-        String chainId = "687fa513e18843ad3e820744f4ffcf93b1354036d80737db8dc444fe4b15ad17";
-        String expectedSerializedTransaction = "8BC2A35CF56E6CC25F7F000000000100A6823403EA3055000000572D3CCDCD01000000000000C03400000000A8ED32322A000000000000C034000000000000A682A08601000000000004454F530000000009536F6D657468696E6700";
-        String signableTransaction = chainId + expectedSerializedTransaction + Hex.toHexString(new byte[30]);
-
-        try {
-            EOSFormatter.extractSerializedTransactionFromSignable(signableTransaction);
-            fail("Expected EOSFormatterError to be thrown!");
-        } catch (EOSFormatterError eosFormatterError) {
-            assertEquals(ErrorConstants.INVALID_INPUT_SIGNABLE_TRANS_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE, eosFormatterError.getMessage());
         }
     }
 }

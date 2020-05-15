@@ -102,10 +102,6 @@ public class ErrorConstants {
      */
     public static final String INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Length of the signable transaction must be larger than %s";
     /**
-     * The signable transaction was improperly formatted.
-     */
-    public static final String INVALID_INPUT_SIGNABLE_TRANS_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Signable transaction has to have this structure: chainId (64 characters) + serialized transaction + 32 bytes of 0!";
-    /**
      * Unable to extract the serialized transaction from the signable transaction.
      */
     public static final String EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE_ERROR = "Something went wrong when trying to extract serialized transaction from signable transaction.";
