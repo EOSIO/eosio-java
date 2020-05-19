@@ -843,7 +843,7 @@ public class TransactionProcessor {
         // Serialize each action of Transaction's context free actions if they exist.
         if (!clonedTransaction.getContextFreeActions().isEmpty()) {
             for (Action contextFreeAction : clonedTransaction.getContextFreeActions()) {
-                AbiEosSerializationObject actionAbiEosSerializationObject = this.serializeAction(contextFreeAction, this.chainId, this.abiProvider);
+                AbiEosSerializationObject actionAbiEosSerializationObject = this.serializeContextFreeAction(contextFreeAction, this.chainId, this.abiProvider);
                 // !!! Set serialization result to data field of the contextFreeAction
                 contextFreeAction.setData(actionAbiEosSerializationObject.getHex());
             }
@@ -893,6 +893,70 @@ public class TransactionProcessor {
     @NotNull
     private AbiEosSerializationObject serializeAction(Action action, String chainId, IABIProvider abiProvider)
             throws TransactionCreateSignatureRequestError {
+        AbiEosSerializationObject actionAbiEosSerializationObject = setupAbiEosSerializationObject(action, chainId, abiProvider);
+
+        try {
+            this.serializationProvider.serialize(actionAbiEosSerializationObject);
+            if (actionAbiEosSerializationObject.getHex().isEmpty()) {
+                throw new TransactionCreateSignatureRequestSerializationError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_WORKED_BUT_EMPTY_RESULT);
+            }
+        } catch (SerializeError | TransactionCreateSignatureRequestSerializationError serializeError) {
+            throw new TransactionCreateSignatureRequestSerializationError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
+                            action.getAccount()), serializeError);
+        }
+
+        return actionAbiEosSerializationObject;
+    }
+
+    /**
+     * Serializing an action's JSON data to Hex format by using {@link IABIProvider} and {@link ISerializationProvider}
+     *
+     * @param action - input contextFreeAction to serialize.
+     * @param chainId - the chain id.
+     * @param abiProvider - an instance of ABI provider.
+     * @return A serialized object from {@link ISerializationProvider} which contains the hex format of the action's JSON data.
+     * @throws TransactionCreateSignatureRequestError thrown if there are any exceptions while serializing transaction:
+     *      <br>
+     *          - {@link TransactionCreateSignatureRequestAbiError}, which is thrown if any error
+     *          occurs while calling {@link IABIProvider#getAbi(String, EOSIOName)} to get the ABI
+     *          needed to serialize an action
+     */
+    @NotNull
+    private AbiEosSerializationObject serializeContextFreeAction(Action action, String chainId, IABIProvider abiProvider)
+            throws TransactionCreateSignatureRequestError {
+        AbiEosSerializationObject actionAbiEosSerializationObject = setupAbiEosSerializationObject(action, chainId, abiProvider);
+
+        try {
+            if (action.hasData()) {
+                this.serializationProvider.serialize(actionAbiEosSerializationObject);
+            }
+        } catch (SerializeError serializeError) {
+            throw new TransactionCreateSignatureRequestSerializationError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
+                            action.getAccount()), serializeError);
+        }
+
+        return actionAbiEosSerializationObject;
+    }
+
+    /**
+     * Sets up AbiEosSerializationObject for use in serializing actions' data
+     *
+     * @param action - input action/contextFreeAction to setup.
+     * @param chainId - the chain id.
+     * @param abiProvider - an instance of ABI provider.
+     * @return A new AbiEosSerializationObject that will be used in serializing actions' data.
+     * @throws TransactionCreateSignatureRequestError thrown if there are any exceptions while serializing transaction:
+     *      <br>
+     *          - {@link TransactionCreateSignatureRequestAbiError}, which is thrown if any error
+     *          occurs while calling {@link IABIProvider#getAbi(String, EOSIOName)} to get the ABI
+     *          needed to serialize an action
+     */
+    @NotNull
+    private AbiEosSerializationObject setupAbiEosSerializationObject(Action action, String chainId, IABIProvider abiProvider)
+            throws TransactionCreateSignatureRequestAbiError {
         String actionAbiJSON;
         try {
             actionAbiJSON = abiProvider
@@ -910,18 +974,6 @@ public class TransactionProcessor {
 
         // !!! At this step, the data field of the action is still in JSON format.
         actionAbiEosSerializationObject.setJson(action.getData());
-
-        try {
-            this.serializationProvider.serialize(actionAbiEosSerializationObject);
-            if (actionAbiEosSerializationObject.getHex().isEmpty()) {
-                throw new TransactionCreateSignatureRequestSerializationError(
-                        ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_WORKED_BUT_EMPTY_RESULT);
-            }
-        } catch (SerializeError | TransactionCreateSignatureRequestSerializationError serializeError) {
-            throw new TransactionCreateSignatureRequestSerializationError(
-                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
-                            action.getAccount()), serializeError);
-        }
 
         return actionAbiEosSerializationObject;
     }

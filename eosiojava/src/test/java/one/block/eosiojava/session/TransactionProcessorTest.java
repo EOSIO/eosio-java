@@ -310,7 +310,7 @@ public class TransactionProcessorTest {
     @Test
     public void getContextFreeData() {
         this.mockDefaultSuccessData();
-        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions(), this.defaultContextFreeData());
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions(), this.defaultContextFreeActions(), this.defaultContextFreeData());
         assertNotNull(processor);
 
         ContextFreeData contextFreeData = processor.getContextFreeData();
@@ -548,7 +548,7 @@ public class TransactionProcessorTest {
         // Context free actions
         TransactionProcessor processor = session.getTransactionProcessor();
         try {
-            processor.prepare(this.defaultActions(), this.defaultActions());
+            processor.prepare(this.defaultActions(), this.defaultContextFreeActions());
         } catch (TransactionPrepareError transactionPrepareError) {
             transactionPrepareError.printStackTrace();
             fail("Exception should not be thrown here for calling prepare.");
@@ -587,6 +587,15 @@ public class TransactionProcessorTest {
         authorizations.add(new Authorization("cryptkeeper", "active"));
         List<Action> actions = new ArrayList<>();
         actions.add(new Action("eosio.token", "transfer", authorizations, jsonData));
+
+        return actions;
+    }
+
+    private List<Action> defaultContextFreeActions() {
+        String jsonData = "";
+
+        List<Action> actions = new ArrayList<>();
+        actions.add(new Action("eosio.token", "transfer", new ArrayList<Authorization>(), jsonData, true));
 
         return actions;
     }
