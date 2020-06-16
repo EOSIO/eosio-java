@@ -1,6 +1,7 @@
 package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.List;
 import java.util.Map;
 import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
 
@@ -16,8 +17,11 @@ public class PushTransactionResponse {
     @SerializedName("transaction_id")
     private String transactionId;
 
+//    @SerializedName("processed")
+//    private Map processed;
+
     @SerializedName("processed")
-    private Map processed;
+    private ProcessedTransactionResponse transactionResponse;
 
     /**
      * Gets the transaction id of the successful transaction.
@@ -28,7 +32,7 @@ public class PushTransactionResponse {
         return transactionId;
     }
 
-    public Map getProcessed() {
-        return processed;
+    public ProcessedTransactionResponse getProcessed() {
+        return transactionResponse;
     }
 }

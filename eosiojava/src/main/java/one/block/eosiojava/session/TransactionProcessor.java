@@ -503,7 +503,8 @@ public class TransactionProcessor {
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
                 0, "", this.serializedTransaction);
         try {
-            return this.pushTransaction(pushTransactionRequest);
+            PushTransactionResponse response = this.pushTransaction(pushTransactionRequest);
+            return response;
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
             throw new TransactionSignAndBroadCastError(transactionPushTransactionError);
         }
