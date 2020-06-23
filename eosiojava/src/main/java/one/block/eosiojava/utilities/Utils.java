@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import one.block.eosiojava.models.rpcProvider.response.ActionTrace;
+import one.block.eosiojava.models.serialization.ActionTraceDeserializer;
 
 /**
  * This class provides generic utility methods
@@ -41,6 +43,7 @@ public class Utils {
      */
     public static Gson getGson(String datePattern) {
         return new GsonBuilder()
+                .registerTypeAdapter(ActionTrace.class, new ActionTraceDeserializer())
                 .setDateFormat(datePattern)
                 .disableHtmlEscaping()
                 .create();

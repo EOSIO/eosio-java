@@ -6,7 +6,7 @@ import one.block.eosiojava.error.serializationProvider.DeserializeTransactionErr
 import one.block.eosiojava.error.serializationProvider.SerializeAbiError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
-import one.block.eosiojava.models.AbiEosSerializationObject;
+import one.block.eosiojava.models.serialization.AbiEosSerializationObject;
 
 /**
  * Interface of Serialization Provider
