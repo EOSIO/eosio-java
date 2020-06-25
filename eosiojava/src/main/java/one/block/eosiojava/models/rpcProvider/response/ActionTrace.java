@@ -140,6 +140,19 @@ public class ActionTrace {
     }
 
     public void setDeserializedReturnValue() {
+
+        ByteBuffer buffer = ByteBuffer.allocate(100);
+        buffer.put(Hex.encode("normal".getBytes()));
+
+        byte[] array1 = buffer.array();
+        String testStr1 = new String(Hex.decode(array1));
+
+        buffer.put(this.returnValue.getBytes());
+
+        byte[] array = buffer.array();
+
+        byte[] test = Hex.decode(array);
+        String testStr = new String(test);
         this.deserializedReturnValue = "something";
     }
 

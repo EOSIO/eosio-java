@@ -7,6 +7,10 @@ import static org.junit.Assert.assertNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import java.lang.reflect.Type;
 import java.math.BigInteger;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRawAbiRequest;
@@ -19,6 +23,7 @@ import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
 import one.block.eosiojava.models.serialization.ActionTraceDeserializer;
+import org.bouncycastle.util.encoders.Base64;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -305,6 +310,8 @@ public class RpcModelTest {
         // FromJSON test
         PushTransactionResponse pushTransactionResponse = this.gson
                 .fromJson(jsonContent, PushTransactionResponse.class);
+        Base64.decode("000000000090b1ca");
+        Base64.decode("000000000090b1ca");
         assertNotNull(pushTransactionResponse);
         assertEquals("dump_transaction_id", pushTransactionResponse.getTransactionId());
         assertEquals("dump_id", pushTransactionResponse.getProcessed().getId());
