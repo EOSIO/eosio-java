@@ -11,9 +11,6 @@ import one.block.eosiojava.models.rpcProvider.Action;
 import org.bouncycastle.util.encoders.Hex;
 
 public class ActionTrace {
-    private String name;
-    private String data;
-
     @SerializedName("action_ordinal")
     private Integer actionOrdinal;
 
@@ -35,42 +32,42 @@ public class ActionTrace {
     @SerializedName("context_free")
     private Boolean contextFree;
 
-//    @SerializedName("elapsed")
-//    private Integer elapsed;
-//
-//    @SerializedName("console")
-//    private String console;
-//
-//    @SerializedName("trx_id")
-//    private String transactionId;
-//
-//    @SerializedName("block_num")
-//    private Integer blockNumber;
-//
-//    @SerializedName("block_time")
-//    private String blockTime;
-//
-//    @SerializedName("producer_block_id")
-//    private String producerBlockId;
-//
-//    @SerializedName("account_ram_deltas")
-//    private Map account_ram_deltas;
-//
-//    @SerializedName("account_disk_deltas")
-//    private Map account_disk_deltas;
-//
-//    @SerializedName("except")
-//    private String except;
-//
-//    @SerializedName("error_code")
-//    private String error_code;
+    @SerializedName("elapsed")
+    private Integer elapsed;
+
+    @SerializedName("console")
+    private String console;
+
+    @SerializedName("trx_id")
+    private String transactionId;
+
+    @SerializedName("block_num")
+    private Integer blockNumber;
+
+    @SerializedName("block_time")
+    private String blockTime;
+
+    @SerializedName("producer_block_id")
+    private String producerBlockId;
+
+    @SerializedName("account_ram_deltas")
+    private Map account_ram_deltas;
+
+    @SerializedName("account_disk_deltas")
+    private Map account_disk_deltas;
+
+    @SerializedName("except")
+    private String except;
+
+    @SerializedName("error_code")
+    private String error_code;
 
     @SerializedName("return_value")
     private String returnValue;
 
     private String deserializedReturnValue;
 
-    public ActionTrace() throws UnsupportedEncodingException {
+    public ActionTrace() {
         String actionName = "normal"; // Necessary to prepend
 
         // returning 10 becomes "0a000000" --- Numbers can be parsed with Integer.parseInt(0000000a, 16)
@@ -136,37 +133,21 @@ public class ActionTrace {
 //
 //        byte[] hexData = hexStringToByteArray(returnValueTwo);
 //
-
     }
 
-    public void setDeserializedReturnValue() {
-
-        ByteBuffer buffer = ByteBuffer.allocate(100);
-        buffer.put(Hex.encode("normal".getBytes()));
-
-        byte[] array1 = buffer.array();
-        String testStr1 = new String(Hex.decode(array1));
-
-        buffer.put(this.returnValue.getBytes());
-
-        byte[] array = buffer.array();
-
-        byte[] test = Hex.decode(array);
-        String testStr = new String(test);
-        this.deserializedReturnValue = "something";
+    public String getHexReturnValue() {
+        return this.returnValue;
     }
 
-    static String hexToBin(String s) {
-        return new BigInteger(s, 16).toString(2);
+    public String getAccountName() {
+        return (String)this.act.get("account");
     }
 
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i+1), 16));
-        }
-        return data;
+    public String getActionName() {
+        return (String)this.act.get("name");
+    }
+
+    public void setDeserializedReturnValue(String deserializedReturnValue) {
+        this.deserializedReturnValue = deserializedReturnValue;
     }
 }

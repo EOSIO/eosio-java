@@ -41,10 +41,9 @@ public class ProcessedTransactionResponse {
     @SerializedName("action_traces")
     private List<ActionTrace> actionTraces;
 
-//    @SerializedName("action_traces")
-//    private Map traces;
-
     public String getId() {
         return this.id;
     }
+
+    public List<ActionTrace> getActionTraces() { return this.actionTraces; }
 }

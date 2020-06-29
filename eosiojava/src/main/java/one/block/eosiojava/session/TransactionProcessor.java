@@ -1,6 +1,7 @@
 package one.block.eosiojava.session;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -13,6 +14,7 @@ import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.serializationProvider.DeserializeError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -43,6 +45,8 @@ import one.block.eosiojava.interfaces.IABIProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
+import one.block.eosiojava.models.abiProvider.Abi;
+import one.block.eosiojava.models.rpcProvider.response.ActionTrace;
 import one.block.eosiojava.models.serialization.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.Action;
@@ -190,6 +194,10 @@ public class TransactionProcessor {
      * Default is false.
      */
     private boolean isTransactionModificationAllowed;
+
+    public IABIProvider getAbiProvider() {
+        return this.abiProvider;
+    }
 
     /**
      * Constructor with all provider references from {@link TransactionSession}
@@ -503,11 +511,23 @@ public class TransactionProcessor {
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
                 0, "", this.serializedTransaction);
         try {
-            PushTransactionResponse response = this.pushTransaction(pushTransactionRequest);
-            return response;
+            return getPushTransactionResponse(this.pushTransaction(pushTransactionRequest));
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
             throw new TransactionSignAndBroadCastError(transactionPushTransactionError);
         }
+    }
+
+    private PushTransactionResponse getPushTransactionResponse(PushTransactionResponse response) {
+        List<ActionTrace> actionTraces = response.getActionTraces();
+        for (ActionTrace actionTrace : actionTraces) {
+            try {
+                AbiEosSerializationObject deserializationObject = deserializeActionTraceReturnValue(actionTrace, chainId, abiProvider);
+                actionTrace.setDeserializedReturnValue(deserializationObject.getJson());
+            } catch (TransactionCreateSignatureRequestError transactionCreateSignatureRequestError) {
+                transactionCreateSignatureRequestError.printStackTrace();
+            }
+        }
+        return response;
     }
 
     /**
@@ -883,6 +903,43 @@ public class TransactionProcessor {
             throw new TransactionCreateSignatureRequestSerializationError(
                     String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
                             action.getAccount()), serializeError);
+        }
+
+        return actionAbiEosSerializationObject;
+    }
+
+    public AbiEosSerializationObject deserializeActionTraceReturnValue(ActionTrace actionTrace, String chainId, IABIProvider abiProvider)
+            throws TransactionCreateSignatureRequestError {
+        String actionAbiJSON;
+        try {
+            actionAbiJSON = abiProvider
+                    .getAbi(chainId, new EOSIOName(actionTrace.getAccountName()));
+        } catch (GetAbiError getAbiError) {
+            throw new TransactionCreateSignatureRequestAbiError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_GET_ABI_ERROR,
+                            actionTrace.getAccountName()), getAbiError);
+        }
+
+        Abi abi = new Gson().fromJson(actionAbiJSON, Abi.class);
+        String returnType = abi.getActionReturnType(actionTrace.getActionName());
+
+        AbiEosSerializationObject actionAbiEosSerializationObject = new AbiEosSerializationObject(
+                actionTrace.getAccountName(), actionTrace.getActionName(),
+                returnType, actionAbiJSON);
+
+        // !!! At this step, the data field of the action is still in HEX format.
+        actionAbiEosSerializationObject.setHex(actionTrace.getHexReturnValue());
+
+        try {
+            this.serializationProvider.deserialize(actionAbiEosSerializationObject);
+            if (actionAbiEosSerializationObject.getJson().isEmpty()) {
+                throw new TransactionCreateSignatureRequestSerializationError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_WORKED_BUT_EMPTY_RESULT);
+            }
+        } catch (TransactionCreateSignatureRequestSerializationError | DeserializeError serializeError) {
+            throw new TransactionCreateSignatureRequestSerializationError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
+                            actionTrace.getAccountName()), serializeError);
         }
 
         return actionAbiEosSerializationObject;
