@@ -908,7 +908,7 @@ public class TransactionProcessor {
         return actionAbiEosSerializationObject;
     }
 
-    public AbiEosSerializationObject deserializeActionTraceReturnValue(ActionTrace actionTrace, String chainId, IABIProvider abiProvider)
+    private AbiEosSerializationObject deserializeActionTraceReturnValue(ActionTrace actionTrace, String chainId, IABIProvider abiProvider)
             throws TransactionCreateSignatureRequestError {
         String actionAbiJSON;
         try {

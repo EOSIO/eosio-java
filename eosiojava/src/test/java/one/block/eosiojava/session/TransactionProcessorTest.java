@@ -11,8 +11,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.google.gson.Gson;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +25,6 @@ import one.block.eosiojava.error.serializationProvider.DeserializeTransactionErr
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.error.session.TransactionBroadCastError;
-import one.block.eosiojava.error.session.TransactionCreateSignatureRequestError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestRequiredKeysEmptyError;
 import one.block.eosiojava.error.session.TransactionPrepareError;
 import one.block.eosiojava.error.session.TransactionProcessorConstructorInputError;
@@ -40,7 +37,6 @@ import one.block.eosiojava.interfaces.IABIProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
-import one.block.eosiojava.models.rpcProvider.response.ActionTrace;
 import one.block.eosiojava.models.serialization.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.Action;
@@ -350,7 +346,7 @@ public class TransactionProcessorTest {
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_PUSHTRANSACTION_RESPONE_JSON, PushTransactionResponse.class));
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(getMockedPushTransactionResponseJson(), PushTransactionResponse.class));
 
         this.mockAbiProvider(EOSIOABIJSON);
         this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction, MOCKED_RETURN_VALUE_JSON);
@@ -521,33 +517,137 @@ public class TransactionProcessorTest {
     }
 
     @Test
-    public void testDeserialize() throws UnsupportedEncodingException {
-        this.mockDefaultSuccessData();
-        List<Action> actions = this.defaultActions();
-        TransactionProcessor processor = createAndPrepareTransaction(actions);
+    public void testDeserializeActionTraceWithNoReturnValue() {
+        String mockedActionTraceWithSimpleReturnValue = getMockedProcessedActionTrace("", "retval_null");
+        String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
+        String expectedJson = null;
+        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson);
 
-        String expectedJson = "{\"id\":1234,\"name\":\"test\"}";
-
-        ActionTrace actionTrace = new Gson().fromJson(MOCKED_PROCESSED_ACTION_TRACE, ActionTrace.class);
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
+        assertNotNull(processor);
 
         try {
-            AbiEosSerializationObject serializationObject = processor.deserializeActionTraceReturnValue(actionTrace, MOCKED_CHAIN_ID, processor.getAbiProvider());
-            assertEquals(expectedJson, serializationObject.getJson());
-        } catch (TransactionCreateSignatureRequestError transactionCreateSignatureRequestError) {
-            transactionCreateSignatureRequestError.printStackTrace();
-            fail("Exception should not be thrown here for calling deserialize.");
+            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
+            assertNotNull(pushTransactionResponse);
+            assertEquals(expectedJson, pushTransactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
+        } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
+            transactionSignAndBroadCastError.printStackTrace();
+            fail("Exception should not be thrown here for calling signAndBroadcast");
         }
     }
 
+    @Test
+    public void testDeserializeActionTraceWithSimpleReturnValue() {
+        String mockedActionTraceWithSimpleReturnValue = getMockedProcessedActionTrace("0a000000", "retval_simple");
+        String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
+        String expectedJson = "10";
+        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson);
+
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
+        assertNotNull(processor);
+
+        try {
+            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
+            assertNotNull(pushTransactionResponse);
+            assertEquals(expectedJson, pushTransactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
+        } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
+            transactionSignAndBroadCastError.printStackTrace();
+            fail("Exception should not be thrown here for calling signAndBroadcast");
+        }
+    }
+
+    @Test
+    public void testDeserializeActionTraceWithComplexReturnValue() {
+        String mockedActionTraceWithComplexReturnValue = getMockedProcessedActionTrace("d2040000000000000090b1ca", "retval_complex");
+        String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithComplexReturnValue);
+        String expectedJson = "{\"id\":1234,\"name\":\"test\"}";
+        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson);
+
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
+        assertNotNull(processor);
+
+        try {
+            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
+            assertNotNull(pushTransactionResponse);
+            assertEquals(expectedJson, pushTransactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
+        } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
+            transactionSignAndBroadCastError.printStackTrace();
+            fail("Exception should not be thrown here for calling signAndBroadcast");
+        }
+    }
+
+    private String getMockedProcessedActionTrace(String returnValueHex, String actionName) {
+        return "{\n"
+                + "        \"action_ordinal\": 1,\n"
+                + "        \"creator_action_ordinal\": 0,\n"
+                + "        \"closest_unnotified_ancestor_action_ordinal\": 0,\n"
+                + "        \"receipt\": {\n"
+                + "          \"receiver\": \"account\",\n"
+                + "          \"act_digest\": \"8f6c4be57658986020e3fc61294d339965a4491ddfae0ceacf598fcaf9955da0\",\n"
+                + "          \"global_sequence\": 275242,\n"
+                + "          \"recv_sequence\": 48,\n"
+                + "          \"auth_sequence\": [[\n"
+                + "              \"actor\",\n"
+                + "              40\n"
+                + "            ]\n"
+                + "          ],\n"
+                + "          \"code_sequence\": 14,\n"
+                + "          \"abi_sequence\": 14\n"
+                + "        },\n"
+                + "        \"receiver\": \"account\",\n"
+                + "        \"act\": {\n"
+                + "          \"account\": \"account\",\n"
+                + "          \"name\": \"" + actionName + "\",\n"
+                + "          \"authorization\": [{\n"
+                + "              \"actor\": \"actor\",\n"
+                + "              \"permission\": \"active\"\n"
+                + "            }\n"
+                + "          ],\n"
+                + "          \"data\": {\n"
+                + "            \"user\": \"test\"\n"
+                + "          },\n"
+                + "          \"hex_data\": \"000000000090b1ca\"\n"
+                + "        },\n"
+                + "        \"context_free\": false,\n"
+                + "        \"elapsed\": 760,\n"
+                + "        \"console\": \"Hi, test\",\n"
+                + "        \"trx_id\": \"7f2ccf898efcb08dd64cadf4ca2bcd61f2577f40162928283038a6a6950e6683\",\n"
+                + "        \"block_num\": 275159,\n"
+                + "        \"block_time\": \"2020-06-25T17:24:18.000\",\n"
+                + "        \"producer_block_id\": null,\n"
+                + "        \"account_ram_deltas\": [],\n"
+                + "        \"account_disk_deltas\": [],\n"
+                + "        \"except\": null,\n"
+                + "        \"error_code\": null,\n"
+                + "        \"return_value\": \"" + returnValueHex + "\"\n"
+                + "      }";
+    }
+
+    private String getMockedPushTransactionResponseJson() {
+        return getMockedPushTransactionResponseJson(null);
+    }
+
+    private String getMockedPushTransactionResponseJson(@Nullable String mockedProcessedActionTrace) {
+        if (mockedProcessedActionTrace != null) {
+            return "{\"transaction_id\":\"" + DUMP_TRANSACTION_ID + "\", \"processed\": { \"action_traces\": [" + mockedProcessedActionTrace + "]}}";
+        }
+
+        return "{\"transaction_id\":\"" + DUMP_TRANSACTION_ID + "\"}";
+    }
+
     private void mockDefaultSuccessData() {
+        mockDefaultSuccessData(getMockedPushTransactionResponseJson(), MOCKED_RETURN_VALUE_JSON);
+    }
+
+    private void mockDefaultSuccessData(String mockedPushTransactionResponseJson, String mockedReturnValueJson) {
         this.mockRPC(
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_PUSHTRANSACTION_RESPONE_JSON, PushTransactionResponse.class));
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedPushTransactionResponseJson, PushTransactionResponse.class));
 
         this.mockAbiProvider(EOSIOABIJSON);
-        this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction, MOCKED_RETURN_VALUE_JSON);
+        this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction, mockedReturnValueJson);
         this.mockSignatureProvider(Arrays.asList("Key1", "Key2"),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedEosioTransactionSignatureResponseJSON, EosioTransactionSignatureResponse.class));
     }
@@ -797,7 +897,27 @@ public class TransactionProcessorTest {
             + "         ]\n"
             + "      },\n"
             + "      {\n"
-            + "          \"name\": \"retval_test\",\n"
+            + "          \"name\": \"retval_complex\",\n"
+            + "          \"base\": \"\",\n"
+            + "          \"fields\": [\n"
+            + "              {\n"
+            + "                  \"name\": \"user\",\n"
+            + "                  \"type\": \"name\"\n"
+            + "              }\n"
+            + "          ]\n"
+            + "      },\n"
+            + "      {\n"
+            + "          \"name\": \"retval_simple\",\n"
+            + "          \"base\": \"\",\n"
+            + "          \"fields\": [\n"
+            + "              {\n"
+            + "                  \"name\": \"user\",\n"
+            + "                  \"type\": \"name\"\n"
+            + "              }\n"
+            + "          ]\n"
+            + "      },\n"
+            + "      {\n"
+            + "          \"name\": \"retval_null\",\n"
             + "          \"base\": \"\",\n"
             + "          \"fields\": [\n"
             + "              {\n"
@@ -838,8 +958,18 @@ public class TransactionProcessorTest {
             + "         \"ricardian_contract\":\"\"\n"
             + "      },\n"
             + "      {\n"
-            + "          \"name\": \"retval_test\",\n"
-            + "          \"type\": \"retval_test\",\n"
+            + "          \"name\": \"retval_complex\",\n"
+            + "          \"type\": \"retval_complex\",\n"
+            + "          \"ricardian_contract\": \"\"\n"
+            + "      },\n"
+            + "      {\n"
+            + "          \"name\": \"retval_simple\",\n"
+            + "          \"type\": \"retval_simple\",\n"
+            + "          \"ricardian_contract\": \"\"\n"
+            + "      },\n"
+            + "      {\n"
+            + "          \"name\": \"retval_null\",\n"
+            + "          \"type\": \"retval_null\",\n"
             + "          \"ricardian_contract\": \"\"\n"
             + "      }\n"
             + "   ],\n"
@@ -873,58 +1003,17 @@ public class TransactionProcessorTest {
             + "   \"variants\":[],\n"
             + "   \"action_results\": [\n"
             + "     {\n"
-            + "         \"name\": \"retval_test\",\n"
+            + "         \"name\": \"retval_complex\",\n"
             + "         \"result_type\": \"returnValue\"\n"
+            + "     },\n"
+            + "     {\n"
+            + "         \"name\": \"retval_simple\",\n"
+            + "         \"result_type\": \"uint32\"\n"
             + "     }\n"
             + "   ]\n"
             + "}";
 
     private static final String DUMP_TRANSACTION_ID = "17335a29eae22e531966f3775e44f8b02173e780c9549881e01e470ff0ab46ce";
-    private static final String MOCKED_PROCESSED_ACTION_TRACE = "{\n"
-            + "        \"action_ordinal\": 1,\n"
-            + "        \"creator_action_ordinal\": 0,\n"
-            + "        \"closest_unnotified_ancestor_action_ordinal\": 0,\n"
-            + "        \"receipt\": {\n"
-            + "          \"receiver\": \"account\",\n"
-            + "          \"act_digest\": \"8f6c4be57658986020e3fc61294d339965a4491ddfae0ceacf598fcaf9955da0\",\n"
-            + "          \"global_sequence\": 275242,\n"
-            + "          \"recv_sequence\": 48,\n"
-            + "          \"auth_sequence\": [[\n"
-            + "              \"actor\",\n"
-            + "              40\n"
-            + "            ]\n"
-            + "          ],\n"
-            + "          \"code_sequence\": 14,\n"
-            + "          \"abi_sequence\": 14\n"
-            + "        },\n"
-            + "        \"receiver\": \"account\",\n"
-            + "        \"act\": {\n"
-            + "          \"account\": \"account\",\n"
-            + "          \"name\": \"retval_test\",\n"
-            + "          \"authorization\": [{\n"
-            + "              \"actor\": \"actor\",\n"
-            + "              \"permission\": \"active\"\n"
-            + "            }\n"
-            + "          ],\n"
-            + "          \"data\": {\n"
-            + "            \"user\": \"test\"\n"
-            + "          },\n"
-            + "          \"hex_data\": \"d2040000000000000090b1ca\"\n"
-            + "        },\n"
-            + "        \"context_free\": false,\n"
-            + "        \"elapsed\": 760,\n"
-            + "        \"console\": \"Hi, test\",\n"
-            + "        \"trx_id\": \"7f2ccf898efcb08dd64cadf4ca2bcd61f2577f40162928283038a6a6950e6683\",\n"
-            + "        \"block_num\": 275159,\n"
-            + "        \"block_time\": \"2020-06-25T17:24:18.000\",\n"
-            + "        \"producer_block_id\": null,\n"
-            + "        \"account_ram_deltas\": [],\n"
-            + "        \"account_disk_deltas\": [],\n"
-            + "        \"except\": null,\n"
-            + "        \"error_code\": null,\n"
-            + "        \"return_value\": \"d2040000000000000090b1ca\"\n"
-            + "      }";
-    private static final String MOCKED_PUSHTRANSACTION_RESPONE_JSON = "{\"transaction_id\":\"" + DUMP_TRANSACTION_ID + "\", \"processed\": { \"action_traces\": [" + MOCKED_PROCESSED_ACTION_TRACE + "]}}";
 
     private static final BigInteger headBlockNum = BigInteger.valueOf(31984402L);
     private static final String headBlockTime = "2019-04-01T22:08:40.000";
