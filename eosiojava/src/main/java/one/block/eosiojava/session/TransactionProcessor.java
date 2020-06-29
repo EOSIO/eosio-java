@@ -924,7 +924,7 @@ public class TransactionProcessor {
                 returnType, actionAbiJSON);
 
         // !!! At this step, the data field of the action is still in HEX format.
-        actionAbiEosSerializationObject.setHex(actionTrace.getHexReturnValue());
+        actionAbiEosSerializationObject.setHex(actionTrace.getReturnValue());
 
         try {
             this.serializationProvider.deserialize(actionAbiEosSerializationObject);

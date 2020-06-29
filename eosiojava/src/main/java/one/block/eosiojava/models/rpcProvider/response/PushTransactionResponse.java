@@ -18,6 +18,9 @@ public class PushTransactionResponse {
     @SerializedName("transaction_id")
     private String transactionId;
 
+    /**
+     * The processed transaction
+     */
     @SerializedName("processed")
     private ProcessedTransactionResponse transactionResponse;
 
@@ -30,9 +33,19 @@ public class PushTransactionResponse {
         return transactionId;
     }
 
+    /**
+     * Gets the processed transaction
+     *
+     * @return the processed transaction
+     */
     public ProcessedTransactionResponse getProcessed() {
         return transactionResponse;
     }
 
+    /**
+     * Gets the processed transaction's action traces
+     *
+     * @return the processed transaction's action traces
+     */
     public List<ActionTrace> getActionTraces() { return transactionResponse != null ? transactionResponse.getActionTraces() : new ArrayList<>(); }
 }

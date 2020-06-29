@@ -19,7 +19,6 @@ import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.rpcProvider.response.ProcessedTransactionResponse;
 import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
-import org.bouncycastle.util.encoders.Base64;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -310,9 +309,9 @@ public class RpcModelTest {
         assertEquals("dump_transaction_id", pushTransactionResponse.getTransactionId());
         assertEquals("dump_id", pushTransactionResponse.getProcessed().getId());
         assertEquals(2, pushTransactionResponse.getActionTraces().size());
-        assertEquals("000000000090b1ca", pushTransactionResponse.getActionTraces().get(0).getHexReturnValue());
+        assertEquals("000000000090b1ca", pushTransactionResponse.getActionTraces().get(0).getReturnValue());
         assertEquals(null, pushTransactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
-        assertEquals("0000000000408608", pushTransactionResponse.getActionTraces().get(1).getHexReturnValue());
+        assertEquals("0000000000408608", pushTransactionResponse.getActionTraces().get(1).getReturnValue());
         assertEquals(null, pushTransactionResponse.getActionTraces().get(1).getDeserializedReturnValue());
 
         // ToJSON test
@@ -361,16 +360,25 @@ public class RpcModelTest {
      */
     @Test
     public void ProcessedTransactionResponseTest() {
-        String jsonContent = "{\"id\":\"dump_id\",\"block_num\":1231214214,\"block_time\":\"2019-12-12T12:12:12.500\",\"receipt\":{\"status\":\"executed\",\"cpu_usage_us\":1,\"net_usage_words\":1},\"elapsed\":1,\"net_usage\":1,\"scheduled\":false,\"action_traces\":[{\"receipt\":{\"receiver\":\"eosio.assert\",\"act_digest\":\"digest\",\"global_sequence\":1,\"recv_sequence\":1,\"auth_sequence\":[],\"code_sequence\":1,\"abi_sequence\":1},\"act\":{\"account\":\"eosio.assert\",\"name\":\"require\",\"authorization\":[],\"data\":{\"chain_params_hash\":\"hash\",\"manifest_id\":\"manifest id\",\"actions\":[{\"contract\":\"eosio.token\",\"action\":\"transfer\"}],\"abi_hashes\":[\"abi hashes\"]},\"hex_data\":\"hex data\"},\"context_free\":false,\"elapsed\":1,\"cpu_usage\":0,\"console\":\"\",\"total_cpu_usage\":0,\"trx_id\":\"transaction id\",\"block_num\":1,\"block_time\":\"2019-12-12T12:12:12.500\",\"account_ram_deltas\":[],\"inline_traces\":[], \"return_value\": \"000000000090b1ca\"},{\"receipt\":{\"receiver\":\"eosio.assert\",\"act_digest\":\"digest\",\"global_sequence\":1,\"recv_sequence\":1,\"auth_sequence\":[],\"code_sequence\":1,\"abi_sequence\":1},\"act\":{\"account\":\"eosio.assert\",\"name\":\"require\",\"authorization\":[],\"data\":{\"chain_params_hash\":\"hash\",\"manifest_id\":\"manifest id\",\"actions\":[{\"contract\":\"eosio.token\",\"action\":\"transfer\"}],\"abi_hashes\":[\"abi hashes\"]},\"hex_data\":\"hex data\"},\"context_free\":false,\"elapsed\":1,\"cpu_usage\":0,\"console\":\"\",\"total_cpu_usage\":0,\"trx_id\":\"transaction id\",\"block_num\":1,\"block_time\":\"2019-12-12T12:12:12.500\",\"account_ram_deltas\":[],\"inline_traces\":[], \"return_value\": \"0000000000408608\"}]}";
+        String jsonContent = "{\"id\":\"dump_id\",\"block_num\":1231214214,\"block_time\":\"2019-12-12T12:12:12.500\",\"producer_block_id\":\"test\",\"receipt\":{\"status\":\"executed\",\"cpu_usage_us\":1,\"net_usage_words\":1},\"elapsed\":1,\"net_usage\":1,\"scheduled\":false,\"account_ram_delta\":\"test\",\"except\":\"test\",\"error_code\":\"test\",\"action_traces\":[{\"receipt\":{\"receiver\":\"eosio.assert\",\"act_digest\":\"digest\",\"global_sequence\":1,\"recv_sequence\":1,\"auth_sequence\":[],\"code_sequence\":1,\"abi_sequence\":1},\"act\":{\"account\":\"eosio.assert\",\"name\":\"require\",\"authorization\":[],\"data\":{\"chain_params_hash\":\"hash\",\"manifest_id\":\"manifest id\",\"actions\":[{\"contract\":\"eosio.token\",\"action\":\"transfer\"}],\"abi_hashes\":[\"abi hashes\"]},\"hex_data\":\"hex data\"},\"context_free\":false,\"elapsed\":1,\"cpu_usage\":0,\"console\":\"\",\"total_cpu_usage\":0,\"trx_id\":\"transaction id\",\"block_num\":1,\"block_time\":\"2019-12-12T12:12:12.500\",\"account_ram_deltas\":[],\"inline_traces\":[], \"return_value\": \"000000000090b1ca\"},{\"receipt\":{\"receiver\":\"eosio.assert\",\"act_digest\":\"digest\",\"global_sequence\":1,\"recv_sequence\":1,\"auth_sequence\":[],\"code_sequence\":1,\"abi_sequence\":1},\"act\":{\"account\":\"eosio.assert\",\"name\":\"require\",\"authorization\":[],\"data\":{\"chain_params_hash\":\"hash\",\"manifest_id\":\"manifest id\",\"actions\":[{\"contract\":\"eosio.token\",\"action\":\"transfer\"}],\"abi_hashes\":[\"abi hashes\"]},\"hex_data\":\"hex data\"},\"context_free\":false,\"elapsed\":1,\"cpu_usage\":0,\"console\":\"\",\"total_cpu_usage\":0,\"trx_id\":\"transaction id\",\"block_num\":1,\"block_time\":\"2019-12-12T12:12:12.500\",\"account_ram_deltas\":[],\"inline_traces\":[], \"return_value\": \"0000000000408608\"}]}";
 
         // FromJSON test
         ProcessedTransactionResponse processedTransactionResponse = this.gson
                 .fromJson(jsonContent, ProcessedTransactionResponse.class);
         assertNotNull(processedTransactionResponse);
         assertEquals("dump_id", processedTransactionResponse.getId());
+        assertNotNull(processedTransactionResponse.getBlockTime());
+        assertNotNull(processedTransactionResponse.getProducerBlockId());
+        assertNotNull(processedTransactionResponse.getReceipt());
+        assertNotNull(processedTransactionResponse.getElapsed());
+        assertNotNull(processedTransactionResponse.getNetUsage());
+        assertNotNull(processedTransactionResponse.getScheduled());
+        assertNotNull(processedTransactionResponse.getAccountRamDelta());
+        assertNotNull(processedTransactionResponse.getExcept());
+        assertNotNull(processedTransactionResponse.getErrorCode());
         assertEquals(2, processedTransactionResponse.getActionTraces().size());
-        assertEquals("000000000090b1ca", processedTransactionResponse.getActionTraces().get(0).getHexReturnValue());
-        assertEquals("0000000000408608", processedTransactionResponse.getActionTraces().get(1).getHexReturnValue());
+        assertEquals("000000000090b1ca", processedTransactionResponse.getActionTraces().get(0).getReturnValue());
+        assertEquals("0000000000408608", processedTransactionResponse.getActionTraces().get(1).getReturnValue());
 
         // ToJSON test
         String toJSON = this.gson.toJson(processedTransactionResponse);
@@ -383,7 +391,7 @@ public class RpcModelTest {
      */
     @Test
     public void ActionTraceTest() {
-        String jsonContent = "{\"receipt\":{\"receiver\":\"eosio.assert\",\"act_digest\":\"digest\",\"global_sequence\":1,\"recv_sequence\":1,\"auth_sequence\":[],\"code_sequence\":1,\"abi_sequence\":1},\"act\":{\"account\":\"eosio.assert\",\"name\":\"require\",\"authorization\":[],\"data\":{\"chain_params_hash\":\"hash\",\"manifest_id\":\"manifest id\",\"actions\":[{\"contract\":\"eosio.token\",\"action\":\"transfer\"}],\"abi_hashes\":[\"abi hashes\"]},\"hex_data\":\"hex data\"},\"context_free\":false,\"elapsed\":1,\"cpu_usage\":0,\"console\":\"\",\"total_cpu_usage\":0,\"trx_id\":\"transaction id\",\"block_num\":1,\"block_time\":\"2019-12-12T12:12:12.500\",\"account_ram_deltas\":[],\"inline_traces\":[], \"return_value\": \"000000000090b1ca\"}";
+        String jsonContent = "{\"action_ordinal\":\"1\",\"creator_action_ordinal\":\"1\",\"closest_unnotified_ancestor_action_ordinal\":\"1\",\"receiver\":\"test\",\"producer_block_id\":\"test\",\"account_ram_deltas\":{},\"account_disk_deltas\":{},\"except\":\"test\",\"error_code\":\"test\",\"receipt\":{\"receiver\":\"eosio.assert\",\"act_digest\":\"digest\",\"global_sequence\":1,\"recv_sequence\":1,\"auth_sequence\":[],\"code_sequence\":1,\"abi_sequence\":1},\"act\":{\"account\":\"eosio.assert\",\"name\":\"require\",\"authorization\":[],\"data\":{\"chain_params_hash\":\"hash\",\"manifest_id\":\"manifest id\",\"actions\":[{\"contract\":\"eosio.token\",\"action\":\"transfer\"}],\"abi_hashes\":[\"abi hashes\"]},\"hex_data\":\"hex data\"},\"context_free\":false,\"elapsed\":1,\"cpu_usage\":0,\"console\":\"\",\"total_cpu_usage\":0,\"trx_id\":\"transaction id\",\"block_num\":1,\"block_time\":\"2019-12-12T12:12:12.500\",\"account_ram_deltas\":[],\"inline_traces\":[], \"return_value\": \"000000000090b1ca\"}";
         String deserializedReturnValue = "test";
 
         // FromJSON test
@@ -392,7 +400,24 @@ public class RpcModelTest {
         actionTrace.setDeserializedReturnValue(deserializedReturnValue);
 
         assertNotNull(actionTrace);
-        assertEquals("000000000090b1ca", actionTrace.getHexReturnValue());
+        assertNotNull(actionTrace.getActionOrdinal());
+        assertNotNull(actionTrace.getCreatorActionOrdinal());
+        assertNotNull(actionTrace.getClosestUnnotifiedAncestorActionOrdinal());
+        assertNotNull(actionTrace.getReceipt());
+        assertNotNull(actionTrace.getReceiver());
+        assertNotNull(actionTrace.getAct());
+        assertNotNull(actionTrace.getContextFree());
+        assertNotNull(actionTrace.getElapsed());
+        assertNotNull(actionTrace.getConsole());
+        assertNotNull(actionTrace.getTransactionId());
+        assertNotNull(actionTrace.getBlockNumber());
+        assertNotNull(actionTrace.getBlockTime());
+        assertNotNull(actionTrace.getProducerBlockId());
+        assertNotNull(actionTrace.getAccountRamDeltas());
+        assertNotNull(actionTrace.getAccountDiskDeltas());
+        assertNotNull(actionTrace.getExcept());
+        assertNotNull(actionTrace.getErrorCode());
+        assertEquals("000000000090b1ca", actionTrace.getReturnValue());
         assertEquals(deserializedReturnValue, actionTrace.getDeserializedReturnValue());
         assertEquals("eosio.assert", actionTrace.getAccountName());
         assertEquals("require", actionTrace.getActionName());
