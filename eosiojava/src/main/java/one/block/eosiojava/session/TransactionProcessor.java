@@ -47,7 +47,7 @@ import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
 import one.block.eosiojava.models.abiProvider.Abi;
 import one.block.eosiojava.models.rpcProvider.response.ActionTrace;
-import one.block.eosiojava.models.serialization.AbiEosSerializationObject;
+import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.Action;
 import one.block.eosiojava.models.rpcProvider.Transaction;

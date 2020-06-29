@@ -5,7 +5,7 @@ package one.block.eosiojava.error;
 import java.util.List;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
-import one.block.eosiojava.models.serialization.AbiEosSerializationObject;
+import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;

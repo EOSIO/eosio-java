@@ -1,4 +1,4 @@
-package one.block.eosiojava.models.serialization;
+package one.block.eosiojava.models;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
