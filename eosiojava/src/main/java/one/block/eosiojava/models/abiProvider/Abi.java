@@ -32,7 +32,7 @@ public class Abi {
     @SerializedName("action_results")
     private List<ActionResult> actionResults;
 
-    public String getActionReturnType(String actionName) {
+    public String getActionReturnTypeByActionName(String actionName) {
         if (this.actionResults.isEmpty()) {
             return null;
         }

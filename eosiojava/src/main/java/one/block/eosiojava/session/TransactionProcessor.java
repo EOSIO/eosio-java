@@ -917,7 +917,7 @@ public class TransactionProcessor {
         }
 
         Abi abi = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(actionAbiJSON, Abi.class);
-        String returnType = abi.getActionReturnType(actionTrace.getActionName());
+        String returnType = abi.getActionReturnTypeByActionName(actionTrace.getActionName());
 
         AbiEosSerializationObject actionAbiEosSerializationObject = new AbiEosSerializationObject(
                 actionTrace.getAccountName(), actionTrace.getActionName(),
