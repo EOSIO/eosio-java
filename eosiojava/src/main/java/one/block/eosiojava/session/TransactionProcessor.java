@@ -1,7 +1,6 @@
 package one.block.eosiojava.session;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -15,6 +14,7 @@ import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeError;
+import one.block.eosiojava.error.serializationProvider.DeserializeReturnValueError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -194,10 +194,6 @@ public class TransactionProcessor {
      * Default is false.
      */
     private boolean isTransactionModificationAllowed;
-
-    public IABIProvider getAbiProvider() {
-        return this.abiProvider;
-    }
 
     /**
      * Constructor with all provider references from {@link TransactionSession}
@@ -511,19 +507,19 @@ public class TransactionProcessor {
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
                 0, "", this.serializedTransaction);
         try {
-            return getPushTransactionResponse(this.pushTransaction(pushTransactionRequest));
+            return formatPushTransactionResponse(this.pushTransaction(pushTransactionRequest));
         } catch (TransactionPushTransactionError transactionPushTransactionError) {
             throw new TransactionSignAndBroadCastError(transactionPushTransactionError);
         }
     }
 
-    private PushTransactionResponse getPushTransactionResponse(PushTransactionResponse response) {
+    private PushTransactionResponse formatPushTransactionResponse(PushTransactionResponse response) {
         List<ActionTrace> actionTraces = response.getActionTraces();
         for (ActionTrace actionTrace : actionTraces) {
             try {
                 AbiEosSerializationObject deserializationObject = deserializeActionTraceReturnValue(actionTrace, chainId, abiProvider);
                 actionTrace.setDeserializedReturnValue(deserializationObject.getJson());
-            } catch (TransactionCreateSignatureRequestError transactionCreateSignatureRequestError) {
+            } catch (DeserializeReturnValueError transactionCreateSignatureRequestError) {
                 transactionCreateSignatureRequestError.printStackTrace();
             }
         }
@@ -909,13 +905,13 @@ public class TransactionProcessor {
     }
 
     private AbiEosSerializationObject deserializeActionTraceReturnValue(ActionTrace actionTrace, String chainId, IABIProvider abiProvider)
-            throws TransactionCreateSignatureRequestError {
+            throws DeserializeReturnValueError {
         String actionAbiJSON;
         try {
             actionAbiJSON = abiProvider
                     .getAbi(chainId, new EOSIOName(actionTrace.getAccountName()));
         } catch (GetAbiError getAbiError) {
-            throw new TransactionCreateSignatureRequestAbiError(
+            throw new DeserializeReturnValueError(
                     String.format(ErrorConstants.TRANSACTION_PROCESSOR_GET_ABI_ERROR,
                             actionTrace.getAccountName()), getAbiError);
         }
@@ -933,13 +929,13 @@ public class TransactionProcessor {
         try {
             this.serializationProvider.deserialize(actionAbiEosSerializationObject);
             if (actionAbiEosSerializationObject.getJson().isEmpty()) {
-                throw new TransactionCreateSignatureRequestSerializationError(
-                        ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_WORKED_BUT_EMPTY_RESULT);
+                throw new DeserializeReturnValueError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_EMPTY);
             }
-        } catch (TransactionCreateSignatureRequestSerializationError | DeserializeError serializeError) {
-            throw new TransactionCreateSignatureRequestSerializationError(
-                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
-                            actionTrace.getAccountName()), serializeError);
+        } catch (DeserializeError | DeserializeReturnValueError deserializeError) {
+            throw new DeserializeReturnValueError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_ERROR,
+                            actionTrace.getAccountName()), deserializeError);
         }
 
         return actionAbiEosSerializationObject;

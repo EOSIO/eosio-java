@@ -34,9 +34,5 @@ public class PushTransactionResponse {
         return transactionResponse;
     }
 
-    public List<ActionTrace> getActionTraces() { return transactionResponse != null ? transactionResponse.getActionTraces() : new ArrayList<ActionTrace>(); }
-
-    public void setActionTraces(List<ActionTrace> actionTraces) {
-        // reset
-    }
+    public List<ActionTrace> getActionTraces() { return transactionResponse != null ? transactionResponse.getActionTraces() : new ArrayList<>(); }
 }
