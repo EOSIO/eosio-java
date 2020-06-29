@@ -326,12 +326,12 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_SIGN_BROADCAST_SIGN_EMPTY = "Can't call sign and broadcast because Signature is empty. Make sure of calling sign before calling sign and broadcast.";
 
     /**
-     * Error message get thrown if return value's deserialization process gets an error by calling {@link ISerializationProvider#deserialize(AbiEosSerializationObject)}}
+     * Error message get thrown if return value's deserialization process gets an error after calling {@link ISerializationProvider#deserialize(AbiEosSerializationObject)}
      */
     public static final String TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_ERROR = "Error happened on deserializing return value [%s]";
 
     /**
-     * Error message thrown if deserializeActionTraceReturnValue is empty after process of {@link TransactionProcessor#signAndBroadcast()}
+     * Error message thrown if return value's deserialization process is empty after calling {@link ISerializationProvider#deserialize(AbiEosSerializationObject)}
      */
     public static final String TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_EMPTY = "Deserialization of return value expected result, but was empty.";
 }
