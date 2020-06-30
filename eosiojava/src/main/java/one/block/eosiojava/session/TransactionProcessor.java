@@ -27,6 +27,7 @@ import one.block.eosiojava.error.session.TransactionCreateSignatureRequestKeyErr
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestRequiredKeysEmptyError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestRpcError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestSerializationError;
+import one.block.eosiojava.error.session.TransactionFormatPushTransactionResponseError;
 import one.block.eosiojava.error.session.TransactionGetSignatureDeserializationError;
 import one.block.eosiojava.error.session.TransactionGetSignatureError;
 import one.block.eosiojava.error.session.TransactionGetSignatureNotAllowModifyTransactionError;
@@ -508,19 +509,20 @@ public class TransactionProcessor {
                 0, "", this.serializedTransaction);
         try {
             return formatPushTransactionResponse(this.pushTransaction(pushTransactionRequest));
-        } catch (TransactionPushTransactionError transactionPushTransactionError) {
+        } catch (TransactionPushTransactionError | TransactionFormatPushTransactionResponseError transactionPushTransactionError) {
             throw new TransactionSignAndBroadCastError(transactionPushTransactionError);
         }
     }
 
-    private PushTransactionResponse formatPushTransactionResponse(PushTransactionResponse response) {
+    private PushTransactionResponse formatPushTransactionResponse(PushTransactionResponse response)
+            throws TransactionFormatPushTransactionResponseError {
         List<ActionTrace> actionTraces = response.getActionTraces();
         for (ActionTrace actionTrace : actionTraces) {
             try {
                 AbiEosSerializationObject deserializationObject = deserializeActionTraceReturnValue(actionTrace, chainId, abiProvider);
                 actionTrace.setDeserializedReturnValue(deserializationObject.getJson());
             } catch (DeserializeReturnValueError transactionCreateSignatureRequestError) {
-                transactionCreateSignatureRequestError.printStackTrace();
+                throw new TransactionFormatPushTransactionResponseError(transactionCreateSignatureRequestError);
             }
         }
         return response;

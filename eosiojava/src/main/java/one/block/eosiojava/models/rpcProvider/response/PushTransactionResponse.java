@@ -3,7 +3,6 @@ package one.block.eosiojava.models.rpcProvider.response;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
 
 /**
