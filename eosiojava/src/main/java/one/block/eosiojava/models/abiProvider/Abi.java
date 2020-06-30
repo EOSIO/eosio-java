@@ -116,6 +116,7 @@ public class Abi {
     /**
      * Gets the return type of the specified action
      * @param actionName - action to check for return type
+     * @return the return type
      */
     public String getActionReturnTypeByActionName(String actionName) {
         if (this.actionResults.isEmpty()) {
