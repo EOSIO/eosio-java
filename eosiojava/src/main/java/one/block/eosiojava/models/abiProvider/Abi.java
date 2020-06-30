@@ -119,15 +119,12 @@ public class Abi {
      * @return the return type
      */
     public String getActionReturnTypeByActionName(String actionName) {
-        if (this.actionResults.isEmpty()) {
-            return null;
+        for (ActionResult actionResult : actionResults) {
+            if (actionResult.hasActionName(actionName)) {
+                return actionResult.getReturnType();
+            }
         }
 
-        ActionResult actionResult = this.actionResults.stream()
-                                                      .filter(ar -> ar.hasActionName(actionName))
-                                                      .findFirst()
-                                                      .orElse(null);
-
-        return actionResult != null ? actionResult.getReturnType() : null;
+        return null;
     }
 }
