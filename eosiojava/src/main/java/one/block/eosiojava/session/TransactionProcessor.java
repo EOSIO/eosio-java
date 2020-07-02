@@ -518,11 +518,13 @@ public class TransactionProcessor {
             throws TransactionFormatPushTransactionResponseError {
         List<ActionTrace> actionTraces = response.getActionTraces();
         for (ActionTrace actionTrace : actionTraces) {
-            try {
-                AbiEosSerializationObject deserializationObject = deserializeActionTraceReturnValue(actionTrace, chainId, abiProvider);
-                actionTrace.setDeserializedReturnValue(deserializationObject.getJson());
-            } catch (DeserializeReturnValueError transactionCreateSignatureRequestError) {
-                throw new TransactionFormatPushTransactionResponseError(transactionCreateSignatureRequestError);
+            if (actionTrace.hasReturnValue()) {
+                try {
+                    AbiEosSerializationObject deserializationObject = deserializeActionTraceReturnValue(actionTrace, chainId, abiProvider);
+                    actionTrace.setDeserializedReturnValue(deserializationObject.getJson());
+                } catch (DeserializeReturnValueError transactionCreateSignatureRequestError) {
+                    throw new TransactionFormatPushTransactionResponseError(transactionCreateSignatureRequestError);
+                }
             }
         }
         return response;

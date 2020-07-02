@@ -244,6 +244,12 @@ public class ActionTrace {
     public String getActionName() { return (String)this.act.get("name"); }
 
     /**
+     * Determines whether or not there is a return value to deserialize
+     * @return true if there is a value; false otherwise
+     */
+    public Boolean hasReturnValue() { return !this.returnValue.isEmpty(); }
+
+    /**
      * Sets the deserialized return value
      * @param deserializedReturnValue - the value to set to
      */

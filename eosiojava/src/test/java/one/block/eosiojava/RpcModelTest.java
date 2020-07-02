@@ -19,6 +19,7 @@ import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.rpcProvider.response.ProcessedTransactionResponse;
 import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
+import static junit.framework.TestCase.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -417,6 +418,7 @@ public class RpcModelTest {
         assertNotNull(actionTrace.getAccountDiskDeltas());
         assertNotNull(actionTrace.getExcept());
         assertNotNull(actionTrace.getErrorCode());
+        assertTrue(actionTrace.hasReturnValue());
         assertEquals("000000000090b1ca", actionTrace.getReturnValue());
         assertEquals(deserializedReturnValue, actionTrace.getDeserializedReturnValue());
         assertEquals("eosio.assert", actionTrace.getAccountName());
