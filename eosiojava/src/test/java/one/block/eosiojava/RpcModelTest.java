@@ -86,7 +86,7 @@ public class RpcModelTest {
      */
     @Test
     public void GetRequiredKeysRequestTest() {
-        String jsonContent = "{\"available_keys\":[\"dummy key\"],\"transaction\":{\"expiration\":\"2019-01-25T22:13:55\",\"ref_block_num\":123456,\"ref_block_prefix\":123456789,\"max_net_usage_words\":0,\"max_cpu_usage_ms\":0,\"delay_sec\":0,\"context_free_actions\":[],\"actions\":[{\"account\":\"eosio.token\",\"name\":\"transfer\",\"authorization\":[{\"actor\":\"dummy_account\",\"permission\":\"active\"}],\"data\":\"hex data\"}],\"transaction_extensions\":[]}}";
+        String jsonContent = "{\"available_keys\":[\"dummy key\"],\"transaction\":{\"expiration\":\"2019-01-25T22:13:55\",\"ref_block_num\":123456,\"ref_block_prefix\":123456789,\"max_net_usage_words\":0,\"max_cpu_usage_ms\":0,\"delay_sec\":0,\"context_free_actions\":[],\"actions\":[{\"account\":\"eosio.token\",\"name\":\"transfer\",\"authorization\":[{\"actor\":\"dummy_account\",\"permission\":\"active\"}],\"data\":\"hex data\",\"isContextFree\":false}],\"transaction_extensions\":[]}}";
 
         // FromJSON test
         GetRequiredKeysRequest getRequiredKeysRequest = this.gson

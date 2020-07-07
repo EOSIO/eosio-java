@@ -92,7 +92,7 @@ public class ErrorConstants {
     /**
      * Chain id or serialized transaction parameter was empty.
      */
-    public static final String EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING = "Chain id and serialized transaction can't be empty!";
+    public static final String EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING = "Chain id, serialized transaction, and serialized context free data can't be empty!";
     /**
      * The signable transaction parameter was empty.
      */
@@ -102,10 +102,6 @@ public class ErrorConstants {
      * be extracted.
      */
     public static final String INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Length of the signable transaction must be larger than %s";
-    /**
-     * The signable transaction was improperly formatted.
-     */
-    public static final String INVALID_INPUT_SIGNABLE_TRANS_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Signable transaction has to have this structure: chainId (64 characters) + serialized transaction + 32 bytes of 0!";
     /**
      * Unable to extract the serialized transaction from the signable transaction.
      */

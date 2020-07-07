@@ -110,3 +110,6 @@ gradle-app.setting
 
 gradle.properties
 
+# OS generated files #
+######################
+.DS_Store
