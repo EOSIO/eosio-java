@@ -310,7 +310,7 @@ public class TransactionProcessorTest {
     @Test
     public void getContextFreeData() {
         this.mockDefaultSuccessData();
-        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions(), this.defaultContextFreeActions(), this.defaultContextFreeData());
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions(), this.defaultContextFreeActions(false), this.defaultContextFreeData());
         assertNotNull(processor);
 
         ContextFreeData contextFreeData = processor.getContextFreeData();
@@ -541,14 +541,36 @@ public class TransactionProcessorTest {
     }
 
     @Test
-    public void testContextFreeActionPrepare() {
+    public void testContextFreeActionPrepareWithoutData() {
         // Prepare and sign
         this.mockDefaultSuccessData();
 
         // Context free actions
         TransactionProcessor processor = session.getTransactionProcessor();
         try {
-            processor.prepare(this.defaultActions(), this.defaultContextFreeActions());
+            processor.prepare(this.defaultActions(), this.defaultContextFreeActions(false));
+        } catch (TransactionPrepareError transactionPrepareError) {
+            transactionPrepareError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare.");
+        }
+
+        try {
+            assertNotEquals("", processor.serialize());
+        } catch (TransactionSerializeError transactionSerializeError) {
+            transactionSerializeError.printStackTrace();
+            fail("Exception should not be thrown here for calling serialize.");
+        }
+    }
+
+    @Test
+    public void testContextFreeActionPrepareWithData() {
+        // Prepare and sign
+        this.mockDefaultSuccessData();
+
+        // Context free actions
+        TransactionProcessor processor = session.getTransactionProcessor();
+        try {
+            processor.prepare(this.defaultActions(), this.defaultContextFreeActions(true));
         } catch (TransactionPrepareError transactionPrepareError) {
             transactionPrepareError.printStackTrace();
             fail("Exception should not be thrown here for calling prepare.");
@@ -591,8 +613,13 @@ public class TransactionProcessorTest {
         return actions;
     }
 
-    private List<Action> defaultContextFreeActions() {
-        String jsonData = "";
+    private List<Action> defaultContextFreeActions(boolean addData) {
+        String jsonData = addData ? "{\n" +
+                "\"from\": \"an\",\n" +
+                "\"to\": \"ken\",\n" +
+                "\"quantity\": \"10.0000 EOS\",\n" +
+                "\"memo\" : \"Something\"\n" +
+                "}" : "";
 
         List<Action> actions = new ArrayList<>();
         actions.add(new Action("eosio.token", "transfer", new ArrayList<Authorization>(), jsonData, true));
