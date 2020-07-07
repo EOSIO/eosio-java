@@ -2,6 +2,7 @@ package one.block.eosiojava.models.signatureProvider;
 
 import java.util.List;
 import one.block.eosiojava.error.signatureProvider.SignatureProviderError;
+import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,13 +19,21 @@ public class EosioTransactionSignatureResponse {
      * The transaction could have been modified by the signature provider.
      * <br>
      * If signature provider modifies the serialized transaction returned in the response {@link
-     * EosioTransactionSignatureResponse#getSerializeTransaction()} but {@link
+     * EosioTransactionSignatureResponse#getSerializedTransaction()} but {@link
      * EosioTransactionSignatureRequest#isModifiable()} is false then {@link
      * one.block.eosiojava.error.session.TransactionGetSignatureNotAllowModifyTransactionError} will
      * be thrown
      */
     @NotNull
-    private String serializeTransaction;
+    private String serializedTransaction;
+
+    /**
+     * The serialized (Hex) version of {@link one.block.eosiojava.models.rpcProvider.ContextFreeData}.
+     * <br>
+     * It is the result of {@link ContextFreeData#getSerialized()}
+     */
+    @NotNull
+    private String serializedContextFreeData;
 
     /**
      * The signatures that are signed by private keys of {@link EosioTransactionSignatureRequest#getSigningPublicKeys()}
@@ -38,11 +47,17 @@ public class EosioTransactionSignatureResponse {
     @Nullable
     private SignatureProviderError error;
 
-    public EosioTransactionSignatureResponse(@NotNull String serializeTransaction,
+    public EosioTransactionSignatureResponse(@NotNull String serializedTransaction, @NotNull String serializedContextFreeData,
             @NotNull List<String> signatures, @Nullable SignatureProviderError error) {
-        this.serializeTransaction = serializeTransaction;
+        this.serializedTransaction = serializedTransaction;
+        this.serializedContextFreeData = serializedContextFreeData;
         this.signatures = signatures;
         this.error = error;
+    }
+
+    public EosioTransactionSignatureResponse(@NotNull String serializedTransaction,
+            @NotNull List<String> signatures, @Nullable SignatureProviderError error) {
+        this(serializedTransaction, "", signatures, error);
     }
 
     /**
@@ -51,8 +66,8 @@ public class EosioTransactionSignatureResponse {
      * @return the serialize transaction
      */
     @NotNull
-    public String getSerializeTransaction() {
-        return serializeTransaction;
+    public String getSerializedTransaction() {
+        return serializedTransaction;
     }
 
     /**
@@ -74,4 +89,12 @@ public class EosioTransactionSignatureResponse {
     public SignatureProviderError getError() {
         return error;
     }
+
+    /**
+     * Gets serialized context free data.
+     *
+     * @return the serialized context free data
+     */
+    @NotNull
+    public String getSerializedContextFreeData() { return serializedContextFreeData; }
 }

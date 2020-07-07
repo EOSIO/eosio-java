@@ -2,15 +2,12 @@ package one.block.eosiojava.session;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -41,6 +38,7 @@ import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.Action;
 import one.block.eosiojava.models.rpcProvider.Authorization;
+import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
@@ -207,6 +205,23 @@ public class TransactionProcessorTest {
     }
 
     @Test
+    public void getTransactionWithContextFreeActions() {
+        this.mockDefaultSuccessData();
+        List<Action> actions = this.defaultActions();
+        TransactionProcessor processor = createAndPrepareTransaction(actions, actions, new ArrayList<String>());
+        assertNotNull(processor);
+
+        Transaction transaction = processor.getTransaction();
+        assertNotNull(transaction);
+
+        List<Action> contextFreeActions = transaction.getContextFreeActions();
+
+        assertNotNull(contextFreeActions);
+        assertArrayEquals(actions.toArray(), contextFreeActions.toArray());
+        assertArrayEquals(actions.get(0).getAuthorization().toArray(), contextFreeActions.get(0).getAuthorization().toArray());
+    }
+
+    @Test
     public void getOriginalTransaction() {
         // Original Transaction value will be set in sign method
         this.mockDefaultSuccessData();
@@ -233,7 +248,6 @@ public class TransactionProcessorTest {
             assertEquals(expectedRefBlockNum, transaction.getRefBlockNum());
             assertEquals(refBlockPrefix, transaction.getRefBlockPrefix());
             assertNotNull(transaction.getRefBlockPrefix());
-
         } catch (TransactionSignError transactionSignError) {
             transactionSignError.printStackTrace();
             fail("Exception should not be thrown here for calling sign");
@@ -275,6 +289,38 @@ public class TransactionProcessorTest {
             transactionSignError.printStackTrace();
             fail("Exception should not be thrown here for calling sign");
         }
+    }
+
+    @Test
+    public void getNoContextFreeData() {
+        this.mockDefaultSuccessData();
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
+        assertNotNull(processor);
+
+        ContextFreeData contextFreeData = processor.getContextFreeData();
+        assertNotNull(contextFreeData);
+        assertNotNull(contextFreeData.getData());
+        assertNotNull(contextFreeData.getHexed());
+        assertNotNull(contextFreeData.getSerialized());
+        assertEquals(contextFreeData.getData().size(), 0);
+        assertEquals(contextFreeData.getHexed(), "");
+        assertEquals(contextFreeData.getSerialized(), "");
+    }
+
+    @Test
+    public void getContextFreeData() {
+        this.mockDefaultSuccessData();
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions(), this.defaultContextFreeActions(false), this.defaultContextFreeData());
+        assertNotNull(processor);
+
+        ContextFreeData contextFreeData = processor.getContextFreeData();
+        assertNotNull(contextFreeData);
+        assertNotNull(contextFreeData.getData());
+        assertNotNull(contextFreeData.getHexed());
+        assertNotNull(contextFreeData.getSerialized());
+        assertEquals(contextFreeData.getData().size(), 3);
+        assertNotEquals(contextFreeData.getHexed(), "");
+        assertNotEquals(contextFreeData.getSerialized(), "");
     }
 
     @Test
@@ -368,17 +414,17 @@ public class TransactionProcessorTest {
         processor.setIsTransactionModificationAllowed(true);
         assertTrue(processor.isTransactionModificationAllowed());
 
-        try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+       try {
+           PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
+           assertNotNull(pushTransactionResponse);
+           assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
 
-            // after signing and broadcast, serialized transaction is updated
-            assertEquals(MOCKED_TRANSACTION_HEX_MODIFIED, processor.getSerializedTransaction());
-        } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
-            transactionSignAndBroadCastError.printStackTrace();
-            fail("Exception should not be thrown here for calling signAndBroadcast");
-        }
+           // after signing and broadcast, serialized transaction is updated
+           assertEquals(MOCKED_TRANSACTION_HEX_MODIFIED, processor.getSerializedTransaction());
+       } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
+           transactionSignAndBroadCastError.printStackTrace();
+           fail("Exception should not be thrown here for calling signAndBroadcast");
+       }
     }
 
     @Test
@@ -495,14 +541,36 @@ public class TransactionProcessorTest {
     }
 
     @Test
-    public void testContextFreeActionPrepare() {
+    public void testContextFreeActionPrepareWithoutData() {
         // Prepare and sign
         this.mockDefaultSuccessData();
 
         // Context free actions
         TransactionProcessor processor = session.getTransactionProcessor();
         try {
-            processor.prepare(this.defaultActions(), this.defaultActions());
+            processor.prepare(this.defaultActions(), this.defaultContextFreeActions(false));
+        } catch (TransactionPrepareError transactionPrepareError) {
+            transactionPrepareError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare.");
+        }
+
+        try {
+            assertNotEquals("", processor.serialize());
+        } catch (TransactionSerializeError transactionSerializeError) {
+            transactionSerializeError.printStackTrace();
+            fail("Exception should not be thrown here for calling serialize.");
+        }
+    }
+
+    @Test
+    public void testContextFreeActionPrepareWithData() {
+        // Prepare and sign
+        this.mockDefaultSuccessData();
+
+        // Context free actions
+        TransactionProcessor processor = session.getTransactionProcessor();
+        try {
+            processor.prepare(this.defaultActions(), this.defaultContextFreeActions(true));
         } catch (TransactionPrepareError transactionPrepareError) {
             transactionPrepareError.printStackTrace();
             fail("Exception should not be thrown here for calling prepare.");
@@ -545,16 +613,51 @@ public class TransactionProcessorTest {
         return actions;
     }
 
-    private TransactionProcessor createAndPrepareTransaction(List<Action> actions) {
+    private List<Action> defaultContextFreeActions(boolean addData) {
+        String jsonData = addData ? "{\n" +
+                "\"from\": \"an\",\n" +
+                "\"to\": \"ken\",\n" +
+                "\"quantity\": \"10.0000 EOS\",\n" +
+                "\"memo\" : \"Something\"\n" +
+                "}" : "";
+
+        List<Action> actions = new ArrayList<>();
+        actions.add(new Action("eosio.token", "transfer", new ArrayList<Authorization>(), jsonData, true));
+
+        return actions;
+    }
+
+    private List<String> defaultContextFreeData() {
+        String contextFreeData1 = "test";
+        String contextFreeData2 = "{\"some\": \"jsonData\"}";
+        String contextFreeData3 = "!@#$%^&*()_+";
+
+        ArrayList<String> contextFreeData = new ArrayList<String>();
+        contextFreeData.add(contextFreeData1);
+        contextFreeData.add(contextFreeData2);
+        contextFreeData.add(contextFreeData3);
+
+        return contextFreeData;
+    }
+
+    private TransactionProcessor createAndPrepareTransaction(List<Action> actions, List<Action> contextFreeActions, List<String> contextFreeData) {
         try {
             TransactionProcessor processor = session.getTransactionProcessor();
-            processor.prepare(actions);
+            processor.prepare(actions, contextFreeActions, contextFreeData);
             return processor;
         } catch (TransactionPrepareError transactionPrepareError) {
             transactionPrepareError.printStackTrace();
             fail("Exception should not be thrown here for calling prepare");
             return null;
         }
+    }
+
+    private TransactionProcessor createAndPrepareTransaction(List<Action> actions, List<String> contextFreeData) {
+        return this.createAndPrepareTransaction(actions, new ArrayList<Action>(), contextFreeData);
+    }
+
+    private TransactionProcessor createAndPrepareTransaction(List<Action> actions) {
+        return this.createAndPrepareTransaction(actions, new ArrayList<String>());
     }
 
     private void mockRPC(
@@ -679,6 +782,9 @@ public class TransactionProcessorTest {
     private static final String MOCKED_SIGNATURE = "SIG_R1_KsHAyy6EvQq2E6c7oxzxCtus5Jd4wP8KZkSxuhZUfxprU56okEWFjopjwy7wGH4fAjJKgTcceG4iUhZGRsWfYiDaTK5X5y";
     private static final String MOCKED_CHAIN_ID = "Mocked chain id";
     private static final String MOCKED_TRANSACTION_HEX_MODIFIED = "1ec3a35c1a706e886c51000000000100a6823403ea3055000000572d3ccdcd01000000000000c03400000000a8ed32322a000000000000c034000000000000a682a08601000000000004454f530000000009536f6d657468696e6700";
+    private static final String MOCKED_CONTEXT_FREE_DATA_HEX = "C21BFB5AD4B64BFD04838B3B14F0CE0C7B92136CAC69BFED41BEF92F95A9BB20";
+
+
 
     // Expectation
     // headBlockTime + default 5 minutes
@@ -723,12 +829,12 @@ public class TransactionProcessorTest {
             + "}";
 
     private static final String mockedEosioTransactionSignatureResponseJSON = "{"
-            + "\"serializeTransaction\": \"" + MOCKED_TRANSACTION_HEX + "\","
+            + "\"serializedTransaction\": \"" + MOCKED_TRANSACTION_HEX + "\","
             + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
             + "}";
 
     private static final String mockedEosioTransactionSignatureResponseModifiedTransactionJSON = "{"
-            + "\"serializeTransaction\": \"" + MOCKED_TRANSACTION_HEX_MODIFIED + "\","
+            + "\"serializedTransaction\": \"" + MOCKED_TRANSACTION_HEX_MODIFIED + "\","
             + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
             + "}";
 
