@@ -158,6 +158,17 @@ public class AbiEosSerializationObject {
     }
 
     /**
+     * Initialize AbiEosSerializationObject for use with action/transaction data only.
+     *
+     * @param contract - the contract name.
+     * @param name - the action name.
+     * @param abi - the abi to use for conversion.
+     */
+    public AbiEosSerializationObject(@NotNull String contract, @NotNull String name, @NotNull String abi) {
+        this(contract, name, null, abi);
+    }
+
+    /**
      * Initialize AbiEosSerializationObject for use with type data only.
      * @param type - the type name.
      * @param abi - the abi to use for conversion.

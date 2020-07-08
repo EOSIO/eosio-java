@@ -989,8 +989,7 @@ public class TransactionProcessor {
         }
 
         AbiEosSerializationObject actionAbiEosSerializationObject = new AbiEosSerializationObject(
-                action.getAccount(), action.getName(),
-                null, actionAbiJSON);
+                action.getAccount(), action.getName(), actionAbiJSON);
         actionAbiEosSerializationObject.setHex("");
 
         // !!! At this step, the data field of the action is still in JSON format.

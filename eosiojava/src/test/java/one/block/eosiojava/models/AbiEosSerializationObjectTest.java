@@ -4,31 +4,40 @@ import org.junit.Test;
 import static junit.framework.TestCase.*;
 
 public class AbiEosSerializationObjectTest {
-    AbiEosSerializationObject serializationObject;
+    private static final String CONTRACT_NAME = "contractName";
+    private static final String ACTION_NAME = "actionName";
+    private static final String TYPE = "type";
+    private static final String ABI = "abi";
+
+    private AbiEosSerializationObject serializationObject;
 
     @Test
     public void testCreateAbiEosSerializationObjectWithAllFields() {
-        String contractName = "contractName";
-        String actionName = "actionName";
-        String type = "type";
-        String abi = "abi";
-        this.serializationObject = new AbiEosSerializationObject(contractName, actionName, type, abi);
+        this.serializationObject = new AbiEosSerializationObject(CONTRACT_NAME, ACTION_NAME, TYPE, ABI);
 
-        assertEquals(this.serializationObject.getContract(), contractName);
-        assertEquals(this.serializationObject.getName(), actionName);
-        assertEquals(this.serializationObject.getType(), type);
-        assertEquals(this.serializationObject.getAbi(), abi);
+        assertEquals(this.serializationObject.getContract(), CONTRACT_NAME);
+        assertEquals(this.serializationObject.getName(), ACTION_NAME);
+        assertEquals(this.serializationObject.getType(), TYPE);
+        assertEquals(this.serializationObject.getAbi(), ABI);
+    }
+
+    @Test
+    public void testCreateAbiEosSerializationObjectWithoutTypeShouldDefaultToNull() {
+        this.serializationObject = new AbiEosSerializationObject(CONTRACT_NAME, ACTION_NAME, ABI);
+
+        assertEquals(this.serializationObject.getContract(), CONTRACT_NAME);
+        assertEquals(this.serializationObject.getName(), ACTION_NAME);
+        assertNull(this.serializationObject.getType());
+        assertEquals(this.serializationObject.getAbi(), ABI);
     }
 
     @Test
     public void testCreateAbiEosSerializationObjectWithoutContractOrActionNameShouldDefaultToNull() {
-        String type = "type";
-        String abi = "abi";
-        this.serializationObject = new AbiEosSerializationObject(type, abi);
+        this.serializationObject = new AbiEosSerializationObject(TYPE, ABI);
 
         assertNull(this.serializationObject.getContract());
         assertNull(this.serializationObject.getName());
-        assertEquals(this.serializationObject.getType(), type);
-        assertEquals(this.serializationObject.getAbi(), abi);
+        assertEquals(this.serializationObject.getType(), TYPE);
+        assertEquals(this.serializationObject.getAbi(), ABI);
     }
 }
