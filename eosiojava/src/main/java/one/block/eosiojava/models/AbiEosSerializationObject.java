@@ -141,7 +141,7 @@ public class AbiEosSerializationObject {
     }
 
     /**
-     * Initialize AbiEosSerializationObject
+     * Initialize AbiEosSerializationObject.
      *
      * @param contract - the contract name.
      * @param name - the action name.
@@ -149,7 +149,7 @@ public class AbiEosSerializationObject {
      * @param abi - the abi to use for conversion.
      */
     public AbiEosSerializationObject(@Nullable String contract,
-            @NotNull String name, @Nullable String type,
+            @Nullable String name, @Nullable String type,
             @NotNull String abi) {
         this.contract = contract;
         this.name = name;
@@ -157,4 +157,12 @@ public class AbiEosSerializationObject {
         this.abi = abi;
     }
 
+    /**
+     * Initialize AbiEosSerializationObject for use with type data only.
+     * @param type - the type name.
+     * @param abi - the abi to use for conversion.
+     */
+    public AbiEosSerializationObject(@NotNull String type, @NotNull String abi) {
+        this(null, null, type, abi);
+    }
 }
