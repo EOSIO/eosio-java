@@ -1204,5 +1204,41 @@ public class TransactionProcessor {
         return this.contextFreeData;
     }
 
+    public deserializeQueryItData() {
+        String queryItName = "queryit";
+        String returnType = "";
+        String returnHex = "";
+        String actionAbiJSON;
+        try {
+            actionAbiJSON = abiProvider
+                    .getAbi(this.chainId, new EOSIOName(queryItName));
+        } catch (GetAbiError getAbiError) {
+            throw new TransactionCreateSignatureRequestAbiError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_GET_ABI_ERROR,
+                            queryItName), getAbiError);
+        }
+
+        Abi abi = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(actionAbiJSON, Abi.class);
+        AbiEosSerializationObject queryitAbiEosSerializationObject = new AbiEosSerializationObject(
+                returnType, actionAbiJSON);
+
+        // !!! At this step, the data field of the action is still in HEX format.
+        queryitAbiEosSerializationObject.setHex(returnHex);
+
+        try {
+            this.serializationProvider.deserialize(queryitAbiEosSerializationObject);
+            if (actionAbiEosSerializationObject.getJson().isEmpty()) {
+                throw new DeserializeReturnValueError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_EMPTY);
+            }
+        } catch (DeserializeError | DeserializeReturnValueError deserializeError) {
+            throw new DeserializeReturnValueError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_ERROR,
+                            queryItName), deserializeError);
+        }
+
+        return queryitAbiEosSerializationObject;
+    }
+
     //endregion
 }
