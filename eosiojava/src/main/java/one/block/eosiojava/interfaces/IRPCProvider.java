@@ -16,6 +16,7 @@ import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -81,10 +82,10 @@ public interface IRPCProvider {
      * This method expects a transaction in JSON format and will attempt to apply it to the blockchain.
      *
      * @param sendTransactionRequest the transaction to push with signatures.
-     * @return the push transaction response
+     * @return the send transaction response
      * @throws SendTransactionRpcError thrown if there are any exceptions/backend error during the
      * sendTransaction() process.
      */
     @NotNull
-    PushTransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest) throws SendTransactionRpcError;
+    SendTransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest) throws SendTransactionRpcError;
 }
