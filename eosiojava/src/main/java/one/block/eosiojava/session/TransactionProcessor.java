@@ -1204,7 +1204,7 @@ public class TransactionProcessor {
         return this.contextFreeData;
     }
 
-    public deserializeQueryItData() {
+    public AbiEosSerializationObject deserializeQueryItData() throws TransactionCreateSignatureRequestAbiError, DeserializeReturnValueError {
         String queryItName = "queryit";
         String returnType = "";
         String returnHex = "";
@@ -1227,7 +1227,7 @@ public class TransactionProcessor {
 
         try {
             this.serializationProvider.deserialize(queryitAbiEosSerializationObject);
-            if (actionAbiEosSerializationObject.getJson().isEmpty()) {
+            if (queryitAbiEosSerializationObject.getJson().isEmpty()) {
                 throw new DeserializeReturnValueError(
                         ErrorConstants.TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_EMPTY);
             }
@@ -1238,6 +1238,11 @@ public class TransactionProcessor {
         }
 
         return queryitAbiEosSerializationObject;
+    }
+
+    public Action getQueryItAction(String account, Query query) {
+        Action action = new Action("eosio.token", "transfer", new ArrayList<>(), jsonData);
+        return new Action("account", "name", );
     }
 
     //endregion
