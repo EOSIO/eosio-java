@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Map;
 
 public class ActionTrace {
+
+    private static final String QUERY_IT_ACTION_NAME = "queryit";
+
     /**
      * The actionOrdinal
      */
@@ -248,6 +251,8 @@ public class ActionTrace {
      * @return true if there is a value; false otherwise
      */
     public Boolean hasReturnValue() { return !this.returnValue.isEmpty(); }
+
+    public Boolean isQueryItAction() { return this.getActionName() == QUERY_IT_ACTION_NAME; }
 
     /**
      * Sets the deserialized return value

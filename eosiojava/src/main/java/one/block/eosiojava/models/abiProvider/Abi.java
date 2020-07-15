@@ -51,7 +51,7 @@ public class Abi {
      * The variants
      */
     @SerializedName("variants")
-    private List<Map> variants;
+    private List<Variant> variants;
 
     /**
      * The action results
@@ -105,7 +105,7 @@ public class Abi {
      * Gets the variants
      * @return the variants
      */
-    public List<Map> getVariants() { return this.variants; }
+    public List<Variant> getVariants() { return this.variants; }
 
     /**
      * Gets the actionResults
@@ -122,6 +122,16 @@ public class Abi {
         for (ActionResult actionResult : actionResults) {
             if (actionResult.hasActionName(actionName)) {
                 return actionResult.getReturnType();
+            }
+        }
+
+        return null;
+    }
+
+    public List<String> getVariantTypesByName(String variantName) {
+        for (Variant variant : variants) {
+            if (variant.hasName(variantName)) {
+                return variant.getTypes();
             }
         }
 

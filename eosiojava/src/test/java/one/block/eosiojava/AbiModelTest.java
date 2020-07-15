@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.util.List;
 import one.block.eosiojava.models.abiProvider.Abi;
 import one.block.eosiojava.models.abiProvider.ActionResult;
 import org.junit.Before;
@@ -61,6 +62,17 @@ public class AbiModelTest {
         assertNotNull(toJSON);
         assertNotEquals("", toJSON);
         assertEquals(jsonContent, toJSON);
+    }
+
+    @Test
+    public void AbiQueryItVariantTest() {
+        String jsonContent = "{\"version\":\"eosio::abi/1.1\",\"types\":[{\"new_type_name\":\"any_array\",\"type\":\"anyvar[]\"},{\"new_type_name\":\"any_object\",\"type\":\"field[]\"}],\"structs\":[{\"name\":\"null_t\",\"base\":\"\",\"fields\":[]},{\"name\":\"field\",\"base\":\"\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"anyvar\"}]},{\"name\":\"query\",\"base\":\"\",\"fields\":[{\"name\":\"method\",\"type\":\"string\"},{\"name\":\"arg\",\"type\":\"anyvar?\"},{\"name\":\"filter\",\"type\":\"query[]\"}]}],\"variants\":[{\"name\":\"anyvar\",\"types\":[\"null_t\",\"int64\",\"uint64\",\"int32\",\"uint32\",\"int16\",\"uint16\",\"int8\",\"uint8\",\"time_point\",\"checksum256\",\"float64\",\"string\",\"any_object\",\"any_array\",\"bytes\",\"symbol\",\"symbol_code\",\"asset\"]}]}";
+
+        // FromJSON test
+        Abi abi = this.gson
+                .fromJson(jsonContent, Abi.class);
+
+        assertEquals(19, abi.getVariantTypesByName("anyvar").size());
     }
 
     /**
