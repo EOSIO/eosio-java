@@ -1020,7 +1020,6 @@ public class TransactionProcessor {
         Abi abi = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(actionAbiJSON, Abi.class);
 
         if (actionTrace.isQueryItAction()) {
-            // Figure out how to get the query-it return type
             actionAbiEosSerializationObject = new AbiEosSerializationObject(
                     abi.getQueryItReturnType(actionTrace.getReturnValue()), actionAbiJSON);
         } else {

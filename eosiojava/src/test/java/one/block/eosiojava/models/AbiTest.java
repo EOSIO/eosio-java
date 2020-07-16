@@ -1,22 +1,23 @@
-package one.block.eosiojava;
+package one.block.eosiojava.models;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.TestCase.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.nio.ByteBuffer;
 import java.util.List;
 import one.block.eosiojava.models.abiProvider.Abi;
-import one.block.eosiojava.models.abiProvider.ActionResult;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Test JSON serialization/Deserialization for All models in RPC Provider
  */
-public class AbiModelTest {
+public class AbiTest {
 
     private Gson gson;
 
@@ -65,7 +66,7 @@ public class AbiModelTest {
     }
 
     @Test
-    public void AbiQueryItVariantTest() {
+    public void AbiGetVariantTypesByNameTest() {
         String jsonContent = "{\"version\":\"eosio::abi/1.1\",\"types\":[{\"new_type_name\":\"any_array\",\"type\":\"anyvar[]\"},{\"new_type_name\":\"any_object\",\"type\":\"field[]\"}],\"structs\":[{\"name\":\"null_t\",\"base\":\"\",\"fields\":[]},{\"name\":\"field\",\"base\":\"\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"anyvar\"}]},{\"name\":\"query\",\"base\":\"\",\"fields\":[{\"name\":\"method\",\"type\":\"string\"},{\"name\":\"arg\",\"type\":\"anyvar?\"},{\"name\":\"filter\",\"type\":\"query[]\"}]}],\"variants\":[{\"name\":\"anyvar\",\"types\":[\"null_t\",\"int64\",\"uint64\",\"int32\",\"uint32\",\"int16\",\"uint16\",\"int8\",\"uint8\",\"time_point\",\"checksum256\",\"float64\",\"string\",\"any_object\",\"any_array\",\"bytes\",\"symbol\",\"symbol_code\",\"asset\"]}]}";
 
         // FromJSON test
@@ -75,28 +76,67 @@ public class AbiModelTest {
         assertEquals(19, abi.getVariantTypesByName("anyvar").size());
     }
 
-    /**
-     * Test ActionResult
-     */
     @Test
-    public void ActionResultTest() {
-        String actionName = "test_action";
-        String returnType = "testReturnType";
-        String jsonContent = "{\"name\":\"" + actionName + "\",\"result_type\":\"" + returnType + "\"}";
+    public void AbiGetQueryItReturnTypeTest() {
+        String jsonContent = "{\"version\":\"eosio::abi/1.1\",\"types\":[{\"new_type_name\":\"any_array\",\"type\":\"anyvar[]\"},{\"new_type_name\":\"any_object\",\"type\":\"field[]\"}],\"structs\":[{\"name\":\"null_t\",\"base\":\"\",\"fields\":[]},{\"name\":\"field\",\"base\":\"\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"anyvar\"}]},{\"name\":\"query\",\"base\":\"\",\"fields\":[{\"name\":\"method\",\"type\":\"string\"},{\"name\":\"arg\",\"type\":\"anyvar?\"},{\"name\":\"filter\",\"type\":\"query[]\"}]}],\"variants\":[{\"name\":\"anyvar\",\"types\":[\"null_t\",\"int64\",\"uint64\",\"int32\",\"uint32\",\"int16\",\"uint16\",\"int8\",\"uint8\",\"time_point\",\"checksum256\",\"float64\",\"string\",\"any_object\",\"any_array\",\"bytes\",\"symbol\",\"symbol_code\",\"asset\"]}]}";
 
         // FromJSON test
-        ActionResult actionResult = this.gson
-                .fromJson(jsonContent, ActionResult.class);
-        assertNotNull(actionResult);
-        assertEquals(actionName, actionResult.getName());
-        assertTrue(actionResult.hasActionName(actionName));
-        assertEquals(returnType, actionResult.getReturnType());
+        Abi abi = this.gson
+                .fromJson(jsonContent, Abi.class);
 
-        // ToJSON test
-        String toJSON = this.gson.toJson(actionResult);
-        assertNotNull(toJSON);
-        assertNotEquals("", toJSON);
-        assertEquals(jsonContent, toJSON);
+        List<String> anyvarVariantTypes = abi.getVariantTypesByName("anyvar");
+
+        Integer variantTypeIndex = 1;
+        String stringVal = "[\"string\",\"test\"]";
+        byte[] stringValBytes = stringVal.getBytes();
+
+        ByteBuffer buffer = ByteBuffer.allocate(stringValBytes.length + 4);
+        buffer.putInt(variantTypeIndex);
+        buffer.put(stringValBytes);
+
+        String variantType = abi.getQueryItReturnType(Hex.toHexString(buffer.array()));
+
+        assertEquals(variantType, anyvarVariantTypes.get(variantTypeIndex));
+    }
+
+    @Test
+    public void AbiGetQueryItReturnTypeNotFoundIndexBelowZeroTest() {
+        String jsonContent = "{\"version\":\"eosio::abi/1.1\",\"types\":[{\"new_type_name\":\"any_array\",\"type\":\"anyvar[]\"},{\"new_type_name\":\"any_object\",\"type\":\"field[]\"}],\"structs\":[{\"name\":\"null_t\",\"base\":\"\",\"fields\":[]},{\"name\":\"field\",\"base\":\"\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"anyvar\"}]},{\"name\":\"query\",\"base\":\"\",\"fields\":[{\"name\":\"method\",\"type\":\"string\"},{\"name\":\"arg\",\"type\":\"anyvar?\"},{\"name\":\"filter\",\"type\":\"query[]\"}]}],\"variants\":[{\"name\":\"anyvar\",\"types\":[\"null_t\",\"int64\",\"uint64\",\"int32\",\"uint32\",\"int16\",\"uint16\",\"int8\",\"uint8\",\"time_point\",\"checksum256\",\"float64\",\"string\",\"any_object\",\"any_array\",\"bytes\",\"symbol\",\"symbol_code\",\"asset\"]}]}";
+
+        // FromJSON test
+        Abi abi = this.gson
+                .fromJson(jsonContent, Abi.class);
+
+        Integer variantTypeIndex = -1;
+        String stringVal = "[\"string\",\"test\"]";
+        byte[] stringValBytes = stringVal.getBytes();
+
+        ByteBuffer buffer = ByteBuffer.allocate(stringValBytes.length + 4);
+        buffer.putInt(variantTypeIndex);
+        buffer.put(stringValBytes);
+
+        assertNull(abi.getQueryItReturnType(Hex.toHexString(buffer.array())));
+    }
+
+    @Test
+    public void AbiGetQueryItReturnTypeNotFoundIndexAboveVariantTypesLengthTest() {
+        String jsonContent = "{\"version\":\"eosio::abi/1.1\",\"types\":[{\"new_type_name\":\"any_array\",\"type\":\"anyvar[]\"},{\"new_type_name\":\"any_object\",\"type\":\"field[]\"}],\"structs\":[{\"name\":\"null_t\",\"base\":\"\",\"fields\":[]},{\"name\":\"field\",\"base\":\"\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"anyvar\"}]},{\"name\":\"query\",\"base\":\"\",\"fields\":[{\"name\":\"method\",\"type\":\"string\"},{\"name\":\"arg\",\"type\":\"anyvar?\"},{\"name\":\"filter\",\"type\":\"query[]\"}]}],\"variants\":[{\"name\":\"anyvar\",\"types\":[\"null_t\",\"int64\",\"uint64\",\"int32\",\"uint32\",\"int16\",\"uint16\",\"int8\",\"uint8\",\"time_point\",\"checksum256\",\"float64\",\"string\",\"any_object\",\"any_array\",\"bytes\",\"symbol\",\"symbol_code\",\"asset\"]}]}";
+
+        // FromJSON test
+        Abi abi = this.gson
+                .fromJson(jsonContent, Abi.class);
+
+        List<String> anyvarVariantTypes = abi.getVariantTypesByName("anyvar");
+
+        Integer variantTypeIndex = anyvarVariantTypes.size() + 1;
+        String stringVal = "[\"string\",\"test\"]";
+        byte[] stringValBytes = stringVal.getBytes();
+
+        ByteBuffer buffer = ByteBuffer.allocate(stringValBytes.length + 4);
+        buffer.putInt(variantTypeIndex);
+        buffer.put(stringValBytes);
+
+        assertNull(abi.getQueryItReturnType(Hex.toHexString(buffer.array())));
     }
 
     //endregion

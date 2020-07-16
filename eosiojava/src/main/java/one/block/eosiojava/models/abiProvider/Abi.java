@@ -139,19 +139,34 @@ public class Abi {
         return null;
     }
 
+    /**
+     * Get the queryit return type based on integer index that is prepended to hex data
+     * @param returnValue Hex representation of the return value for a queryit action
+     * @return type of data in queryit return value
+     */
     public String getQueryItReturnType(String returnValue) {
-        // Can also get these types by getting the ABI and then calling abi.
         List<String> queryItTypes = this.getVariantTypesByName("anyvar");
-        byte[] bytes = returnValue.getBytes();
+        byte[] bytes = hexStringToByteArray(returnValue);
         ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
         buffer.put(bytes);
+        buffer.rewind();
 
         Integer index = buffer.getInt();
 
-        if (index >= queryItTypes.size()) {
-            throw new Error("Tried to deserialize unknown anyvar type");
+        if (index < 0 || index >= queryItTypes.size()) {
+            return null;
         }
 
         return queryItTypes.get(index);
+    }
+
+    public byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
     }
 }
