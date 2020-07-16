@@ -86,7 +86,7 @@ public class AbiTest {
 
         List<String> anyvarVariantTypes = abi.getVariantTypesByName("anyvar");
 
-        Integer variantTypeIndex = 1;
+        Integer variantTypeIndex = 12;
         String stringVal = "[\"string\",\"test\"]";
         byte[] stringValBytes = stringVal.getBytes();
 

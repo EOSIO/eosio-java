@@ -252,7 +252,7 @@ public class ActionTrace {
      */
     public Boolean hasReturnValue() { return !this.returnValue.isEmpty(); }
 
-    public Boolean isQueryItAction() { return this.getActionName() == QUERY_IT_ACTION_NAME; }
+    public Boolean isQueryItAction() { return this.getActionName().equals(QUERY_IT_ACTION_NAME); }
 
     /**
      * Sets the deserialized return value

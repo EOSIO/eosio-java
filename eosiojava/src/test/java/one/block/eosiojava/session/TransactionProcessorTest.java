@@ -590,7 +590,7 @@ public class TransactionProcessorTest {
         String mockedActionTraceWithSimpleReturnValue = getMockedProcessedActionTrace("", "retval_null");
         String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
         String expectedJson = null;
-        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson);
+        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson, EOSIOABIJSON);
 
         TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
         assertNotNull(processor);
@@ -610,7 +610,7 @@ public class TransactionProcessorTest {
         String mockedActionTraceWithSimpleReturnValue = getMockedProcessedActionTrace("0a000000", "retval_simple");
         String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
         String expectedJson = "10";
-        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson);
+        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson, EOSIOABIJSON);
 
         TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
         assertNotNull(processor);
@@ -630,7 +630,27 @@ public class TransactionProcessorTest {
         String mockedActionTraceWithComplexReturnValue = getMockedProcessedActionTrace("d2040000000000000090b1ca", "retval_complex");
         String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithComplexReturnValue);
         String expectedJson = "{\"id\":1234,\"name\":\"test\"}";
-        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson);
+        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson, EOSIOABIJSON);
+
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
+        assertNotNull(processor);
+
+        try {
+            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
+            assertNotNull(pushTransactionResponse);
+            assertEquals(expectedJson, pushTransactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
+        } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
+            transactionSignAndBroadCastError.printStackTrace();
+            fail("Exception should not be thrown here for calling signAndBroadcast");
+        }
+    }
+
+    @Test
+    public void testDeserializeQueryItActionTrace() {
+        String mockedActionTraceWithSimpleReturnValue = getMockedProcessedActionTrace("0000000c5b22737472696e67222c2274657374225d", "queryit");
+        String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
+        String expectedJson = "[\"string\",\"test\"]";
+        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson, QUERYITABIJSON);
 
         TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
         assertNotNull(processor);
@@ -705,17 +725,17 @@ public class TransactionProcessorTest {
     }
 
     private void mockDefaultSuccessData() {
-        mockDefaultSuccessData(getMockedPushTransactionResponseJson(), MOCKED_RETURN_VALUE_JSON);
+        mockDefaultSuccessData(getMockedPushTransactionResponseJson(), MOCKED_RETURN_VALUE_JSON, EOSIOABIJSON);
     }
 
-    private void mockDefaultSuccessData(String mockedPushTransactionResponseJson, String mockedReturnValueJson) {
+    private void mockDefaultSuccessData(String mockedPushTransactionResponseJson, String mockedReturnValueJson, String mockedAbiJson) {
         this.mockRPC(
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedPushTransactionResponseJson, PushTransactionResponse.class));
 
-        this.mockAbiProvider(EOSIOABIJSON);
+        this.mockAbiProvider(mockedAbiJson);
         this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction, mockedReturnValueJson);
         this.mockSignatureProvider(Arrays.asList("Key1", "Key2"),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedEosioTransactionSignatureResponseJSON, EosioTransactionSignatureResponse.class));
@@ -1115,6 +1135,85 @@ public class TransactionProcessorTest {
             + "         \"result_type\": \"uint32\"\n"
             + "     }\n"
             + "   ]\n"
+            + "}";
+
+    private static final String QUERYITABIJSON = "{\n"
+            + "    \"version\": \"eosio::abi/1.1\",\n"
+            + "    \"types\": [\n"
+            + "        {\n"
+            + "            \"new_type_name\": \"any_array\",\n"
+            + "            \"type\": \"anyvar[]\"\n"
+            + "        },\n"
+            + "        {\n"
+            + "            \"new_type_name\": \"any_object\",\n"
+            + "            \"type\": \"field[]\"\n"
+            + "        }\n"
+            + "    ],\n"
+            + "    \"structs\": [\n"
+            + "        {\n"
+            + "            \"name\": \"null_t\",\n"
+            + "            \"base\": \"\",\n"
+            + "            \"fields\": []\n"
+            + "        },\n"
+            + "        {\n"
+            + "            \"name\": \"field\",\n"
+            + "            \"base\": \"\",\n"
+            + "            \"fields\": [\n"
+            + "                {\n"
+            + "                    \"name\": \"name\",\n"
+            + "                    \"type\": \"string\"\n"
+            + "                },\n"
+            + "                {\n"
+            + "                    \"name\": \"value\",\n"
+            + "                    \"type\": \"anyvar\"\n"
+            + "                }\n"
+            + "            ]\n"
+            + "        },\n"
+            + "        {\n"
+            + "            \"name\": \"query\",\n"
+            + "            \"base\": \"\",\n"
+            + "            \"fields\": [\n"
+            + "                {\n"
+            + "                    \"name\": \"method\",\n"
+            + "                    \"type\": \"string\"\n"
+            + "                },\n"
+            + "                {\n"
+            + "                    \"name\": \"arg\",\n"
+            + "                    \"type\": \"anyvar?\"\n"
+            + "                },\n"
+            + "                {\n"
+            + "                    \"name\": \"filter\",\n"
+            + "                    \"type\": \"query[]\"\n"
+            + "                }\n"
+            + "            ]\n"
+            + "        }\n"
+            + "    ],\n"
+            + "    \"variants\": [\n"
+            + "        {\n"
+            + "            \"name\": \"anyvar\",\n"
+            + "            \"types\": [\n"
+            + "                \"null_t\",\n"
+            + "                \"int64\",\n"
+            + "                \"uint64\",\n"
+            + "                \"int32\",\n"
+            + "                \"uint32\",\n"
+            + "                \"int16\",\n"
+            + "                \"uint16\",\n"
+            + "                \"int8\",\n"
+            + "                \"uint8\",\n"
+            + "                \"time_point\",\n"
+            + "                \"checksum256\",\n"
+            + "                \"float64\",\n"
+            + "                \"string\",\n"
+            + "                \"any_object\",\n"
+            + "                \"any_array\",\n"
+            + "                \"bytes\",\n"
+            + "                \"symbol\",\n"
+            + "                \"symbol_code\",\n"
+            + "                \"asset\"\n"
+            + "            ]\n"
+            + "        }\n"
+            + "    ]\n"
             + "}";
 
     private static final String DUMP_TRANSACTION_ID = "17335a29eae22e531966f3775e44f8b02173e780c9549881e01e470ff0ab46ce";
