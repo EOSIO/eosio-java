@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1016,23 +1017,16 @@ public class TransactionProcessor {
         }
 
         AbiEosSerializationObject actionAbiEosSerializationObject;
-
-//        if (actionTrace.isQueryItAction()) {
-//            // Figure out how to get the query-it return type
-//            String queryItReturnType = "some-return-type";
-//            actionAbiEosSerializationObject = new AbiEosSerializationObject(
-//                    queryItReturnType, actionAbiJSON);
-//        } else {
-//            Abi abi = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(actionAbiJSON, Abi.class);
-//
-//            actionAbiEosSerializationObject = new AbiEosSerializationObject(
-//                    abi.getActionReturnTypeByActionName(actionTrace.getActionName()), actionAbiJSON);
-//        }
-
         Abi abi = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(actionAbiJSON, Abi.class);
 
-        actionAbiEosSerializationObject = new AbiEosSerializationObject(
-                abi.getActionReturnTypeByActionName(actionTrace.getActionName()), actionAbiJSON);
+        if (actionTrace.isQueryItAction()) {
+            // Figure out how to get the query-it return type
+            actionAbiEosSerializationObject = new AbiEosSerializationObject(
+                    abi.getQueryItReturnType(actionTrace.getReturnValue()), actionAbiJSON);
+        } else {
+            actionAbiEosSerializationObject = new AbiEosSerializationObject(
+                    abi.getActionReturnTypeByActionName(actionTrace.getActionName()), actionAbiJSON);
+        }
 
         // !!! At this step, the data field of the action is still in HEX format.
         actionAbiEosSerializationObject.setHex(actionTrace.getReturnValue());
@@ -1050,34 +1044,6 @@ public class TransactionProcessor {
         }
 
         return actionAbiEosSerializationObject;
-    }
-
-    private String getQueryItReturnType(String returnValue, Abi abi) {
-        // Can also get these types by getting the ABI and then calling abi.
-        List<String> queryItTypes = abi.getVariantTypesByName("anyvar");
-//        ArrayList<String> queryItTypes = new ArrayList<String>(Arrays.asList(
-//                "null_t",
-//                "int64",
-//                "uint64",
-//                "int32",
-//                "uint32",
-//                "int16",
-//                "uint16",
-//                "int8",
-//                "uint8",
-//                "time_point",
-//                "checksum256",
-//                "float64",
-//                "string",
-//                "any_object",
-//                "any_array",
-//                "bytes",
-//                "symbol",
-//                "symbol_code",
-//                "asset"
-//        ));
-
-        return "test";
     }
 
     /**

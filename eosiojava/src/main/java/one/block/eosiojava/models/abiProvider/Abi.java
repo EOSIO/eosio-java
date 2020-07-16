@@ -1,6 +1,7 @@
 package one.block.eosiojava.models.abiProvider;
 
 import com.google.gson.annotations.SerializedName;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -136,5 +137,21 @@ public class Abi {
         }
 
         return null;
+    }
+
+    public String getQueryItReturnType(String returnValue) {
+        // Can also get these types by getting the ABI and then calling abi.
+        List<String> queryItTypes = this.getVariantTypesByName("anyvar");
+        byte[] bytes = returnValue.getBytes();
+        ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
+        buffer.put(bytes);
+
+        Integer index = buffer.getInt();
+
+        if (index >= queryItTypes.size()) {
+            throw new Error("Tried to deserialize unknown anyvar type");
+        }
+
+        return queryItTypes.get(index);
     }
 }
