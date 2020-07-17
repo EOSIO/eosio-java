@@ -10,6 +10,7 @@ import com.google.gson.JsonPrimitive;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.time.Instant;
+import java.util.List;
 
 public class QueryItDeserializer implements JsonDeserializer<QueryIt> {
     private static final String ANY_OBJECT_TYPE = "any_object";
@@ -47,12 +48,14 @@ public class QueryItDeserializer implements JsonDeserializer<QueryIt> {
             } else if (type.equals("any_object")) {
                 JsonArray array = jsonAsArray.get(1).getAsJsonArray();
                 for(JsonElement subJson : array) {
-                    JsonObject subJsonAsObject = subJson.getAsJsonObject();
-                    String name = subJsonAsObject.get("name").getAsString();
-                    JsonArray subJsonArray = subJsonAsObject.getAsJsonArray("value");
-                    QueryIt subQueryIt = deserialize(subJsonArray, typeOfT, context);
-                    subQueryIt.setName(name);
-                    queryIt.addQueryIt(subQueryIt);
+//                    JsonObject subJsonAsObject = subJson.getAsJsonObject();
+//                    String name = subJsonAsObject.get("name").getAsString();
+//                    JsonArray subJsonArray = subJsonAsObject.getAsJsonArray("value");
+//                    QueryIt subQueryIt = deserialize(subJsonArray, typeOfT, context);
+//                    subQueryIt.setName(name);
+//                    queryIt.addField(subQueryIt);
+                    Field field = context.deserialize(subJson, Field.class);
+                    queryIt.addField(field);
                 }
                 //queryIt.value = "test";
             } else if (type.equals("any_array")) {
@@ -60,6 +63,9 @@ public class QueryItDeserializer implements JsonDeserializer<QueryIt> {
                 for(JsonElement subJson : array) {
                     QueryIt subQueryIt = deserialize(subJson, typeOfT, context);
                     queryIt.addQueryIt(subQueryIt);
+//                    JsonArray nestedArray = subJson.getAsJsonArray().get(1).getAsJsonArray();
+//                    Field field = context.deserialize(nestedArray, Field.class);
+//                    queryIt.addField(field);
                 }
             } else { // string, checksum256, symbol, symbol_code, asset, bytes
                 queryIt.setValue(jsonAsArray.get(1).getAsString());

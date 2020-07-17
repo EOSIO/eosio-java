@@ -338,7 +338,7 @@ public class QueryItTest {
         QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
 
         assertNotNull(queryIt);
-        assertEquals(expectedSubQueriesCount, queryIt.getSubQueries().size());
+        assertEquals(expectedSubQueriesCount, queryIt.getQueries().size());
     }
 
     @Test
@@ -350,8 +350,8 @@ public class QueryItTest {
         QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
 
         assertNotNull(queryIt);
-        assertEquals(expectedSubQueriesCount, queryIt.getSubQueries().size());
-        assertEquals(expectedSubqueryValue, queryIt.getSubQueries().get(0).getValue());
+        assertEquals(expectedSubQueriesCount, queryIt.getQueries().size());
+        assertEquals(expectedSubqueryValue, queryIt.getQueries().get(0).getValue());
     }
 
     @Test
@@ -364,9 +364,9 @@ public class QueryItTest {
         QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
 
         assertNotNull(queryIt);
-        assertEquals(expectedSubQueriesCount, queryIt.getSubQueries().size());
-        assertEquals(expectedSubqueryStringValue, queryIt.getSubQueries().get(0).getValue());
-        assertEquals(expectedSubqueryIntValue, queryIt.getSubQueries().get(1).getValue());
+        assertEquals(expectedSubQueriesCount, queryIt.getQueries().size());
+        assertEquals(expectedSubqueryStringValue, queryIt.getQueries().get(0).getValue());
+        assertEquals(expectedSubqueryIntValue, queryIt.getQueries().get(1).getValue());
     }
 
     @Test
@@ -378,8 +378,8 @@ public class QueryItTest {
         QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
 
         assertNotNull(queryIt);
-        assertEquals(expectedValue, queryIt.getSubQueries().size());
-        assertEquals(expectedNestedArrays, queryIt.getSubQueries().get(0).getSubQueries().size());
+        assertEquals(expectedValue, queryIt.getQueries().size());
+        assertEquals(expectedNestedArrays, queryIt.getQueries().get(0).getQueries().size());
     }
 
     @Test
@@ -391,8 +391,8 @@ public class QueryItTest {
         QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
 
         assertNotNull(queryIt);
-        assertEquals(expectedValue, queryIt.getSubQueries().size());
-        assertEquals(expectedNestedArrays, queryIt.getSubQueries().get(0).getSubQueries().size());
+        assertEquals(expectedValue, queryIt.getQueries().size());
+        assertEquals(expectedNestedArrays, queryIt.getQueries().get(0).getQueries().size());
     }
 
     @Test
@@ -404,17 +404,23 @@ public class QueryItTest {
         QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
 
         assertNotNull(queryIt);
-        assertEquals(expectedNestedArrays, queryIt.getSubQueries().size());
-        assertEquals(expectedName, queryIt.getSubQueries().get(0).getName());
+        assertEquals(expectedNestedArrays, queryIt.getFields().size());
+        assertEquals(expectedName, queryIt.getFields().get(0).getName());
     }
 
     @Test
     public void testSimpleAnyObject() {
-        String jsonContent = "[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"7\"]}]]";
+        String expectedName = "test";
+        int expectedNestedArrays = 1;
+        BigInteger expectedIntValue = new BigInteger("7");
+        String jsonContent = "[\"any_object\",[{\"name\":\"" + expectedName + "\",\"value\":[\"uint64\"," + expectedIntValue + "]}]]";
 
         QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
 
         assertNotNull(queryIt);
+        assertEquals(expectedNestedArrays, queryIt.getFields().size());
+        assertEquals(expectedName, queryIt.getFields().get(0).getName());
+        assertEquals(expectedIntValue, queryIt.getFields().get(0).getValue().getValue());
     }
 
     @Test
@@ -428,9 +434,9 @@ public class QueryItTest {
         QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
 
         assertNotNull(queryIt);
-        assertEquals(expectedNestedArrays, queryIt.getSubQueries().size());
-        assertEquals(expectedBidsNestedArrays, queryIt.getSubQueries().get(6).getSubQueries().size());
-        assertEquals(expectedBidsEdgesNestedArrays, queryIt.getSubQueries().get(6).getSubQueries().get(0).getSubQueries().size());
+        assertEquals(expectedNestedArrays, queryIt.getFields().size());
+        assertEquals(expectedBidsNestedArrays, queryIt.getFields().get(6).getValue().getFields().size());
+        assertEquals(expectedBidsEdgesNestedArrays, queryIt.getFields().get(6).getValue().getFields().get(0).getValue().getQueries().size());
     }
 
 //    @Test

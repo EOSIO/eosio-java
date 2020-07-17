@@ -8,10 +8,12 @@ public class QueryIt {
     private String name;
     private Object value;
 
-    private List<QueryIt> subQueries;
+    private List<Field> fields;
+    private List<QueryIt> queries;
 
     public QueryIt() {
-        subQueries = new ArrayList<QueryIt>();
+        fields = new ArrayList<Field>();
+        queries = new ArrayList<QueryIt>();
     }
 
     public String getName() {
@@ -30,11 +32,19 @@ public class QueryIt {
         this.value = value;
     }
 
-    public void addQueryIt(QueryIt queryIt) {
-        subQueries.add(queryIt);
+    public void addField(Field queryIt) {
+        fields.add(queryIt);
     }
 
-    public List<QueryIt> getSubQueries() {
-        return this.subQueries;
+    public List<Field> getFields() {
+        return this.fields;
+    }
+
+    public void addQueryIt(QueryIt queryIt) {
+        queries.add(queryIt);
+    }
+
+    public List<QueryIt> getQueries() {
+        return this.queries;
     }
 }
