@@ -5,19 +5,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QueryIt {
-    public Object value;
+    private String name;
+    private Object value;
 
-    public List<QueryIt> queryIts;
+    private List<QueryIt> subQueries;
 
     public QueryIt() {
-        queryIts = new ArrayList<QueryIt>();
+        subQueries = new ArrayList<QueryIt>();
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Object getValue() {
         return this.value;
     }
 
+    public void setValue(Object value) {
+        this.value = value;
+    }
+
     public void addQueryIt(QueryIt queryIt) {
-        queryIts.add(queryIt);
+        subQueries.add(queryIt);
+    }
+
+    public List<QueryIt> getSubQueries() {
+        return this.subQueries;
     }
 }

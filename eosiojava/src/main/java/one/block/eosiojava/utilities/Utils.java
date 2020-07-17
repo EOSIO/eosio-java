@@ -43,7 +43,7 @@ public class Utils {
      */
     public static Gson getGson(String datePattern) {
         return new GsonBuilder()
-                .registerTypeAdapter(QueryIt.class, new QueryItDeserializer(datePattern))
+                .registerTypeAdapter(QueryIt.class, new QueryItDeserializer())
                 .setDateFormat(datePattern)
                 .disableHtmlEscaping()
                 .create();

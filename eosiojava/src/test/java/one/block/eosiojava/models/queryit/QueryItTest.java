@@ -5,8 +5,6 @@ import static junit.framework.TestCase.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,13 +23,13 @@ public class QueryItTest {
     public void setUpGSON() {
         String datePattern = "yyyy-MM-dd'T'hh:mm:ss zzz";
         this.gson = new GsonBuilder()
-                .registerTypeAdapter(QueryIt.class, new QueryItDeserializer(datePattern))
+                .registerTypeAdapter(QueryIt.class, new QueryItDeserializer())
                 .setDateFormat(datePattern)
                 .disableHtmlEscaping().create();
     }
 
     @Test
-    public void testConversion() {
+    public void testFullConversion() {
         String jsonContent = "[\"any_object\",[{\"name\":\"quote\",\"value\":[\"string\",\"538059690.21 USD\"]},{\"name\":\"base\",\"value\":[\"string\",\"89352.54000000 BTC\"]},{\"name\":\"bancorPrice\",\"value\":[\"string\",\"6021.76 USD\"]},{\"name\":\"lastTradePrice\",\"value\":[\"string\",\"6010.87 USD\"]},{\"name\":\"lastTradeQuantity\",\"value\":[\"string\",\"161.89085947 BTC\"]},{\"name\":\"asks\",\"value\":[\"any_object\",[{\"name\":\"edges\",\"value\":[\"any_array\",[]]}]]},{\"name\":\"bids\",\"value\":[\"any_object\",[{\"name\":\"edges\",\"value\":[\"any_array\",[[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"4\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maker\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867124500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:38:46.000\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"9\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maxnamstorm\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867454500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:44:15.000\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"10\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maxnamstorm\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867537500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:45:38.500\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"7\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maker\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867290500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5199.50 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:41:31.000\"]}]]}]]]]}]]}]]";
 
         // FromJSON test
@@ -357,8 +355,77 @@ public class QueryItTest {
     }
 
     @Test
+    public void testEmptyAnyArray() {
+        int expectedSubQueriesCount = 0;
+        String jsonContent = "[\"any_array\", []]";
+
+        QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
+
+        assertNotNull(queryIt);
+        assertEquals(expectedSubQueriesCount, queryIt.getSubQueries().size());
+    }
+
+    @Test
+    public void testSimpleAnyArray() {
+        String expectedSubqueryValue = "test";
+        int expectedSubQueriesCount = 1;
+        String jsonContent = "[\"any_array\", [[\"string\", \"" + expectedSubqueryValue + "\"]]]";
+
+        QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
+
+        assertNotNull(queryIt);
+        assertEquals(expectedSubQueriesCount, queryIt.getSubQueries().size());
+        assertEquals(expectedSubqueryValue, queryIt.getSubQueries().get(0).getValue());
+    }
+
+    @Test
+    public void testAnyArrayWithMultipleAnyVars() {
+        String expectedSubqueryStringValue = "test";
+        Long expectedSubqueryIntValue = 1234L;
+        int expectedSubQueriesCount = 2;
+        String jsonContent = "[\"any_array\", [[\"string\", \"" + expectedSubqueryStringValue + "\"], [\"uint32\", " + expectedSubqueryIntValue + "]]]";
+
+        QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
+
+        assertNotNull(queryIt);
+        assertEquals(expectedSubQueriesCount, queryIt.getSubQueries().size());
+        assertEquals(expectedSubqueryStringValue, queryIt.getSubQueries().get(0).getValue());
+        assertEquals(expectedSubqueryIntValue, queryIt.getSubQueries().get(1).getValue());
+    }
+
+    @Test
+    public void testEmptyNestedAnyArray() {
+        int expectedValue = 1;
+        int expectedNestedArrays = 0;
+        String jsonContent = "[\"any_array\", [[\"any_array\", []]]]";
+
+        QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
+
+        assertNotNull(queryIt);
+        assertEquals(expectedValue, queryIt.getSubQueries().size());
+        assertEquals(expectedNestedArrays, queryIt.getSubQueries().get(0).getSubQueries().size());
+    }
+
+    @Test
+    public void testSimpleNestedAnyArray() {
+        int expectedValue = 1;
+        int expectedNestedArrays = 1;
+        String jsonContent = "[\"any_array\", [[\"any_array\", [[\"string\", \"test\"]]]]]";
+
+        QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
+
+        assertNotNull(queryIt);
+        assertEquals(expectedValue, queryIt.getSubQueries().size());
+        assertEquals(expectedNestedArrays, queryIt.getSubQueries().get(0).getSubQueries().size());
+    }
+
+    @Test
     public void testSimpleAnyObject() {
         String jsonContent = "[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"7\"]}]]";
+
+        QueryIt queryIt = this.gson.fromJson(jsonContent, QueryIt.class);
+
+        assertNotNull(queryIt);
     }
 
 //    @Test
