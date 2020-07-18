@@ -4,16 +4,16 @@ package one.block.eosiojava.models.queryit;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QueryIt {
+public class AnyVar {
     private String name;
     private Object value;
 
     private List<Field> fields;
-    private List<QueryIt> queries;
+    private List<AnyVar> anyVars;
 
-    public QueryIt() {
+    public AnyVar() {
         fields = new ArrayList<Field>();
-        queries = new ArrayList<QueryIt>();
+        anyVars = new ArrayList<AnyVar>();
     }
 
     public String getName() {
@@ -40,11 +40,11 @@ public class QueryIt {
         return this.fields;
     }
 
-    public void addQueryIt(QueryIt queryIt) {
-        queries.add(queryIt);
+    public void addAnyVar(AnyVar anyVar) {
+        anyVars.add(anyVar);
     }
 
-    public List<QueryIt> getQueries() {
-        return this.queries;
+    public List<AnyVar> getAnyVars() {
+        return this.anyVars;
     }
 }

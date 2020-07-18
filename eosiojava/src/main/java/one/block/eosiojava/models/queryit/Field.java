@@ -7,9 +7,9 @@ public class Field {
     private String name;
 
     @SerializedName("value")
-    private QueryIt value;
+    private AnyVar value;
 
-    public QueryIt getValue() { return this.value; }
+    public AnyVar getValue() { return this.value; }
 
     public String getName() { return this.name; }
 }
