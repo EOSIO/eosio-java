@@ -50,6 +50,7 @@ import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
 import one.block.eosiojava.models.abiProvider.Abi;
+import one.block.eosiojava.models.queryit.AnyVar;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.ActionTrace;
 import one.block.eosiojava.models.AbiEosSerializationObject;
@@ -566,13 +567,23 @@ public class TransactionProcessor {
             if (actionTrace.hasReturnValue()) {
                 try {
                     AbiEosSerializationObject deserializationObject = deserializeActionTraceReturnValue(actionTrace, chainId, abiProvider);
-                    actionTrace.setDeserializedReturnValue(deserializationObject.getJson());
+                    if (actionTrace.isQueryItAction()) {
+                        String json = convertAbieosQueryItJsonToUsableJson(deserializationObject.getJson());
+                        actionTrace.setDeserializedReturnValue(json);
+                    } else {
+                        actionTrace.setDeserializedReturnValue(deserializationObject.getJson());
+                    }
                 } catch (DeserializeReturnValueError transactionCreateSignatureRequestError) {
                     throw new TransactionFormatPushTransactionResponseError(transactionCreateSignatureRequestError);
                 }
             }
         }
         return response;
+    }
+
+    private String convertAbieosQueryItJsonToUsableJson(String json) {
+        AnyVar anyVar = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(json, AnyVar.class);
+        return Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).toJson(anyVar);
     }
 
     /**
