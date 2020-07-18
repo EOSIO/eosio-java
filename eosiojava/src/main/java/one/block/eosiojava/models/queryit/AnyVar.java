@@ -18,6 +18,10 @@ public class AnyVar {
         anyVars = new ArrayList<AnyVar>();
     }
 
+    public Boolean hasValue() {
+        return this.value != null;
+    }
+
     public String getName() {
         return this.name;
     }

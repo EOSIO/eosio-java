@@ -11,5 +11,15 @@ public class Field {
 
     public AnyVar getValue() { return this.value; }
 
+    public Object getAnyVarValue() { return this.value != null ? this.value.getValue() : null; }
+
+    public Boolean hasPrimitiveValue() { return this.getValue().hasValue(); }
+
+    public Boolean hasType() { return this.getValue() != null && this.getValue().getType() != null; }
+
+    public String getType() { return this.getValue().getType(); }
+
+    public Boolean hasType(String type) { return this.hasType() && this.getType().equals(type); }
+
     public String getName() { return this.name; }
 }

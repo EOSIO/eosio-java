@@ -1,13 +1,11 @@
 package one.block.eosiojava.models.queryit;
 
 import static junit.framework.TestCase.*;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.math.BigInteger;
-import java.time.Instant;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,9 +51,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -67,9 +62,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -81,9 +73,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -95,9 +84,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -109,9 +95,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -123,9 +106,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -137,9 +117,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -151,9 +128,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -165,9 +139,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -179,9 +150,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -193,9 +161,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -207,9 +172,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -221,9 +183,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -235,9 +194,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -249,9 +205,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -263,9 +216,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -277,9 +227,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -291,9 +238,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -305,9 +249,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -319,51 +260,42 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinInt8() {
         Integer expectedValue = -128;
         String jsonContent = "[\"int8\",\"" + expectedValue.toString() + "\"]";
+        String expectedJsonContent = "-128";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMaxFloat64() {
         Float expectedValue = Float.parseFloat("3.40282e+038");
         String jsonContent = "[\"float64\",\"" + expectedValue.toString() + "\"]";
+        String expectedJsonContent = "3.40282E38";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinFloat64() {
         Float expectedValue = Float.parseFloat("1.17549e-038");
         String jsonContent = "[\"float64\",\"" + expectedValue.toString() + "\"]";
+        String expectedJsonContent = "1.17549e-038";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -375,9 +307,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -389,9 +318,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -403,9 +329,6 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -435,9 +358,6 @@ public class AnyVarTest {
         assertNotNull(anyVar);
         assertEquals(expectedSubQueriesCount, anyVar.getAnyVars().size());
         assertEquals(expectedSubqueryValue, anyVar.getAnyVars().get(0).getValue());
-
-        String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, expectedJsonContent);
     }
 
     @Test
@@ -514,11 +434,26 @@ public class AnyVarTest {
     }
 
     @Test
+    public void testAnyObjectWithAnyArray() {
+        String expectedName = "test";
+        String expectedJsonContent = "{\"test\":[\"test2\"]}";
+        String jsonContent = "[\"any_object\",[{\"name\":\"" + expectedName + "\",\"value\":[\"any_array\", [[\"string\", \"test2\"]]]}]]";
+
+        AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
+
+        assertNotNull(anyVar);
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, expectedJsonContent);
+    }
+
+    @Test
     public void testNestedAnyObjects() {
         String expectedName = "test";
         int expectedNestedArrays = 1;
         int expectedSubNestedArrays = 1;
         String jsonContent = "[\"any_object\",[{\"name\":\"quote1\",\"value\":[\"any_object\",[{\"name\":\"quote2\",\"value\":\"" + expectedName + "\"}]]}]]";
+        String expectedJsonContent = "{\"quote1\":{\"quote2\":\"" + expectedName + "\"}}";
 
         // FromJSON test
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
@@ -527,6 +462,9 @@ public class AnyVarTest {
         assertEquals(expectedNestedArrays, anyVar.getFields().size());
         assertEquals(expectedSubNestedArrays, anyVar.getFields().get(0).getValue().getFields().size());
         assertEquals(expectedName, anyVar.getFields().get(0).getValue().getFields().get(0).getValue().getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, expectedJsonContent);
     }
 
     @Test
@@ -535,6 +473,7 @@ public class AnyVarTest {
         int expectedBidsNestedArrays = 1;
         int expectedBidsEdgesNestedArrays = 4;
         String jsonContent = "[\"any_object\",[{\"name\":\"quote\",\"value\":[\"string\",\"538059690.21 USD\"]},{\"name\":\"base\",\"value\":[\"string\",\"89352.54000000 BTC\"]},{\"name\":\"bancorPrice\",\"value\":[\"string\",\"6021.76 USD\"]},{\"name\":\"lastTradePrice\",\"value\":[\"string\",\"6010.87 USD\"]},{\"name\":\"lastTradeQuantity\",\"value\":[\"string\",\"161.89085947 BTC\"]},{\"name\":\"asks\",\"value\":[\"any_object\",[{\"name\":\"edges\",\"value\":[\"any_array\",[]]}]]},{\"name\":\"bids\",\"value\":[\"any_object\",[{\"name\":\"edges\",\"value\":[\"any_array\",[[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"4\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maker\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867124500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:38:46.000\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"9\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maxnamstorm\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867454500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:44:15.000\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"10\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maxnamstorm\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867537500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:45:38.500\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"7\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maker\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867290500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5199.50 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:41:31.000\"]}]]}]]]]}]]}]]";
+        String expectedJsonContent = "{\"quote\":\"538059690.21 USD\",\"base\":\"89352.54000000 BTC\",\"bancorPrice\":\"6021.76 USD\",\"lastTradePrice\":\"6010.87 USD\",\"lastTradeQuantity\":\"161.89085947 BTC\",\"asks\":{\"edges\":[]},\"bids\":{\"edges\":[{\"node\":{\"orderId\":\"4\",\"owner\":\"maker\",\"handle\":\"1594867124500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"1.00000000 BTC\",\"size\":\"1.00000000 BTC\",\"created\":\"2020-07-16T10:38:46.000\"}},{\"node\":{\"orderId\":\"9\",\"owner\":\"maxnamstorm\",\"handle\":\"1594867454500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"10.00000000 BTC\",\"size\":\"10.00000000 BTC\",\"created\":\"2020-07-16T10:44:15.000\"}},{\"node\":{\"orderId\":\"10\",\"owner\":\"maxnamstorm\",\"handle\":\"1594867537500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"10.00000000 BTC\",\"size\":\"10.00000000 BTC\",\"created\":\"2020-07-16T10:45:38.500\"}},{\"node\":{\"orderId\":\"7\",\"owner\":\"maker\",\"handle\":\"1594867290500000\",\"price\":\"5199.50 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"1.00000000 BTC\",\"size\":\"1.00000000 BTC\",\"created\":\"2020-07-16T10:41:31.000\"}}]}}";
 
         // FromJSON test
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
@@ -545,6 +484,6 @@ public class AnyVarTest {
         assertEquals(expectedBidsEdgesNestedArrays, anyVar.getFields().get(6).getValue().getFields().get(0).getValue().getAnyVars().size());
 
         String toJSON = this.gson.toJson(anyVar);
-        assertEquals(toJSON, jsonContent);
+        assertEquals(toJSON, expectedJsonContent);
     }
 }
