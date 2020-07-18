@@ -1,6 +1,8 @@
 package one.block.eosiojava.models.queryit;
 
 import static junit.framework.TestCase.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,6 +26,7 @@ public class AnyVarTest {
         String datePattern = "yyyy-MM-dd'T'hh:mm:ss zzz";
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(AnyVar.class, new AnyVarDeserializer())
+                .registerTypeAdapter(AnyVar.class, new AnyVarSerializer())
                 .setDateFormat(datePattern)
                 .disableHtmlEscaping().create();
     }
@@ -36,298 +39,373 @@ public class AnyVarTest {
 
         assertNotNull(anyVar);
         assertNull(anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertString() {
         String expectedValue = "someValue";
-        String jsonContent = "[\"string\", \"" + expectedValue + "\"]";
+        String jsonContent = "[\"string\",\"" + expectedValue + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertChecksum256() {
         String expectedValue = "532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25";
-        String jsonContent = "[\"checksum256\", \"" + expectedValue + "\"]";
+        String jsonContent = "[\"checksum256\",\"" + expectedValue + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertSymbol() {
         String expectedValue = "10.0000 EOS";
-        String jsonContent = "[\"symbol\", \"" + expectedValue + "\"]";
+        String jsonContent = "[\"symbol\",\"" + expectedValue + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertSymbolCode() {
         String expectedValue = "EOS";
-        String jsonContent = "[\"symbol_code\", \"" + expectedValue + "\"]";
+        String jsonContent = "[\"symbol_code\",\"" + expectedValue + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertAsset() {
         String expectedValue = "10.0000 EOS";
-        String jsonContent = "[\"asset\", \"" + expectedValue + "\"]";
+        String jsonContent = "[\"asset\",\"" + expectedValue + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMaxUInt64() {
         BigInteger expectedValue = new BigInteger("18446744073709551615");
-        String jsonContent = "[\"uint64\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"uint64\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinUInt64() {
         BigInteger expectedValue = new BigInteger("0");
-        String jsonContent = "[\"uint64\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"uint64\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMaxInt64() {
         Long expectedValue = 9223372036854775807L;
-        String jsonContent = "[\"int64\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"int64\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinInt64() {
         Long expectedValue = -9223372036854775808L;
-        String jsonContent = "[\"int64\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"int64\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMaxUInt32() {
         Long expectedValue = 4294967295L;
-        String jsonContent = "[\"uint32\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"uint32\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinUInt32() {
         Long expectedValue = 0L;
-        String jsonContent = "[\"uint32\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"uint32\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMaxInt32() {
         Integer expectedValue = 2147483647;
-        String jsonContent = "[\"int32\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"int32\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinInt32() {
         Integer expectedValue = -2147483648;
-        String jsonContent = "[\"int32\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"int32\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMaxUInt16() {
         Integer expectedValue = 65535;
-        String jsonContent = "[\"uint16\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"uint16\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinUInt16() {
         Integer expectedValue = 0;
-        String jsonContent = "[\"uint16\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"uint16\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMaxInt16() {
         Integer expectedValue = 32767;
-        String jsonContent = "[\"int16\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"int16\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinInt16() {
         Integer expectedValue = -32768;
-        String jsonContent = "[\"int16\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"int16\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMaxUInt8() {
         Integer expectedValue = 256;
-        String jsonContent = "[\"uint8\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"uint8\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinUInt8() {
         Integer expectedValue = 0;
-        String jsonContent = "[\"uint8\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"uint8\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMaxInt8() {
         Integer expectedValue = 127;
-        String jsonContent = "[\"int8\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"int8\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinInt8() {
         Integer expectedValue = -128;
-        String jsonContent = "[\"int8\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"int8\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMaxFloat64() {
         Float expectedValue = Float.parseFloat("3.40282e+038");
-        String jsonContent = "[\"float64\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"float64\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertMinFloat64() {
         Float expectedValue = Float.parseFloat("1.17549e-038");
-        String jsonContent = "[\"float64\", \"" + expectedValue.toString() + "\"]";
+        String jsonContent = "[\"float64\",\"" + expectedValue.toString() + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertTimepointWithoutZone() {
-        String expectedValueAsString = "2020-07-16T10:38:46.000";
-        Instant expectedValue = Instant.parse(expectedValueAsString + 'Z');
-        String expectedValueToString = "2020-07-16T10:38:46Z";
-        String jsonContent = "[\"time_point\", \"" + expectedValueAsString + "\"]";
+        String expectedValue = "2020-07-16T10:38:46.000";
+        String jsonContent = "[\"time_point\",\"" + expectedValue + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-        assertEquals(expectedValueToString, anyVar.getValue().toString());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertTimepointWithZone() {
-        String expectedValueAsString = "2020-07-16T10:38:46.500Z";
-        Instant expectedValue = Instant.parse(expectedValueAsString);
-        String expectedValueToString = "2020-07-16T10:38:46.500Z";
-        String jsonContent = "[\"time_point\", \"" + expectedValueAsString + "\"]";
+        String expectedValue = "2020-07-16T10:38:46.500Z";
+        String jsonContent = "[\"time_point\",\"" + expectedValue + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
-        assertEquals(expectedValueToString, anyVar.getValue().toString());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
     public void testConvertBytes() {
         String expectedValue = "0110";
-        String jsonContent = "[\"bytes\", \"" + expectedValue + "\"]";
+        String jsonContent = "[\"bytes\",\"" + expectedValue + "\"]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedValue, anyVar.getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, jsonContent);
     }
 
     @Test
@@ -437,5 +515,8 @@ public class AnyVarTest {
         assertEquals(expectedNestedArrays, anyVar.getFields().size());
         assertEquals(expectedBidsNestedArrays, anyVar.getFields().get(6).getValue().getFields().size());
         assertEquals(expectedBidsEdgesNestedArrays, anyVar.getFields().get(6).getValue().getFields().get(0).getValue().getAnyVars().size());
+
+        String toJSON = this.gson.toJson(anyVar);
+        String test = toJSON;
     }
 }

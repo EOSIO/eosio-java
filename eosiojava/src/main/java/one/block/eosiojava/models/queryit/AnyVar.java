@@ -1,10 +1,12 @@
 package one.block.eosiojava.models.queryit;
 
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AnyVar {
+    private String type;
     private String name;
     private Object value;
 
@@ -32,6 +34,14 @@ public class AnyVar {
         this.value = value;
     }
 
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public void addField(Field queryIt) {
         fields.add(queryIt);
     }
@@ -46,5 +56,9 @@ public class AnyVar {
 
     public List<AnyVar> getAnyVars() {
         return this.anyVars;
+    }
+
+    public Boolean isEmpty() {
+        return this.name == null && this.value == null && this.getFields().size() == 0 && this.getAnyVars().size() == 0;
     }
 }

@@ -20,6 +20,7 @@ public class AnyVarDeserializer implements JsonDeserializer<AnyVar> {
         } else {
             JsonArray jsonAsArray = ((JsonArray) json);
             String type = jsonAsArray.get(0).getAsString();
+            anyVar.setType(type);
 
             if (type.equals(QueryItConstants.INT32_TYPE)
                     || type.equals(QueryItConstants.INT16_TYPE) || type.equals(QueryItConstants.UINT16_TYPE)
@@ -31,12 +32,12 @@ public class AnyVarDeserializer implements JsonDeserializer<AnyVar> {
                 anyVar.setValue(Float.parseFloat(jsonAsArray.get(1).getAsString()));
             } else if (type.equals(QueryItConstants.INT64_TYPE) || type.equals(QueryItConstants.UINT32_TYPE)) {
                 anyVar.setValue(Long.parseLong(jsonAsArray.get(1).getAsString()));
-            } else if (type.equals(QueryItConstants.TIME_POINT_TYPE)) {
-                String timePointAsString = jsonAsArray.get(1).getAsString();
-                if (timePointAsString.charAt(timePointAsString.length() - 1) != QueryItConstants.OPTIONAL_ZONE_CHAR) {
-                    timePointAsString += QueryItConstants.OPTIONAL_ZONE_CHAR;
-                }
-                anyVar.setValue(Instant.parse(timePointAsString));
+//            } else if (type.equals(QueryItConstants.TIME_POINT_TYPE)) { // Serialization doesn't work exactly due to dropped milliseconds if .000
+//                String timePointAsString = jsonAsArray.get(1).getAsString();
+//                if (timePointAsString.charAt(timePointAsString.length() - 1) != QueryItConstants.OPTIONAL_ZONE_CHAR) {
+//                    timePointAsString += QueryItConstants.OPTIONAL_ZONE_CHAR;
+//                }
+//                anyVar.setValue(Instant.parse(timePointAsString));
             } else if (type.equals(QueryItConstants.ANY_OBJECT_TYPE)) {
                 JsonArray array = jsonAsArray.get(1).getAsJsonArray();
                 for(JsonElement subJson : array) {
