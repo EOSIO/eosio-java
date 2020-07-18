@@ -7,7 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
-import java.time.Instant;
 
 public class AnyVarDeserializer implements JsonDeserializer<AnyVar> {
     @Override
@@ -15,7 +14,9 @@ public class AnyVarDeserializer implements JsonDeserializer<AnyVar> {
             JsonDeserializationContext context) throws JsonParseException {
 
         AnyVar anyVar = new AnyVar();
-        if (!json.isJsonArray() || ((JsonArray)json).size() == 0) { // null_t
+        if (json.isJsonPrimitive()) {
+            anyVar.setValue(json.getAsJsonPrimitive().getAsString());
+        } else if (!json.isJsonArray() || ((JsonArray)json).size() == 0) { // null_t
             return anyVar; // Seems like this might actually be wrong for size() == 0, return []
         } else {
             JsonArray jsonAsArray = ((JsonArray) json);

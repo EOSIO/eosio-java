@@ -411,25 +411,33 @@ public class AnyVarTest {
     @Test
     public void testEmptyAnyArray() {
         int expectedSubQueriesCount = 0;
-        String jsonContent = "[\"any_array\", []]";
+        String expectedJsonContent = "[]";
+        String jsonContent = "[\"any_array\", " + expectedJsonContent + "]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedSubQueriesCount, anyVar.getAnyVars().size());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, expectedJsonContent);
     }
 
     @Test
     public void testSimpleAnyArray() {
         String expectedSubqueryValue = "test";
         int expectedSubQueriesCount = 1;
-        String jsonContent = "[\"any_array\", [[\"string\", \"" + expectedSubqueryValue + "\"]]]";
+        String expectedJsonContent = "[[\"string\", \"" + expectedSubqueryValue + "\"]]";
+        String jsonContent = "[\"any_array\", " + expectedJsonContent + "]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
 
         assertNotNull(anyVar);
         assertEquals(expectedSubQueriesCount, anyVar.getAnyVars().size());
         assertEquals(expectedSubqueryValue, anyVar.getAnyVars().get(0).getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, expectedJsonContent);
     }
 
     @Test
@@ -489,8 +497,9 @@ public class AnyVarTest {
     @Test
     public void testSimpleAnyObject() {
         String expectedName = "test";
-        int expectedNestedArrays = 1;
         BigInteger expectedIntValue = new BigInteger("7");
+        String expectedJsonContent = "{\"" + expectedName + "\":\"" + expectedIntValue + "\"}";
+        int expectedNestedArrays = 1;
         String jsonContent = "[\"any_object\",[{\"name\":\"" + expectedName + "\",\"value\":[\"uint64\"," + expectedIntValue + "]}]]";
 
         AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
@@ -499,6 +508,25 @@ public class AnyVarTest {
         assertEquals(expectedNestedArrays, anyVar.getFields().size());
         assertEquals(expectedName, anyVar.getFields().get(0).getName());
         assertEquals(expectedIntValue, anyVar.getFields().get(0).getValue().getValue());
+
+        String toJSON = this.gson.toJson(anyVar);
+        assertEquals(toJSON, expectedJsonContent);
+    }
+
+    @Test
+    public void testNestedAnyObjects() {
+        String expectedName = "test";
+        int expectedNestedArrays = 1;
+        int expectedSubNestedArrays = 1;
+        String jsonContent = "[\"any_object\",[{\"name\":\"quote1\",\"value\":[\"any_object\",[{\"name\":\"quote2\",\"value\":\"" + expectedName + "\"}]]}]]";
+
+        // FromJSON test
+        AnyVar anyVar = this.gson.fromJson(jsonContent, AnyVar.class);
+
+        assertNotNull(anyVar);
+        assertEquals(expectedNestedArrays, anyVar.getFields().size());
+        assertEquals(expectedSubNestedArrays, anyVar.getFields().get(0).getValue().getFields().size());
+        assertEquals(expectedName, anyVar.getFields().get(0).getValue().getFields().get(0).getValue().getValue());
     }
 
     @Test
@@ -517,6 +545,6 @@ public class AnyVarTest {
         assertEquals(expectedBidsEdgesNestedArrays, anyVar.getFields().get(6).getValue().getFields().get(0).getValue().getAnyVars().size());
 
         String toJSON = this.gson.toJson(anyVar);
-        String test = toJSON;
+        assertEquals(toJSON, jsonContent);
     }
 }

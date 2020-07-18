@@ -20,14 +20,49 @@ public class AnyVarSerializer implements JsonSerializer<AnyVar> {
         if (src.isEmpty()) {
             return new JsonArray();
         } else {
-            JsonArray array = new JsonArray();
-            String type = src.getType();
-            array.add(type);
+            JsonObject object = new JsonObject();
+            for (Field field : src.getFields()) {
+                if (field.getValue().getType().equals(QueryItConstants.ANY_OBJECT_TYPE)) {
+                    JsonElement jsonElement = serialize(field.getValue(), typeOfSrc, context);
+                    String test = "";
+                    //object.add(field.getValue());
+                } else if (field.getValue().isEmpty()) {
+                    return new JsonArray();
+                } else {
+                    try {
+                        object.addProperty(field.getName(), field.getValue().getValue().toString());
+                    } catch(NullPointerException exception) {
+                        String test = "";
+                    }
 
-            array.add(src.getValue().toString());
+                }
+            }
 
-            return array;
+            for (AnyVar anyVar : src.getAnyVars()) {
+                JsonElement array = serialize(anyVar, typeOfSrc, context);
+
+                String test = "";
+            }
+            return object;
         }
+//        else {
+//            JsonArray array = new JsonArray();
+//            String type = src.getType();
+//            array.add(type);
+//
+//            for(AnyVar anyVar : src.getAnyVars()) {
+//                JsonElement object = serialize(anyVar, typeOfSrc, context);
+//                String test = "";
+//            }
+//
+////            for(Field field : src.getFields()) {
+////                JsonObject object = serialize(field, )
+////            }
+//
+//            array.add(src.getValue().toString());
+//
+//            return array;
+//        }
     }
 
     // Don't think this matters, even though it'd be nice.. doesn't match output JSON from EOSJS
