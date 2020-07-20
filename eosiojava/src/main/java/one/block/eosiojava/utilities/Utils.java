@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import one.block.eosiojava.models.queryit.AnyVar;
+import one.block.eosiojava.models.queryit.AnyVarDeserializer;
+import one.block.eosiojava.models.queryit.AnyVarSerializer;
 
 /**
  * This class provides generic utility methods
@@ -41,6 +44,8 @@ public class Utils {
      */
     public static Gson getGson(String datePattern) {
         return new GsonBuilder()
+                .registerTypeAdapter(AnyVar.class, new AnyVarDeserializer())
+                .registerTypeAdapter(AnyVar.class, new AnyVarSerializer())
                 .setDateFormat(datePattern)
                 .disableHtmlEscaping()
                 .create();

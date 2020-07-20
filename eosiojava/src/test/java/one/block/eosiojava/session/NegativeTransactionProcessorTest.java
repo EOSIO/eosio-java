@@ -18,6 +18,7 @@ import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -47,6 +48,7 @@ import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
@@ -419,8 +421,8 @@ public class NegativeTransactionProcessorTest {
 
         // Mock PushTransaction RPC to throw error
         try {
-            when(this.mockedRpcProvider.pushTransaction(any(PushTransactionRequest.class))).thenThrow(new PushTransactionRpcError());
-        } catch (PushTransactionRpcError pushTransactionRpcError) {
+            when(this.mockedRpcProvider.sendTransaction(any(SendTransactionRequest.class))).thenThrow(new SendTransactionRpcError());
+        } catch (SendTransactionRpcError pushTransactionRpcError) {
             pushTransactionRpcError.printStackTrace();
             fail("Exception should not be thrown here for mocking pushTransaction");
         }

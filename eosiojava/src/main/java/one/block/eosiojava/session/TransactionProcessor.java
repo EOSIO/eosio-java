@@ -4,8 +4,10 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
@@ -13,6 +15,9 @@ import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
+import one.block.eosiojava.error.serializationProvider.DeserializeError;
+import one.block.eosiojava.error.serializationProvider.DeserializeReturnValueError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -25,6 +30,7 @@ import one.block.eosiojava.error.session.TransactionCreateSignatureRequestKeyErr
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestRequiredKeysEmptyError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestRpcError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestSerializationError;
+import one.block.eosiojava.error.session.TransactionFormatPushTransactionResponseError;
 import one.block.eosiojava.error.session.TransactionGetSignatureDeserializationError;
 import one.block.eosiojava.error.session.TransactionGetSignatureError;
 import one.block.eosiojava.error.session.TransactionGetSignatureNotAllowModifyTransactionError;
@@ -43,6 +49,10 @@ import one.block.eosiojava.interfaces.IABIProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
+import one.block.eosiojava.models.abiProvider.Abi;
+import one.block.eosiojava.models.queryit.AnyVar;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.response.ActionTrace;
 import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.Action;
@@ -56,6 +66,8 @@ import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.response.TransactionResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
@@ -475,7 +487,7 @@ public class TransactionProcessor {
      *          - An error has been returned from the blockchain. Cause: {@link TransactionPushTransactionError}
      */
     @NotNull
-    public PushTransactionResponse broadcast() throws TransactionBroadCastError {
+    public TransactionResponse broadcast() throws TransactionBroadCastError {
         if (this.serializedTransaction == null || this.serializedTransaction.isEmpty()) {
             throw new TransactionBroadCastError(
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY);
@@ -486,11 +498,11 @@ public class TransactionProcessor {
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY);
         }
 
-        PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
+        SendTransactionRequest sendTransactionRequest = new SendTransactionRequest(this.signatures,
                 0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
-            return this.pushTransaction(pushTransactionRequest);
-        } catch (TransactionPushTransactionError transactionPushTransactionError) {
+            return formatTransactionResponse(this.sendTransaction(sendTransactionRequest));
+        } catch (TransactionPushTransactionError | TransactionFormatPushTransactionResponseError transactionPushTransactionError) {
             throw new TransactionBroadCastError(
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR,
                     transactionPushTransactionError);
@@ -500,7 +512,7 @@ public class TransactionProcessor {
     /**
      * Sign and broadcast the transaction and signature/s to chain
      *
-     * @return PushTransactionResponse from blockchain.
+     * @return TransactionResponse from blockchain.
      * @throws TransactionSignAndBroadCastError thrown under the following conditions:
      *      <br>
      *          - Exception while creating signature. Cause: {@link TransactionCreateSignatureRequestError}
@@ -514,7 +526,7 @@ public class TransactionProcessor {
      *          - An error has been returned from the blockchain. Cause: {@link TransactionPushTransactionError}
      */
     @NotNull
-    public PushTransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
+    public TransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest;
         try {
             eosioTransactionSignatureRequest = this.createSignatureRequest();
@@ -539,13 +551,49 @@ public class TransactionProcessor {
         }
 
         // Signatures and serializedTransaction are assigned and finalized in getSignature() method
-        PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
+        SendTransactionRequest sendTransactionRequest = new SendTransactionRequest(this.signatures,
                 0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
-            return this.pushTransaction(pushTransactionRequest);
-        } catch (TransactionPushTransactionError transactionPushTransactionError) {
+            return formatTransactionResponse(this.sendTransaction(sendTransactionRequest));
+        } catch (TransactionPushTransactionError | TransactionFormatPushTransactionResponseError transactionPushTransactionError) {
             throw new TransactionSignAndBroadCastError(transactionPushTransactionError);
         }
+    }
+
+    /**
+     *
+     * @param response
+     * @return
+     * @throws TransactionFormatPushTransactionResponseError
+     */
+    private TransactionResponse formatTransactionResponse(TransactionResponse response)
+            throws TransactionFormatPushTransactionResponseError {
+        List<ActionTrace> actionTraces = response.getActionTraces();
+        for (ActionTrace actionTrace : actionTraces) {
+            if (actionTrace.hasReturnValue()) {
+                try {
+                    AbiEosSerializationObject deserializationObject = deserializeActionTraceReturnValue(actionTrace, chainId, abiProvider);
+                    if (actionTrace.isQueryItAction()) {
+                        actionTrace.setDeserializedReturnValue(convertAbieosQueryItJsonToUsableJson(deserializationObject.getJson()));
+                    } else {
+                        actionTrace.setDeserializedReturnValue(deserializationObject.getJson());
+                    }
+                } catch (DeserializeReturnValueError transactionCreateSignatureRequestError) {
+                    throw new TransactionFormatPushTransactionResponseError(transactionCreateSignatureRequestError);
+                }
+            }
+        }
+        return response;
+    }
+
+    /**
+     * Convert json to AnyVar type and then convert that to human-readable queryit json
+     * @param json - the json to convert
+     * @return converted human-readable queryit json
+     */
+    private String convertAbieosQueryItJsonToUsableJson(String json) {
+        AnyVar anyVar = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(json, AnyVar.class);
+        return Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).toJson(anyVar);
     }
 
     /**
@@ -781,6 +829,26 @@ public class TransactionProcessor {
     }
 
     /**
+     * Send signed transaction to blockchain.
+     * <p>
+     * Check sendTransaction() flow in "Complete Workflow" document for more details.
+     *
+     * @param sendTransactionRequest the request
+     * @return Response from chain
+     */
+    @NotNull
+    private SendTransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest)
+            throws TransactionPushTransactionError {
+        try {
+            return this.rpcProvider.sendTransaction(sendTransactionRequest);
+        } catch (SendTransactionRpcError pushTransactionRpcError) {
+            throw new TransactionPushTransactionError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
+                    pushTransactionRpcError);
+        }
+    }
+
+    /**
      * Serialize current transaction
      *
      * @return serialized transaction in Hex
@@ -968,12 +1036,52 @@ public class TransactionProcessor {
         }
 
         AbiEosSerializationObject actionAbiEosSerializationObject = new AbiEosSerializationObject(
-                action.getAccount(), action.getName(),
-                null, actionAbiJSON);
+                action.getAccount(), action.getName(), actionAbiJSON);
         actionAbiEosSerializationObject.setHex("");
 
         // !!! At this step, the data field of the action is still in JSON format.
         actionAbiEosSerializationObject.setJson(action.getData());
+
+        return actionAbiEosSerializationObject;
+    }
+
+    private AbiEosSerializationObject deserializeActionTraceReturnValue(ActionTrace actionTrace, String chainId, IABIProvider abiProvider)
+            throws DeserializeReturnValueError {
+        String actionAbiJSON;
+        try {
+            actionAbiJSON = abiProvider
+                    .getAbi(chainId, new EOSIOName(actionTrace.getAccountName()));
+        } catch (GetAbiError getAbiError) {
+            throw new DeserializeReturnValueError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_GET_ABI_ERROR,
+                            actionTrace.getAccountName()), getAbiError);
+        }
+
+        AbiEosSerializationObject actionAbiEosSerializationObject;
+        Abi abi = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(actionAbiJSON, Abi.class);
+
+        if (actionTrace.isQueryItAction()) {
+            actionAbiEosSerializationObject = new AbiEosSerializationObject(
+                    abi.getQueryItReturnType(actionTrace.getReturnValue()), actionAbiJSON);
+        } else {
+            actionAbiEosSerializationObject = new AbiEosSerializationObject(
+                    abi.getActionReturnTypeByActionName(actionTrace.getActionName()), actionAbiJSON);
+        }
+
+        // !!! At this step, the data field of the action is still in HEX format.
+        actionAbiEosSerializationObject.setHex(actionTrace.getReturnValue());
+
+        try {
+            this.serializationProvider.deserialize(actionAbiEosSerializationObject);
+            if (actionAbiEosSerializationObject.getJson().isEmpty()) {
+                throw new DeserializeReturnValueError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_EMPTY);
+            }
+        } catch (DeserializeError | DeserializeReturnValueError deserializeError) {
+            throw new DeserializeReturnValueError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_ERROR,
+                            actionTrace.getAccountName()), deserializeError);
+        }
 
         return actionAbiEosSerializationObject;
     }
