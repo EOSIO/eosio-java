@@ -8,6 +8,9 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 
+/**
+ * Custom deserializer converting ABIEOS representation of queryit data to AnyVar object
+ */
 public class AnyVarDeserializer implements JsonDeserializer<AnyVar> {
     @Override
     public AnyVar deserialize(JsonElement json, Type typeOfT,

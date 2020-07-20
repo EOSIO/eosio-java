@@ -3,6 +3,9 @@ package one.block.eosiojava.models.abiProvider;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
+/**
+ * The Abi type variants
+ */
 public class Variant {
     /**
      * The name

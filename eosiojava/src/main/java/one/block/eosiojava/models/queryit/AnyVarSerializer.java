@@ -8,6 +8,9 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
+/**
+ * Custom serializer converting AnyVar object to human-readable json representation
+ */
 public class AnyVarSerializer implements JsonSerializer<AnyVar> {
 
     @Override

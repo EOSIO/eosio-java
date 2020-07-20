@@ -2,6 +2,9 @@ package one.block.eosiojava.models.abiProvider;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * The action results that are contained in response when submitting transactions
+ */
 public class ActionResult {
 
     /**

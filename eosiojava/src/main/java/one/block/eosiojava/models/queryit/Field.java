@@ -2,6 +2,9 @@ package one.block.eosiojava.models.queryit;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Field in a queryit abi/json
+ */
 public class Field {
     @SerializedName("name")
     private String name;

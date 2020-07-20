@@ -11,13 +11,8 @@ import org.junit.Test;
 
 public class AnyVarTest {
 
-    // For generic deserialization of arrays
-//    Type listType = new TypeToken<ArrayList<AnyObject>>(){}.getType();
-//
-//    // FromJSON test
-//    List<AnyObject> anyObjects = this.gson.fromJson(jsonContent, listType);
-
     private Gson gson;
+    private AnyVar testAnyVar;
 
     @Before
     public void setUpGSON() {
@@ -27,6 +22,36 @@ public class AnyVarTest {
                 .registerTypeAdapter(AnyVar.class, new AnyVarSerializer())
                 .setDateFormat(datePattern)
                 .disableHtmlEscaping().create();
+
+        testAnyVar = new AnyVar();
+    }
+
+    @Test
+    public void testConstructor() {
+        assertTrue(testAnyVar.isEmpty());
+    }
+
+    @Test
+    public void testHasNoValue() {
+        assertFalse(testAnyVar.hasValue());
+    }
+
+    @Test
+    public void testHasValueWithString() {
+        testAnyVar.setValue("anything");
+        assertTrue(testAnyVar.hasValue());
+    }
+
+    @Test
+    public void testHasValueWithInteger() {
+        testAnyVar.setValue(1);
+        assertTrue(testAnyVar.hasValue());
+    }
+
+    @Test
+    public void testHasValueWithObject() {
+        testAnyVar.setValue(new Object());
+        assertTrue(testAnyVar.hasValue());
     }
 
     @Test
