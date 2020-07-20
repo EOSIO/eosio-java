@@ -18,6 +18,7 @@ import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
@@ -45,10 +46,13 @@ import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.response.TransactionResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
@@ -145,9 +149,9 @@ public class TransactionProcessorTest {
         }
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.broadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+            TransactionResponse transactionResponse = processor.broadcast();
+            assertNotNull(transactionResponse);
+            assertEquals(DUMP_TRANSACTION_ID, transactionResponse.getTransactionId());
         } catch (TransactionBroadCastError transactionBroadCastError) {
             transactionBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling broadcast");
@@ -161,9 +165,9 @@ public class TransactionProcessorTest {
         assertNotNull(processor);
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+            TransactionResponse transactionResponse = processor.signAndBroadcast();
+            assertNotNull(transactionResponse);
+            assertEquals(DUMP_TRANSACTION_ID, transactionResponse.getTransactionId());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling signAndBroadcast");
@@ -378,9 +382,9 @@ public class TransactionProcessorTest {
         processor.setRequiredKeys(requiredKeys);
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+            TransactionResponse transactionResponse = processor.signAndBroadcast();
+            assertNotNull(transactionResponse);
+            assertEquals(DUMP_TRANSACTION_ID, transactionResponse.getTransactionId());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling signAndBroadcast");
@@ -393,7 +397,7 @@ public class TransactionProcessorTest {
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(getMockedPushTransactionResponseJson(), PushTransactionResponse.class));
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(getMockedSendTransactionResponseJson(), SendTransactionResponse.class));
 
         this.mockAbiProvider(EOSIOABIJSON);
         this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction, MOCKED_RETURN_VALUE_JSON);
@@ -416,9 +420,9 @@ public class TransactionProcessorTest {
         assertTrue(processor.isTransactionModificationAllowed());
 
        try {
-           PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-           assertNotNull(pushTransactionResponse);
-           assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+           TransactionResponse transactionResponse = processor.signAndBroadcast();
+           assertNotNull(transactionResponse);
+           assertEquals(DUMP_TRANSACTION_ID, transactionResponse.getTransactionId());
 
            // after signing and broadcast, serialized transaction is updated
            assertEquals(MOCKED_TRANSACTION_HEX_MODIFIED, processor.getSerializedTransaction());
@@ -457,9 +461,9 @@ public class TransactionProcessorTest {
         }
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+            TransactionResponse transactionResponse = processor.signAndBroadcast();
+            assertNotNull(transactionResponse);
+            assertEquals(DUMP_TRANSACTION_ID, transactionResponse.getTransactionId());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for sign and broadcast");
@@ -588,7 +592,7 @@ public class TransactionProcessorTest {
     @Test
     public void testDeserializeActionTraceWithNoReturnValue() {
         String mockedActionTraceWithSimpleReturnValue = getMockedProcessedActionTrace("", "retval_null");
-        String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
+        String mockPushTransactionResponseJson = this.getMockedSendTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
         String expectedJson = null;
         this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson, EOSIOABIJSON);
 
@@ -596,9 +600,9 @@ public class TransactionProcessorTest {
         assertNotNull(processor);
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(expectedJson, pushTransactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
+            TransactionResponse transactionResponse = processor.signAndBroadcast();
+            assertNotNull(transactionResponse);
+            assertEquals(expectedJson, transactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling signAndBroadcast");
@@ -608,7 +612,7 @@ public class TransactionProcessorTest {
     @Test
     public void testDeserializeActionTraceWithSimpleReturnValue() {
         String mockedActionTraceWithSimpleReturnValue = getMockedProcessedActionTrace("0a000000", "retval_simple");
-        String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
+        String mockPushTransactionResponseJson = this.getMockedSendTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
         String expectedJson = "10";
         this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson, EOSIOABIJSON);
 
@@ -616,9 +620,9 @@ public class TransactionProcessorTest {
         assertNotNull(processor);
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(expectedJson, pushTransactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
+            TransactionResponse transactionResponse = processor.signAndBroadcast();
+            assertNotNull(transactionResponse);
+            assertEquals(expectedJson, transactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling signAndBroadcast");
@@ -628,7 +632,7 @@ public class TransactionProcessorTest {
     @Test
     public void testDeserializeActionTraceWithComplexReturnValue() {
         String mockedActionTraceWithComplexReturnValue = getMockedProcessedActionTrace("d2040000000000000090b1ca", "retval_complex");
-        String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithComplexReturnValue);
+        String mockPushTransactionResponseJson = this.getMockedSendTransactionResponseJson(mockedActionTraceWithComplexReturnValue);
         String expectedJson = "{\"id\":1234,\"name\":\"test\"}";
         this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson, EOSIOABIJSON);
 
@@ -636,9 +640,9 @@ public class TransactionProcessorTest {
         assertNotNull(processor);
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(expectedJson, pushTransactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
+            TransactionResponse transactionResponse = processor.signAndBroadcast();
+            assertNotNull(transactionResponse);
+            assertEquals(expectedJson, transactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling signAndBroadcast");
@@ -648,17 +652,17 @@ public class TransactionProcessorTest {
     @Test
     public void testDeserializeQueryItActionTrace() {
         String mockedActionTraceWithSimpleReturnValue = getMockedProcessedActionTrace("0000000c5b22737472696e67222c2274657374225d", "queryit");
-        String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
-        String expectedJson = "[\"string\",\"test\"]";
+        String mockPushTransactionResponseJson = this.getMockedSendTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
+        String expectedJson = "\"test\"";
         this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson, QUERYITABIJSON);
 
         TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
         assertNotNull(processor);
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(expectedJson, pushTransactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
+            TransactionResponse transactionResponse = processor.signAndBroadcast();
+            assertNotNull(transactionResponse);
+            assertEquals(expectedJson, transactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling signAndBroadcast");
@@ -666,21 +670,51 @@ public class TransactionProcessorTest {
     }
 
     @Test
-    public void testDeserializeB1XQueryItActionTrace() {
+    public void testDeserializeB1XQueryItActionTraceSignAndBroadcast() {
         String returnValue = "0D070571756F74650C103533383035393639302E32312055534404626173650C1238393335322E3534303030303030204254430B62616E636F7250726963650C0B363032312E3736205553440E6C617374547261646550726963650C0B363031302E383720555344116C61737454726164655175616E746974790C103136312E3839303835393437204254430461736B730D010565646765730E0004626964730D010565646765730E040D01046E6F64650D08076F726465724964020400000000000000056F776E65720C056D616B65720668616E646C650220766BF085AA05000570726963650C0B353030302E30302055534404636F73740C08302E3030205553440972656D61696E696E670C0E312E3030303030303030204254430473697A650C0E312E30303030303030302042544307637265617465640980791FA58CAA05000D01046E6F64650D08076F726465724964020900000000000000056F776E65720C0B6D61786E616D73746F726D0668616E646C6502A0DC160486AA05000570726963650C0B353030302E30302055534404636F73740C08302E3030205553440972656D61696E696E670C0F31302E3030303030303030204254430473697A650C0F31302E303030303030303020425443076372656174656409C09DBBB88CAA05000D01046E6F64650D08076F726465724964020A00000000000000056F776E65720C0B6D61786E616D73746F726D0668616E646C65026057090986AA05000570726963650C0B353030302E30302055534404636F73740C08302E3030205553440972656D61696E696E670C0F31302E3030303030303030204254430473697A650C0F31302E303030303030303020425443076372656174656409A0B9B5BD8CAA05000D01046E6F64650D08076F726465724964020700000000000000056F776E65720C056D616B65720668616E646C6502A06B50FA85AA05000570726963650C0B353139392E35302055534404636F73740C08302E3030205553440972656D61696E696E670C0E312E3030303030303030204254430473697A650C0E312E303030303030303020425443076372656174656409C02CF5AE8CAA0500";
         String mockedActionTraceWithSimpleReturnValue = getMockedProcessedActionTrace(returnValue, "queryit");
-        String mockPushTransactionResponseJson = this.getMockedPushTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
-        String expectedJson = "{\"quote\":\"538059690.21 USD\",\"base\":\"89352.54000000 BTC\",\"bancorPrice\":\"6021.76 USD\",\"lastTradePrice\":\"6010.87 USD\",\"lastTradeQuantity\":\"161.89085947 BTC\",\"asks\":{\"edges\":[]},\"bids\":{\"edges\":[{\"node\":{\"orderId\":\"4\",\"owner\":\"maker\",\"handle\":\"1594867124500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"1.00000000 BTC\",\"size\":\"1.00000000 BTC\",\"created\":\"2020-07-16T10:38:46.000\"}},{\"node\":{\"orderId\":\"9\",\"owner\":\"maxnamstorm\",\"handle\":\"1594867454500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"10.00000000 BTC\",\"size\":\"10.00000000 BTC\",\"created\":\"2020-07-16T10:44:15.000\"}},{\"node\":{\"orderId\":\"10\",\"owner\":\"maxnamstorm\",\"handle\":\"1594867537500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"10.00000000 BTC\",\"size\":\"10.00000000 BTC\",\"created\":\"2020-07-16T10:45:38.500\"}},{\"node\":{\"orderId\":\"7\",\"owner\":\"maker\",\"handle\":\"1594867290500000\",\"price\":\"5199.50 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"1.00000000 BTC\",\"size\":\"1.00000000 BTC\",\"created\":\"2020-07-16T10:41:31.000\"}}]}}";
+        String mockPushTransactionResponseJson = this.getMockedSendTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
+        String expectedJson = "[\"any_object\",[{\"name\":\"quote\",\"value\":[\"string\",\"538059690.21 USD\"]},{\"name\":\"base\",\"value\":[\"string\",\"89352.54000000 BTC\"]},{\"name\":\"bancorPrice\",\"value\":[\"string\",\"6021.76 USD\"]},{\"name\":\"lastTradePrice\",\"value\":[\"string\",\"6010.87 USD\"]},{\"name\":\"lastTradeQuantity\",\"value\":[\"string\",\"161.89085947 BTC\"]},{\"name\":\"asks\",\"value\":[\"any_object\",[{\"name\":\"edges\",\"value\":[\"any_array\",[]]}]]},{\"name\":\"bids\",\"value\":[\"any_object\",[{\"name\":\"edges\",\"value\":[\"any_array\",[[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"4\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maker\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867124500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:38:46.000\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"9\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maxnamstorm\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867454500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:44:15.000\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"10\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maxnamstorm\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867537500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:45:38.500\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"7\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maker\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867290500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5199.50 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:41:31.000\"]}]]}]]]]}]]}]]";
+        String expectedSerializedJson = "{\"quote\":\"538059690.21 USD\",\"base\":\"89352.54000000 BTC\",\"bancorPrice\":\"6021.76 USD\",\"lastTradePrice\":\"6010.87 USD\",\"lastTradeQuantity\":\"161.89085947 BTC\",\"asks\":{\"edges\":[]},\"bids\":{\"edges\":[{\"node\":{\"orderId\":\"4\",\"owner\":\"maker\",\"handle\":\"1594867124500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"1.00000000 BTC\",\"size\":\"1.00000000 BTC\",\"created\":\"2020-07-16T10:38:46.000\"}},{\"node\":{\"orderId\":\"9\",\"owner\":\"maxnamstorm\",\"handle\":\"1594867454500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"10.00000000 BTC\",\"size\":\"10.00000000 BTC\",\"created\":\"2020-07-16T10:44:15.000\"}},{\"node\":{\"orderId\":\"10\",\"owner\":\"maxnamstorm\",\"handle\":\"1594867537500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"10.00000000 BTC\",\"size\":\"10.00000000 BTC\",\"created\":\"2020-07-16T10:45:38.500\"}},{\"node\":{\"orderId\":\"7\",\"owner\":\"maker\",\"handle\":\"1594867290500000\",\"price\":\"5199.50 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"1.00000000 BTC\",\"size\":\"1.00000000 BTC\",\"created\":\"2020-07-16T10:41:31.000\"}}]}}";
         this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson, QUERYITABIJSON);
 
         TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
         assertNotNull(processor);
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(expectedJson, pushTransactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
+            TransactionResponse transactionResponse = processor.signAndBroadcast();
+            assertNotNull(transactionResponse);
+            assertEquals(expectedSerializedJson, transactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
+            transactionSignAndBroadCastError.printStackTrace();
+            fail("Exception should not be thrown here for calling signAndBroadcast");
+        }
+    }
+
+    @Test
+    public void testDeserializeB1XQueryItActionTraceBroadcast() {
+        String returnValue = "0D070571756F74650C103533383035393639302E32312055534404626173650C1238393335322E3534303030303030204254430B62616E636F7250726963650C0B363032312E3736205553440E6C617374547261646550726963650C0B363031302E383720555344116C61737454726164655175616E746974790C103136312E3839303835393437204254430461736B730D010565646765730E0004626964730D010565646765730E040D01046E6F64650D08076F726465724964020400000000000000056F776E65720C056D616B65720668616E646C650220766BF085AA05000570726963650C0B353030302E30302055534404636F73740C08302E3030205553440972656D61696E696E670C0E312E3030303030303030204254430473697A650C0E312E30303030303030302042544307637265617465640980791FA58CAA05000D01046E6F64650D08076F726465724964020900000000000000056F776E65720C0B6D61786E616D73746F726D0668616E646C6502A0DC160486AA05000570726963650C0B353030302E30302055534404636F73740C08302E3030205553440972656D61696E696E670C0F31302E3030303030303030204254430473697A650C0F31302E303030303030303020425443076372656174656409C09DBBB88CAA05000D01046E6F64650D08076F726465724964020A00000000000000056F776E65720C0B6D61786E616D73746F726D0668616E646C65026057090986AA05000570726963650C0B353030302E30302055534404636F73740C08302E3030205553440972656D61696E696E670C0F31302E3030303030303030204254430473697A650C0F31302E303030303030303020425443076372656174656409A0B9B5BD8CAA05000D01046E6F64650D08076F726465724964020700000000000000056F776E65720C056D616B65720668616E646C6502A06B50FA85AA05000570726963650C0B353139392E35302055534404636F73740C08302E3030205553440972656D61696E696E670C0E312E3030303030303030204254430473697A650C0E312E303030303030303020425443076372656174656409C02CF5AE8CAA0500";
+        String mockedActionTraceWithSimpleReturnValue = getMockedProcessedActionTrace(returnValue, "queryit");
+        String mockPushTransactionResponseJson = this.getMockedSendTransactionResponseJson(mockedActionTraceWithSimpleReturnValue);
+        String expectedJson = "[\"any_object\",[{\"name\":\"quote\",\"value\":[\"string\",\"538059690.21 USD\"]},{\"name\":\"base\",\"value\":[\"string\",\"89352.54000000 BTC\"]},{\"name\":\"bancorPrice\",\"value\":[\"string\",\"6021.76 USD\"]},{\"name\":\"lastTradePrice\",\"value\":[\"string\",\"6010.87 USD\"]},{\"name\":\"lastTradeQuantity\",\"value\":[\"string\",\"161.89085947 BTC\"]},{\"name\":\"asks\",\"value\":[\"any_object\",[{\"name\":\"edges\",\"value\":[\"any_array\",[]]}]]},{\"name\":\"bids\",\"value\":[\"any_object\",[{\"name\":\"edges\",\"value\":[\"any_array\",[[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"4\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maker\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867124500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:38:46.000\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"9\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maxnamstorm\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867454500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:44:15.000\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"10\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maxnamstorm\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867537500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5000.00 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"10.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:45:38.500\"]}]]}]],[\"any_object\",[{\"name\":\"node\",\"value\":[\"any_object\",[{\"name\":\"orderId\",\"value\":[\"uint64\",\"7\"]},{\"name\":\"owner\",\"value\":[\"string\",\"maker\"]},{\"name\":\"handle\",\"value\":[\"uint64\",\"1594867290500000\"]},{\"name\":\"price\",\"value\":[\"string\",\"5199.50 USD\"]},{\"name\":\"cost\",\"value\":[\"string\",\"0.00 USD\"]},{\"name\":\"remaining\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"size\",\"value\":[\"string\",\"1.00000000 BTC\"]},{\"name\":\"created\",\"value\":[\"time_point\",\"2020-07-16T10:41:31.000\"]}]]}]]]]}]]}]]";
+        String expectedSerializedJson = "{\"quote\":\"538059690.21 USD\",\"base\":\"89352.54000000 BTC\",\"bancorPrice\":\"6021.76 USD\",\"lastTradePrice\":\"6010.87 USD\",\"lastTradeQuantity\":\"161.89085947 BTC\",\"asks\":{\"edges\":[]},\"bids\":{\"edges\":[{\"node\":{\"orderId\":\"4\",\"owner\":\"maker\",\"handle\":\"1594867124500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"1.00000000 BTC\",\"size\":\"1.00000000 BTC\",\"created\":\"2020-07-16T10:38:46.000\"}},{\"node\":{\"orderId\":\"9\",\"owner\":\"maxnamstorm\",\"handle\":\"1594867454500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"10.00000000 BTC\",\"size\":\"10.00000000 BTC\",\"created\":\"2020-07-16T10:44:15.000\"}},{\"node\":{\"orderId\":\"10\",\"owner\":\"maxnamstorm\",\"handle\":\"1594867537500000\",\"price\":\"5000.00 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"10.00000000 BTC\",\"size\":\"10.00000000 BTC\",\"created\":\"2020-07-16T10:45:38.500\"}},{\"node\":{\"orderId\":\"7\",\"owner\":\"maker\",\"handle\":\"1594867290500000\",\"price\":\"5199.50 USD\",\"cost\":\"0.00 USD\",\"remaining\":\"1.00000000 BTC\",\"size\":\"1.00000000 BTC\",\"created\":\"2020-07-16T10:41:31.000\"}}]}}";
+        this.mockDefaultSuccessData(mockPushTransactionResponseJson, expectedJson, QUERYITABIJSON);
+
+        TransactionProcessor processor = createAndPrepareTransaction(this.defaultActions());
+        assertNotNull(processor);
+
+        try {
+            assertTrue(processor.sign());
+        } catch (TransactionSignError transactionSignError) {
+            transactionSignError.printStackTrace();
+            fail("Exception should not be thrown here for calling sign");
+        }
+
+        try {
+            TransactionResponse transactionResponse = processor.broadcast();
+            assertNotNull(transactionResponse);
+            assertEquals(expectedSerializedJson, transactionResponse.getActionTraces().get(0).getDeserializedReturnValue());
+        } catch (TransactionBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling signAndBroadcast");
         }
@@ -733,11 +767,11 @@ public class TransactionProcessorTest {
                 + "      }";
     }
 
-    private String getMockedPushTransactionResponseJson() {
-        return getMockedPushTransactionResponseJson(null);
+    private String getMockedSendTransactionResponseJson() {
+        return getMockedSendTransactionResponseJson(null);
     }
 
-    private String getMockedPushTransactionResponseJson(@Nullable String mockedProcessedActionTrace) {
+    private String getMockedSendTransactionResponseJson(@Nullable String mockedProcessedActionTrace) {
         if (mockedProcessedActionTrace != null) {
             return "{\"transaction_id\":\"" + DUMP_TRANSACTION_ID + "\", \"processed\": { \"action_traces\": [" + mockedProcessedActionTrace + "]}}";
         }
@@ -746,7 +780,7 @@ public class TransactionProcessorTest {
     }
 
     private void mockDefaultSuccessData() {
-        mockDefaultSuccessData(getMockedPushTransactionResponseJson(), MOCKED_RETURN_VALUE_JSON, EOSIOABIJSON);
+        mockDefaultSuccessData(getMockedSendTransactionResponseJson(), MOCKED_RETURN_VALUE_JSON, EOSIOABIJSON);
     }
 
     private void mockDefaultSuccessData(String mockedPushTransactionResponseJson, String mockedReturnValueJson, String mockedAbiJson) {
@@ -754,7 +788,7 @@ public class TransactionProcessorTest {
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedPushTransactionResponseJson, PushTransactionResponse.class));
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedPushTransactionResponseJson, SendTransactionResponse.class));
 
         this.mockAbiProvider(mockedAbiJson);
         this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction, mockedReturnValueJson);
@@ -829,7 +863,7 @@ public class TransactionProcessorTest {
             @Nullable GetInfoResponse getInfoResponse,
             @Nullable GetBlockResponse getBlockResponse,
             @Nullable GetRequiredKeysResponse getRequiredKeysResponse,
-            @Nullable PushTransactionResponse pushTransactionResponse) {
+            @Nullable SendTransactionResponse sendTransactionResponse) {
 
         if (getInfoResponse != null) {
             try {
@@ -858,10 +892,10 @@ public class TransactionProcessorTest {
             }
         }
 
-        if (pushTransactionResponse != null) {
+        if (sendTransactionResponse != null) {
             try {
-                when(this.mockedRpcProvider.pushTransaction(any(PushTransactionRequest.class))).thenReturn(pushTransactionResponse);
-            } catch (PushTransactionRpcError pushTransactionRpcError) {
+                when(this.mockedRpcProvider.sendTransaction(any(SendTransactionRequest.class))).thenReturn(sendTransactionResponse);
+            } catch (SendTransactionRpcError pushTransactionRpcError) {
                 pushTransactionRpcError.printStackTrace();
                 fail("Exception should not be thrown here for mocking pushTransaction");
             }

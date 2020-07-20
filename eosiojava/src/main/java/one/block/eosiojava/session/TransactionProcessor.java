@@ -487,7 +487,7 @@ public class TransactionProcessor {
      *          - An error has been returned from the blockchain. Cause: {@link TransactionPushTransactionError}
      */
     @NotNull
-    public PushTransactionResponse broadcast() throws TransactionBroadCastError {
+    public TransactionResponse broadcast() throws TransactionBroadCastError {
         if (this.serializedTransaction == null || this.serializedTransaction.isEmpty()) {
             throw new TransactionBroadCastError(
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY);
@@ -498,11 +498,11 @@ public class TransactionProcessor {
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY);
         }
 
-        PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
+        SendTransactionRequest sendTransactionRequest = new SendTransactionRequest(this.signatures,
                 0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
-            return this.pushTransaction(pushTransactionRequest);
-        } catch (TransactionPushTransactionError transactionPushTransactionError) {
+            return formatTransactionResponse(this.sendTransaction(sendTransactionRequest));
+        } catch (TransactionPushTransactionError | TransactionFormatPushTransactionResponseError transactionPushTransactionError) {
             throw new TransactionBroadCastError(
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR,
                     transactionPushTransactionError);
@@ -512,7 +512,7 @@ public class TransactionProcessor {
     /**
      * Sign and broadcast the transaction and signature/s to chain
      *
-     * @return PushTransactionResponse from blockchain.
+     * @return TransactionResponse from blockchain.
      * @throws TransactionSignAndBroadCastError thrown under the following conditions:
      *      <br>
      *          - Exception while creating signature. Cause: {@link TransactionCreateSignatureRequestError}
@@ -526,7 +526,7 @@ public class TransactionProcessor {
      *          - An error has been returned from the blockchain. Cause: {@link TransactionPushTransactionError}
      */
     @NotNull
-    public PushTransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
+    public TransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest;
         try {
             eosioTransactionSignatureRequest = this.createSignatureRequest();
@@ -551,16 +551,22 @@ public class TransactionProcessor {
         }
 
         // Signatures and serializedTransaction are assigned and finalized in getSignature() method
-        PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
+        SendTransactionRequest sendTransactionRequest = new SendTransactionRequest(this.signatures,
                 0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
-            return formatPushTransactionResponse(this.pushTransaction(pushTransactionRequest));
+            return formatTransactionResponse(this.sendTransaction(sendTransactionRequest));
         } catch (TransactionPushTransactionError | TransactionFormatPushTransactionResponseError transactionPushTransactionError) {
             throw new TransactionSignAndBroadCastError(transactionPushTransactionError);
         }
     }
 
-    private PushTransactionResponse formatPushTransactionResponse(PushTransactionResponse response)
+    /**
+     *
+     * @param response
+     * @return
+     * @throws TransactionFormatPushTransactionResponseError
+     */
+    private TransactionResponse formatTransactionResponse(TransactionResponse response)
             throws TransactionFormatPushTransactionResponseError {
         List<ActionTrace> actionTraces = response.getActionTraces();
         for (ActionTrace actionTrace : actionTraces) {
@@ -568,8 +574,7 @@ public class TransactionProcessor {
                 try {
                     AbiEosSerializationObject deserializationObject = deserializeActionTraceReturnValue(actionTrace, chainId, abiProvider);
                     if (actionTrace.isQueryItAction()) {
-                        String json = convertAbieosQueryItJsonToUsableJson(deserializationObject.getJson());
-                        actionTrace.setDeserializedReturnValue(json);
+                        actionTrace.setDeserializedReturnValue(convertAbieosQueryItJsonToUsableJson(deserializationObject.getJson()));
                     } else {
                         actionTrace.setDeserializedReturnValue(deserializationObject.getJson());
                     }
@@ -581,6 +586,11 @@ public class TransactionProcessor {
         return response;
     }
 
+    /**
+     * Convert json to AnyVar type and then convert that to human-readable queryit json
+     * @param json - the json to convert
+     * @return converted human-readable queryit json
+     */
     private String convertAbieosQueryItJsonToUsableJson(String json) {
         AnyVar anyVar = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(json, AnyVar.class);
         return Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).toJson(anyVar);
@@ -812,6 +822,26 @@ public class TransactionProcessor {
         try {
             return this.rpcProvider.pushTransaction(pushTransactionRequest);
         } catch (PushTransactionRpcError pushTransactionRpcError) {
+            throw new TransactionPushTransactionError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
+                    pushTransactionRpcError);
+        }
+    }
+
+    /**
+     * Send signed transaction to blockchain.
+     * <p>
+     * Check sendTransaction() flow in "Complete Workflow" document for more details.
+     *
+     * @param sendTransactionRequest the request
+     * @return Response from chain
+     */
+    @NotNull
+    private SendTransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest)
+            throws TransactionPushTransactionError {
+        try {
+            return this.rpcProvider.sendTransaction(sendTransactionRequest);
+        } catch (SendTransactionRpcError pushTransactionRpcError) {
             throw new TransactionPushTransactionError(
                     ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
                     pushTransactionRpcError);
@@ -1225,26 +1255,6 @@ public class TransactionProcessor {
      */
     public ContextFreeData getContextFreeData() {
         return this.contextFreeData;
-    }
-
-    /**
-     * Send signed transaction to blockchain.
-     * <p>
-     * Check sendTransaction() flow in "Complete Workflow" document for more details.
-     *
-     * @param sendTransactionRequest the request
-     * @return Response from chain
-     */
-    @NotNull
-    private TransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest)
-            throws TransactionPushTransactionError {
-        try {
-            return this.rpcProvider.sendTransaction(sendTransactionRequest);
-        } catch (SendTransactionRpcError pushTransactionRpcError) {
-            throw new TransactionPushTransactionError(
-                    ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
-                    pushTransactionRpcError);
-        }
     }
 
     //endregion

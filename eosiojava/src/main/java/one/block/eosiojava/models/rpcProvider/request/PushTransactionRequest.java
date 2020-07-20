@@ -1,6 +1,5 @@
 package one.block.eosiojava.models.rpcProvider.request;
 
-import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import org.jetbrains.annotations.NotNull;

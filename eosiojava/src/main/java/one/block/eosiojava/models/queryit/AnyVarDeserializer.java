@@ -17,7 +17,7 @@ public class AnyVarDeserializer implements JsonDeserializer<AnyVar> {
         if (json.isJsonPrimitive()) {
             anyVar.setValue(json.getAsJsonPrimitive().getAsString());
         } else if (!json.isJsonArray() || ((JsonArray)json).size() == 0) { // null_t
-            return anyVar; // Seems like this might actually be wrong for size() == 0, return []
+            return anyVar;
         } else {
             JsonArray jsonAsArray = ((JsonArray) json);
             String type = jsonAsArray.get(0).getAsString();
