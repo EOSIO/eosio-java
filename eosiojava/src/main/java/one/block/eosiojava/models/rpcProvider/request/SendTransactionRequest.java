@@ -3,6 +3,7 @@ package one.block.eosiojava.models.rpcProvider.request;
 import java.util.List;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import org.jetbrains.annotations.NotNull;
+import com.google.gson.annotations.SerializedName;
 
 public class SendTransactionRequest extends TransactionRequest {
 
