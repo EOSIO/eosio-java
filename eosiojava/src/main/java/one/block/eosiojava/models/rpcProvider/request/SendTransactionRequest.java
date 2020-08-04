@@ -28,6 +28,7 @@ public class SendTransactionRequest extends TransactionRequest {
             @NotNull List<String> signatures, int compression,
             String packagedContextFreeData, @NotNull String packTrx) {
         super(signatures, compression, packagedContextFreeData, packTrx);
+        this.setIsAmqpRequest(true);
     }
 
     /**
