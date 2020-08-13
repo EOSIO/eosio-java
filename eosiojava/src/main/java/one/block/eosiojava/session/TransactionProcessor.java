@@ -40,6 +40,7 @@ import one.block.eosiojava.error.session.TransactionSignError;
 import one.block.eosiojava.error.signatureProvider.GetAvailableKeysError;
 import one.block.eosiojava.error.signatureProvider.SignatureProviderError;
 import one.block.eosiojava.interfaces.IABIProvider;
+import one.block.eosiojava.interfaces.IAMQPProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
@@ -104,6 +105,12 @@ public class TransactionProcessor {
      */
     @NotNull
     private ISignatureProvider signatureProvider;
+
+    /**
+     * Reference of AMQP Provider from TransactionSession
+     */
+    @Nullable
+    private IAMQPProvider amqpProvider;
 
     /**
      * Transaction instance that holds all data relating to an EOS Transaction.
@@ -217,13 +224,31 @@ public class TransactionProcessor {
     }
 
     /**
+     * Constructor with all provider references from {@link TransactionSession}
+     * @param serializationProvider the serialization provider.
+     * @param rpcProvider the rpc provider.
+     * @param abiProvider the abi provider.
+     * @param signatureProvider the signature provider.
+     * @param amqpProvider the AMQP provider.
+     */
+    public TransactionProcessor(
+            @NotNull ISerializationProvider serializationProvider,
+            @NotNull IRPCProvider rpcProvider,
+            @NotNull IABIProvider abiProvider,
+            @NotNull ISignatureProvider signatureProvider,
+            @NotNull IAMQPProvider amqpProvider) {
+        this(serializationProvider, rpcProvider, abiProvider, signatureProvider);
+        this.amqpProvider = amqpProvider;
+    }
+
+    /**
      * Constructor with all provider references from {@link TransactionSession} and preset
      * Transaction
      * @param serializationProvider the serialization provider.
      * @param rpcProvider the rpc provider.
      * @param abiProvider the abi provider.
      * @param signatureProvider the signature provider.
-     * @param transaction - preset Transaction
+     * @param transaction - the preset Transaction.
      * @throws TransactionProcessorConstructorInputError thrown if the input transaction has an empty action list.
      */
     public TransactionProcessor(
@@ -233,11 +258,29 @@ public class TransactionProcessor {
             @NotNull ISignatureProvider signatureProvider,
             @NotNull Transaction transaction) throws TransactionProcessorConstructorInputError {
         this(serializationProvider, rpcProvider, abiProvider, signatureProvider);
-        this.transaction = transaction;
-        if (this.transaction.getActions().isEmpty()) {
-            throw new TransactionProcessorConstructorInputError(
-                    ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG);
-        }
+        this.setTransaction(transaction);
+    }
+
+    /**
+     * Constructor with all provider references from {@link TransactionSession} and preset
+     * Transaction
+     * @param serializationProvider the serialization provider.
+     * @param rpcProvider the rpc provider.
+     * @param abiProvider the abi provider.
+     * @param signatureProvider the signature provider.
+     * @param transaction - the preset Transaction.
+     * @param amqpProvider the AMQP provider.
+     * @throws TransactionProcessorConstructorInputError thrown if the input transaction has an empty action list.
+     */
+    public TransactionProcessor(
+            @NotNull ISerializationProvider serializationProvider,
+            @NotNull IRPCProvider rpcProvider,
+            @NotNull IABIProvider abiProvider,
+            @NotNull ISignatureProvider signatureProvider,
+            @NotNull Transaction transaction,
+            @NotNull IAMQPProvider amqpProvider) throws TransactionProcessorConstructorInputError {
+        this(serializationProvider, rpcProvider, abiProvider, signatureProvider, amqpProvider);
+        this.setTransaction(transaction);
     }
 
     //region public methods
@@ -1000,6 +1043,20 @@ public class TransactionProcessor {
         // Clear serialized transaction if it was serialized.
         if (!Strings.isNullOrEmpty(this.serializedTransaction)) {
             this.serializedTransaction = "";
+        }
+    }
+
+    /**
+     * Set the preset transaction
+     * @param transaction the preset transaction
+     * @throws TransactionProcessorConstructorInputError
+     */
+    private void setTransaction(Transaction transaction)
+            throws TransactionProcessorConstructorInputError {
+        this.transaction = transaction;
+        if (this.transaction.getActions().isEmpty()) {
+            throw new TransactionProcessorConstructorInputError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG);
         }
     }
 
