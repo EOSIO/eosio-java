@@ -42,7 +42,7 @@ dependencies {
 
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '0.1.2-amqp2'
+def libraryVersion = '0.1.2-amqp3'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'
