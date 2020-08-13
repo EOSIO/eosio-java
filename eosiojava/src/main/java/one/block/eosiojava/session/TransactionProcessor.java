@@ -1,12 +1,18 @@
 package one.block.eosiojava.session;
 
 import com.google.common.base.Strings;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.disposables.Disposable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
 import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
@@ -45,6 +51,8 @@ import one.block.eosiojava.interfaces.IAMQPProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
+import one.block.eosiojava.models.amqpProvider.AMQPMessageFailedResponse;
+import one.block.eosiojava.models.amqpProvider.AMQPMessageSuccessResponse;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
@@ -522,7 +530,7 @@ public class TransactionProcessor {
      *          - An error has been returned from the blockchain. Cause: {@link TransactionPushTransactionError}
      */
     @NotNull
-    public SendTransactionResponse broadcast() throws TransactionBroadCastError {
+    public TransactionResponse broadcast() throws TransactionBroadCastError {
         if (this.serializedTransaction == null || this.serializedTransaction.isEmpty()) {
             throw new TransactionBroadCastError(
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY);
@@ -561,7 +569,7 @@ public class TransactionProcessor {
      *          - An error has been returned from the blockchain. Cause: {@link TransactionPushTransactionError}
      */
     @NotNull
-    public SendTransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
+    public TransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest;
         try {
             eosioTransactionSignatureRequest = this.createSignatureRequest();
@@ -1219,14 +1227,49 @@ public class TransactionProcessor {
      * @return Response from chain
      */
     @NotNull
-    private SendTransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest)
+    private TransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest)
             throws TransactionPushTransactionError {
-        try {
-            return this.rpcProvider.sendTransaction(sendTransactionRequest);
-        } catch (SendTransactionRpcError pushTransactionRpcError) {
-            throw new TransactionPushTransactionError(
-                    ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
-                    pushTransactionRpcError);
+        if (this.amqpProvider != null) {
+            return this.sendAmqpTransaction(sendTransactionRequest);
+        } else {
+            try {
+                return this.rpcProvider.sendTransaction(sendTransactionRequest);
+            } catch (SendTransactionRpcError pushTransactionRpcError) {
+                throw new TransactionPushTransactionError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
+                        pushTransactionRpcError);
+            }
+        }
+    }
+
+    private TransactionResponse sendAmqpTransaction(SendTransactionRequest sendTransactionRequest) {
+        AtomicBoolean success = new AtomicBoolean(false);
+        Completable completable = this.amqpProvider.send(sendTransactionRequest);
+        completable.subscribe(new CompletableObserver() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                success.getAndSet(true);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                success.getAndSet(false);
+                // Do something else?
+            }
+        });
+
+        // Await response for 5 seconds
+        completable.blockingAwait(5, TimeUnit.SECONDS);
+
+        if (success.get()) {
+            return new AMQPMessageSuccessResponse();
+        } else {
+            return new AMQPMessageFailedResponse();
         }
     }
 

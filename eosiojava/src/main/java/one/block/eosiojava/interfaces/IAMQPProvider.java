@@ -11,9 +11,9 @@ public interface IAMQPProvider {
     /**
      * Sends an AMQP message to configured queue
      *
-     * @param data the request
+     * @param object the object to send to AMQP
      * @return the response from the queue that message was received
      */
     @NotNull
-    Completable send(byte[] data);
+    Completable send(Object object);
 }
