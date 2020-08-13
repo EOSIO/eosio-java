@@ -80,6 +80,7 @@ public class TransactionSession {
      * @param rpcProvider Rpc provider.
      * @param abiProvider ABI provider.
      * @param signatureProvider signature provider.
+     * @param amqpProvider AMQP provider.
      */
     public TransactionSession(
             @NotNull ISerializationProvider serializationProvider,
