@@ -1244,7 +1244,7 @@ public class TransactionProcessor {
 
     private TransactionResponse sendAmqpTransaction(SendTransactionRequest sendTransactionRequest) {
         AtomicBoolean success = new AtomicBoolean(false);
-        Completable completable = this.amqpProvider.send(sendTransactionRequest);
+        Completable completable = this.amqpProvider.send((char)0 + sendTransactionRequest.getPackTrx());
         completable.subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {

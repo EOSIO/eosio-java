@@ -36,13 +36,12 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.26.0'
     api 'org.bitcoinj:bitcoinj-core:0.15.2'
-    api 'org.slf4j:slf4j-jdk14:1.7.25'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
 }
 
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '0.1.2-amqp3'
+def libraryVersion = '0.2.0-amqp5'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'

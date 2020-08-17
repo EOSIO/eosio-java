@@ -6,15 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import com.google.gson.annotations.SerializedName;
 
 public class SendTransactionRequest extends TransactionRequest {
-
-    /**
-     * Determines whether or not this request is sent to AMQP
-     * By default, it is sent to AMQP
-     */
-    @SerializedName("isAmqpRequest")
-    @NotNull
-    private boolean isAmqpRequest;
-
     /**
      * Instantiates a new SendTransactionRequest.
      *
@@ -28,18 +19,5 @@ public class SendTransactionRequest extends TransactionRequest {
             @NotNull List<String> signatures, int compression,
             String packagedContextFreeData, @NotNull String packTrx) {
         super(signatures, compression, packagedContextFreeData, packTrx);
-        this.setIsAmqpRequest(true);
     }
-
-    /**
-     * Gets the field that determines whether or not transaction is sent to AMQP
-     * @return the AMQP field to determine where transaction is sent
-     */
-    public boolean getIsAmqpRequest() { return this.isAmqpRequest; }
-
-    /**
-     * Sets the field that determines whether or not transaction is sent to AMQP
-     * @param isAmqpRequest the AMQP field to determine where transaction is sent
-     */
-    public void setIsAmqpRequest(boolean isAmqpRequest) { this.isAmqpRequest = isAmqpRequest; }
 }
