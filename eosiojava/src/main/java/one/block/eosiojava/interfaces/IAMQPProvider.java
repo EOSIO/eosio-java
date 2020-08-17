@@ -15,5 +15,5 @@ public interface IAMQPProvider {
      * @return the response from the queue that message was received
      */
     @NotNull
-    Completable send(String message);
+    Completable send(byte[] message);
 }

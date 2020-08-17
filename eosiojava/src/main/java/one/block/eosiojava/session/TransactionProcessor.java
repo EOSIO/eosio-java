@@ -1,5 +1,7 @@
 package one.block.eosiojava.session;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import com.google.common.base.Strings;
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -1244,27 +1246,18 @@ public class TransactionProcessor {
 
     private TransactionResponse sendAmqpTransaction(SendTransactionRequest sendTransactionRequest) {
         AtomicBoolean success = new AtomicBoolean(false);
-        Completable completable = this.amqpProvider.send((char)0 + sendTransactionRequest.getPackTrx());
-        completable.subscribe(new CompletableObserver() {
-            @Override
-            public void onSubscribe(Disposable d) {
+        Completable completable = this.amqpProvider.send(sendTransactionRequest.toBinary());
 
-            }
-
+        // What do we do on error?
+        Completable onComplete = completable.doOnComplete(new io.reactivex.functions.Action() {
             @Override
-            public void onComplete() {
-                success.getAndSet(true);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                success.getAndSet(false);
-                // Do something else?
+            public void run() throws Exception {
+                success.set(true);
             }
         });
 
         // Await response for 5 seconds
-        completable.blockingAwait(5, TimeUnit.SECONDS);
+        onComplete.blockingAwait(5, TimeUnit.SECONDS);
 
         if (success.get()) {
             return new AMQPMessageSuccessResponse();

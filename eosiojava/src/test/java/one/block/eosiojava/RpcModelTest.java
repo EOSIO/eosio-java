@@ -285,7 +285,7 @@ public class RpcModelTest {
                 .fromJson(jsonContent, PushTransactionResponse.class);
         assertNotNull(pushTransactionResponse);
         assertEquals("dump_transaction_id", pushTransactionResponse.getTransactionId());
-        assertEquals("dump_id", pushTransactionResponse.getProcessed().get("id"));
+        assertEquals("dump_id", pushTransactionResponse.getTransactionId());
 
         // ToJSON test
         String toJSON = this.gson.toJson(pushTransactionResponse);
