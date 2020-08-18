@@ -24,6 +24,7 @@ import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
 import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
+import one.block.eosiojava.error.serializationProvider.SerializePackedTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.error.session.TransactionBroadCastEmptySignatureError;
 import one.block.eosiojava.error.session.TransactionBroadCastError;
@@ -42,7 +43,8 @@ import one.block.eosiojava.error.session.TransactionPrepareError;
 import one.block.eosiojava.error.session.TransactionPrepareInputError;
 import one.block.eosiojava.error.session.TransactionPrepareRpcError;
 import one.block.eosiojava.error.session.TransactionProcessorConstructorInputError;
-import one.block.eosiojava.error.session.TransactionPushTransactionError;
+import one.block.eosiojava.error.session.TransactionSendRpcTransactionError;
+import one.block.eosiojava.error.session.TransactionSendAmqpTransactionError;
 import one.block.eosiojava.error.session.TransactionSerializeError;
 import one.block.eosiojava.error.session.TransactionSignAndBroadCastError;
 import one.block.eosiojava.error.session.TransactionSignError;
@@ -75,6 +77,7 @@ import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureReq
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
 import one.block.eosiojava.utilities.Utils;
+import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -218,6 +221,11 @@ public class TransactionProcessor {
      * Default is false.
      */
     private boolean isTransactionModificationAllowed;
+
+    /**
+     * Prefix for packed transaction v0
+     */
+    private static final String PACKED_TRANSACTION_V0_PREFIX = "00";
 
     /**
      * Constructor with all provider references from {@link TransactionSession}
@@ -529,7 +537,9 @@ public class TransactionProcessor {
      *      <br>
      *          - The transaction has not been signed yet (no signature).
      *      <br>
-     *          - An error has been returned from the blockchain. Cause: {@link TransactionPushTransactionError}
+     *          - An error has been returned from the blockchain. Cause: {@link TransactionSendRpcTransactionError}
+     *      <br>
+     *          - An error has been returned from the AMQP TRX queue process. Cause: {@link TransactionSendAmqpTransactionError}
      */
     @NotNull
     public TransactionResponse broadcast() throws TransactionBroadCastError {
@@ -547,10 +557,10 @@ public class TransactionProcessor {
                 0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
             return this.sendTransaction(sendTransactionRequest);
-        } catch (TransactionPushTransactionError transactionPushTransactionError) {
+        } catch (TransactionSendRpcTransactionError | TransactionSendAmqpTransactionError transactionSendTransactionError) {
             throw new TransactionBroadCastError(
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR,
-                    transactionPushTransactionError);
+                    transactionSendTransactionError);
         }
     }
 
@@ -568,7 +578,9 @@ public class TransactionProcessor {
      *      <br>
      *          - The transaction has not been signed yet (no signature).
      *      <br>
-     *          - An error has been returned from the blockchain. Cause: {@link TransactionPushTransactionError}
+     *          - An error has been returned from the blockchain. Cause: {@link TransactionSendRpcTransactionError}
+     *      <br>
+     *          - An error has been returned from the AMQP TRX queue process. Cause: {@link TransactionSendAmqpTransactionError}
      */
     @NotNull
     public TransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
@@ -600,8 +612,8 @@ public class TransactionProcessor {
                 0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
             return this.sendTransaction(pushTransactionRequest);
-        } catch (TransactionPushTransactionError transactionPushTransactionError) {
-            throw new TransactionSignAndBroadCastError(transactionPushTransactionError);
+        } catch (TransactionSendRpcTransactionError | TransactionSendAmqpTransactionError transactionSendTransactionError) {
+            throw new TransactionSignAndBroadCastError(transactionSendTransactionError);
         }
     }
 
@@ -815,26 +827,6 @@ public class TransactionProcessor {
         this.signatures.addAll(eosioTransactionSignatureResponse.getSignatures());
         this.serializedTransaction = eosioTransactionSignatureResponse.getSerializedTransaction();
         return eosioTransactionSignatureResponse;
-    }
-
-    /**
-     * Push signed transaction to blockchain.
-     * <p>
-     * Check pushTransaction() flow in "Complete Workflow" document for more details.
-     *
-     * @param pushTransactionRequest the request
-     * @return Response from chain
-     */
-    @NotNull
-    private PushTransactionResponse pushTransaction(PushTransactionRequest pushTransactionRequest)
-            throws TransactionPushTransactionError {
-        try {
-            return this.rpcProvider.pushTransaction(pushTransactionRequest);
-        } catch (PushTransactionRpcError pushTransactionRpcError) {
-            throw new TransactionPushTransactionError(
-                    ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
-                    pushTransactionRpcError);
-        }
     }
 
     /**
@@ -1221,7 +1213,7 @@ public class TransactionProcessor {
     }
 
     /**
-     * Send signed transaction to blockchain.
+     * Queue message to AMQP TRX queue if amqpProvider exists. Otherwise, send signed transaction to blockchain.
      * <p>
      * Check sendTransaction() flow in "Complete Workflow" document for more details.
      *
@@ -1230,31 +1222,34 @@ public class TransactionProcessor {
      */
     @NotNull
     private TransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest)
-            throws TransactionPushTransactionError {
+            throws TransactionSendRpcTransactionError, TransactionSendAmqpTransactionError {
         if (this.amqpProvider != null) {
-            return this.sendAmqpTransaction(sendTransactionRequest);
+            try {
+                return this.sendAmqpTransaction(sendTransactionRequest);
+            } catch (SerializePackedTransactionError serializePackedTransactionError) {
+                throw new TransactionSendAmqpTransactionError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_AMQP_SEND_TRANSACTION,
+                        serializePackedTransactionError);
+            }
         } else {
             try {
                 return this.rpcProvider.sendTransaction(sendTransactionRequest);
             } catch (SendTransactionRpcError pushTransactionRpcError) {
-                throw new TransactionPushTransactionError(
-                        ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
+                throw new TransactionSendRpcTransactionError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_RPC_SEND_TRANSACTION,
                         pushTransactionRpcError);
             }
         }
     }
 
-    private TransactionResponse sendAmqpTransaction(SendTransactionRequest sendTransactionRequest) {
+    private TransactionResponse sendAmqpTransaction(SendTransactionRequest sendTransactionRequest)
+            throws SerializePackedTransactionError {
         AtomicBoolean success = new AtomicBoolean(false);
-        Completable completable = this.amqpProvider.send(sendTransactionRequest.toBinary());
+        String packedTransactionV0 = getPackedTransactionV0(sendTransactionRequest);
+        Completable completable = this.amqpProvider.send(Hex.decode(packedTransactionV0));
 
         // What do we do on error?
-        Completable onComplete = completable.doOnComplete(new io.reactivex.functions.Action() {
-            @Override
-            public void run() throws Exception {
-                success.set(true);
-            }
-        });
+        Completable onComplete = completable.doOnComplete(() -> success.set(true));
 
         // Await response for 5 seconds
         onComplete.blockingAwait(5, TimeUnit.SECONDS);
@@ -1264,6 +1259,14 @@ public class TransactionProcessor {
         } else {
             return new AMQPMessageFailedResponse();
         }
+    }
+
+    private String getPackedTransactionV0(SendTransactionRequest sendTransactionRequest)
+            throws SerializePackedTransactionError {
+        String json = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).toJson(sendTransactionRequest);
+        String packedTransactionV0 = this.serializationProvider.serializePackedTransaction(json);
+
+        return PACKED_TRANSACTION_V0_PREFIX + packedTransactionV0;
     }
 
     //endregion

@@ -4,6 +4,7 @@ package one.block.eosiojava.error;
 
 import java.util.List;
 import one.block.eosiojava.interfaces.IRPCProvider;
+import one.block.eosiojava.interfaces.IAMQPProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
 import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
@@ -268,7 +269,12 @@ public class ErrorConstants {
     /**
      * Error message get thrown if {@link IRPCProvider#pushTransaction(PushTransactionRequest)} returns error.
      */
-    public static final String TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION = "Error happened on calling pushTransaction RPC call";
+    public static final String TRANSACTION_PROCESSOR_RPC_SEND_TRANSACTION = "Error happened on calling pushTransaction RPC call";
+
+    /**
+     * Error message get thrown if {@link IAMQPProvider#send(byte[])} returns error.
+     */
+    public static final String TRANSACTION_PROCESSOR_AMQP_SEND_TRANSACTION = "Error happened on calling send AMQP call";
 
     /**
      * Error message get thrown if {@link TransactionProcessor#serialize()}

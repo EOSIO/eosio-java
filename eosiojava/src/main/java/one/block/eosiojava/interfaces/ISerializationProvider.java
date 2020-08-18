@@ -2,9 +2,11 @@ package one.block.eosiojava.interfaces;
 
 import one.block.eosiojava.error.serializationProvider.DeserializeAbiError;
 import one.block.eosiojava.error.serializationProvider.DeserializeError;
+import one.block.eosiojava.error.serializationProvider.DeserializePackedTransactionError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeAbiError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
+import one.block.eosiojava.error.serializationProvider.SerializePackedTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.models.AbiEosSerializationObject;
 
@@ -76,4 +78,24 @@ public interface ISerializationProvider {
      * conversion process.
      */
     String serializeAbi(String json) throws SerializeAbiError;
+
+    /**
+     * Convenience method to transform a packed transaction (v0) hex string to a JSON string.
+     *
+     * @param hex - Hex string representing the packed transaction (v0) to deserialize.
+     * @return - Deserialized JSON string representing the transaction hex.
+     * @throws DeserializePackedTransactionError - A deserialization error is thrown if there are any exceptions during the
+     *      * conversion process.
+     */
+    String deserializePackedTransaction(String hex) throws DeserializePackedTransactionError;
+
+    /**
+     * Convenience method to transform a serialized transaction (v0) JSON string to a hex string.
+     *
+     * @param json - JSON string representing the serialized transaction (v0) to serialize.
+     * @return - Serialized hex string representing the transaction JSON.
+     * @throws SerializePackedTransactionError - A serialization error is thrown if there are any exceptions during the
+     *      * conversion process.
+     */
+    String serializePackedTransaction(String json) throws SerializePackedTransactionError;
 }
