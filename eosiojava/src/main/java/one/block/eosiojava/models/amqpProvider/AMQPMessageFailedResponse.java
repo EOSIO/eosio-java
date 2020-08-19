@@ -1,7 +1,7 @@
 package one.block.eosiojava.models.amqpProvider;
 
-import one.block.eosiojava.models.rpcProvider.response.TransactionResponse;
+import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
 
-public class AMQPMessageFailedResponse extends TransactionResponse {
+public class AMQPMessageFailedResponse extends SendTransactionResponse {
 
 }

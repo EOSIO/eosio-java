@@ -1,11 +1,7 @@
 package one.block.eosiojava.session;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 import com.google.common.base.Strings;
 import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
-import io.reactivex.disposables.Disposable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -14,13 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
 import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
 import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
@@ -57,7 +51,6 @@ import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
 import one.block.eosiojava.models.amqpProvider.AMQPMessageFailedResponse;
 import one.block.eosiojava.models.amqpProvider.AMQPMessageSuccessResponse;
-import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.Action;
@@ -66,13 +59,11 @@ import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
-import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
 import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
-import one.block.eosiojava.models.rpcProvider.response.TransactionResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
@@ -542,7 +533,7 @@ public class TransactionProcessor {
      *          - An error has been returned from the AMQP TRX queue process. Cause: {@link TransactionSendAmqpTransactionError}
      */
     @NotNull
-    public TransactionResponse broadcast() throws TransactionBroadCastError {
+    public SendTransactionResponse broadcast() throws TransactionBroadCastError {
         if (this.serializedTransaction == null || this.serializedTransaction.isEmpty()) {
             throw new TransactionBroadCastError(
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY);
@@ -567,7 +558,7 @@ public class TransactionProcessor {
     /**
      * Sign and broadcast the transaction and signature/s to chain
      *
-     * @return PushTransactionResponse from blockchain.
+     * @return SendTransactionResponse from blockchain.
      * @throws TransactionSignAndBroadCastError thrown under the following conditions:
      *      <br>
      *          - Exception while creating signature. Cause: {@link TransactionCreateSignatureRequestError}
@@ -583,7 +574,7 @@ public class TransactionProcessor {
      *          - An error has been returned from the AMQP TRX queue process. Cause: {@link TransactionSendAmqpTransactionError}
      */
     @NotNull
-    public TransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
+    public SendTransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest;
         try {
             eosioTransactionSignatureRequest = this.createSignatureRequest();
@@ -608,10 +599,10 @@ public class TransactionProcessor {
         }
 
         // Signatures and serializedTransaction are assigned and finalized in getSignature() method
-        SendTransactionRequest pushTransactionRequest = new SendTransactionRequest(this.signatures,
+        SendTransactionRequest sendTransactionRequest = new SendTransactionRequest(this.signatures,
                 0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
-            return this.sendTransaction(pushTransactionRequest);
+            return this.sendTransaction(sendTransactionRequest);
         } catch (TransactionSendRpcTransactionError | TransactionSendAmqpTransactionError transactionSendTransactionError) {
             throw new TransactionSignAndBroadCastError(transactionSendTransactionError);
         }
@@ -1221,7 +1212,7 @@ public class TransactionProcessor {
      * @return Response from chain
      */
     @NotNull
-    private TransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest)
+    private SendTransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest)
             throws TransactionSendRpcTransactionError, TransactionSendAmqpTransactionError {
         if (this.amqpProvider != null) {
             try {
@@ -1234,15 +1225,15 @@ public class TransactionProcessor {
         } else {
             try {
                 return this.rpcProvider.sendTransaction(sendTransactionRequest);
-            } catch (SendTransactionRpcError pushTransactionRpcError) {
+            } catch (SendTransactionRpcError sendTransactionRpcError) {
                 throw new TransactionSendRpcTransactionError(
                         ErrorConstants.TRANSACTION_PROCESSOR_RPC_SEND_TRANSACTION,
-                        pushTransactionRpcError);
+                        sendTransactionRpcError);
             }
         }
     }
 
-    private TransactionResponse sendAmqpTransaction(SendTransactionRequest sendTransactionRequest)
+    private SendTransactionResponse sendAmqpTransaction(SendTransactionRequest sendTransactionRequest)
             throws SerializePackedTransactionError {
         AtomicBoolean success = new AtomicBoolean(false);
         String packedTransactionV0 = getPackedTransactionV0(sendTransactionRequest);

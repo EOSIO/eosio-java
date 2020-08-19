@@ -10,7 +10,6 @@ import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.session.TransactionProcessor;
@@ -18,6 +17,7 @@ import one.block.eosiojava.interfaces.IABIProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 
 public class ErrorConstants {
     private ErrorConstants(){
@@ -267,9 +267,9 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_ERROR = "Error happened on calling deserializeTransaction to refresh transaction object with new values";
 
     /**
-     * Error message get thrown if {@link IRPCProvider#pushTransaction(PushTransactionRequest)} returns error.
+     * Error message get thrown if {@link IRPCProvider#sendTransaction(SendTransactionRequest)} returns error.
      */
-    public static final String TRANSACTION_PROCESSOR_RPC_SEND_TRANSACTION = "Error happened on calling pushTransaction RPC call";
+    public static final String TRANSACTION_PROCESSOR_RPC_SEND_TRANSACTION = "Error happened on calling sendTransaction RPC call";
 
     /**
      * Error message get thrown if {@link IAMQPProvider#send(byte[])} returns error.
@@ -287,9 +287,9 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_SIGN_CREATE_SIGN_REQUEST_ERROR = "Error happened on creating signature request for Signature Provider to sign!";
 
     /**
-     * Error message get thrown if error happens during pushing transaction to backend
+     * Error message get thrown if error happens during sending transaction to backend
      */
-    public static final String TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR = "Error happened on pushing transaction to chain!";
+    public static final String TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR = "Error happened on sending transaction to chain!";
 
     /**
      * Error message get thrown if required keys from {@link GetRequiredKeysResponse} is not subset of keys from {@link ISignatureProvider#getAvailableKeys()}

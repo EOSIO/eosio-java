@@ -17,9 +17,10 @@ import one.block.eosiojava.error.abiProvider.GetAbiError;
 import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
+import one.block.eosiojava.error.serializationProvider.SerializePackedTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.error.session.TransactionBroadCastError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestError;
@@ -30,11 +31,13 @@ import one.block.eosiojava.error.session.TransactionPrepareError;
 import one.block.eosiojava.error.session.TransactionPrepareInputError;
 import one.block.eosiojava.error.session.TransactionPrepareRpcError;
 import one.block.eosiojava.error.session.TransactionProcessorConstructorInputError;
-import one.block.eosiojava.error.session.TransactionPushTransactionError;
+import one.block.eosiojava.error.session.TransactionSendAmqpTransactionError;
+import one.block.eosiojava.error.session.TransactionSendRpcTransactionError;
 import one.block.eosiojava.error.session.TransactionSignError;
 import one.block.eosiojava.error.signatureProvider.GetAvailableKeysError;
 import one.block.eosiojava.error.signatureProvider.SignTransactionError;
 import one.block.eosiojava.interfaces.IABIProvider;
+import one.block.eosiojava.interfaces.IAMQPProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
@@ -46,7 +49,7 @@ import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
@@ -71,6 +74,7 @@ public class NegativeTransactionProcessorTest {
     public ExpectedException exceptionRule = ExpectedException.none();
 
     private IRPCProvider mockedRpcProvider = mock(IRPCProvider.class);
+    private IAMQPProvider mockedAmqpProvider = mock(IAMQPProvider.class);
     private ISignatureProvider mockedSignatureProvider = mock(ISignatureProvider.class);
     private IABIProvider mockedABIProvider = mock(IABIProvider.class);
     private ISerializationProvider mockedSerializationProvider = mock(ISerializationProvider.class);
@@ -80,6 +84,11 @@ public class NegativeTransactionProcessorTest {
     public void setUp() {
         this.session = new TransactionSession(this.mockedSerializationProvider, this.mockedRpcProvider, this.mockedABIProvider,
                 this.mockedSignatureProvider);
+    }
+
+    public void setUpWithAmqpProvider() {
+        this.session = new TransactionSession(this.mockedSerializationProvider, this.mockedRpcProvider, this.mockedABIProvider,
+                this.mockedSignatureProvider, this.mockedAmqpProvider);
     }
 
     //region negative tests for "prepare"
@@ -407,22 +416,73 @@ public class NegativeTransactionProcessorTest {
     //region negative tests for broadcast
 
     @Test
-    public void broadCast_thenFailWithPushTransactionError() throws TransactionBroadCastError {
+    public void broadCast_thenFailWithSendRpcTransactionError() throws TransactionBroadCastError {
         exceptionRule.expect(TransactionBroadCastError.class);
         exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR);
-        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(TransactionPushTransactionError.class));
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(TransactionSendRpcTransactionError.class));
 
         // Mock RpcProvider
         this.mockGetInfoPositively();
         this.mockGetBlockPositively();
         this.mockRequiredKeys(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
 
-        // Mock PushTransaction RPC to throw error
+        // Mock SendTransaction RPC to throw error
         try {
-            when(this.mockedRpcProvider.pushTransaction(any(PushTransactionRequest.class))).thenThrow(new PushTransactionRpcError());
-        } catch (PushTransactionRpcError pushTransactionRpcError) {
-            pushTransactionRpcError.printStackTrace();
-            fail("Exception should not be thrown here for mocking pushTransaction");
+            when(this.mockedRpcProvider.sendTransaction(any(SendTransactionRequest.class))).thenThrow(new SendTransactionRpcError());
+        } catch (SendTransactionRpcError sendTransactionRpcError) {
+            sendTransactionRpcError.printStackTrace();
+            fail("Exception should not be thrown here for mocking sendTransaction");
+        }
+
+        // Mock AbiProvider
+        this.mockGetAbi(EOSIOTOKENABIJSON);
+
+        // mock serialization
+        this.mockSerialize(MOCKED_ACTION_HEX);
+        this.mockSerializeTransaction(MOCKED_TRANSACTION_HEX);
+
+        // Mock signature provider
+        this.mockGetAvailableKey(Arrays.asList("Key1", "Key2"));
+        this.mockSignTransaction(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN)
+                .fromJson(mockedEosioTransactionSignatureResponseJSON, EosioTransactionSignatureResponse.class));
+
+        TransactionProcessor processor = session.getTransactionProcessor();
+
+        try {
+            processor.prepare(this.defaultActions());
+        } catch (TransactionPrepareError transactionPrepareError) {
+            transactionPrepareError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare");
+        }
+
+        try {
+            processor.sign();
+        } catch (TransactionSignError transactionSignError) {
+            transactionSignError.printStackTrace();
+            fail("Exception should not be thrown here for calling prepare");
+        }
+
+        processor.broadcast();
+    }
+
+    @Test
+    public void broadCast_thenFailWithSendAmqpTransactionError() throws TransactionBroadCastError {
+        setUpWithAmqpProvider();
+        exceptionRule.expect(TransactionBroadCastError.class);
+        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR);
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(TransactionSendAmqpTransactionError.class));
+
+        // Mock RpcProvider
+        this.mockGetInfoPositively();
+        this.mockGetBlockPositively();
+        this.mockRequiredKeys(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
+
+        // Mock AMQPProvider send to throw error
+        try {
+            when(this.mockedSerializationProvider.serializePackedTransaction(any(String.class))).thenThrow(new SerializePackedTransactionError());
+        } catch (SerializePackedTransactionError serializePackedTransactionError) {
+            serializePackedTransactionError.printStackTrace();
+            fail("Exception should not be thrown here for mocking sendTransaction");
         }
 
         // Mock AbiProvider

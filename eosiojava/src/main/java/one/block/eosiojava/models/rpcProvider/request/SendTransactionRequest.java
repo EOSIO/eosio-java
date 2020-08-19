@@ -1,37 +1,131 @@
 package one.block.eosiojava.models.rpcProvider.request;
 
-import java.util.List;
-import one.block.eosiojava.models.rpcProvider.Transaction;
-import one.block.eosiojava.utilities.DateFormatter;
-import one.block.eosiojava.utilities.Utils;
-import org.jetbrains.annotations.NotNull;
 import com.google.gson.annotations.SerializedName;
+import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
-public class SendTransactionRequest extends TransactionRequest {
+/**
+ * The base class for send transaction requests
+ */
+public class SendTransactionRequest {
+
     /**
-     * Instantiates a new SendTransactionRequest.
+     * List of signatures required to authorize transaction
+     */
+    @SerializedName("signatures")
+    @NotNull
+    private List<String> signatures;
+
+    /**
+     * The compression used, usually 0.
+     */
+    @SerializedName("compression")
+    private int compression;
+
+    /**
+     * Context free data in hex
+     */
+    @SerializedName("packed_context_free_data")
+    private String packagedContextFreeData;
+
+    /**
+     * The Pack Transaction (Serialized Transaction).
+     * <br> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
+     */
+    @SerializedName("packed_trx")
+    @NotNull
+    private String packTrx;
+
+    /**
+     * Instantiates a new TransactionRequest.
      *
      * @param signatures the list of signatures required to authorize transaction
      * @param compression the compression used, usually 0.
      * @param packagedContextFreeData the context free data in hex
-     * @param packTrx the packed Transaction (serialized transaction). It is serialized version of
-     * {@link Transaction}.
+     * @param packTrx the packed Transaction (serialized transaction). It is serialized version
+     * of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      */
-    public SendTransactionRequest(
-            @NotNull List<String> signatures, int compression,
+    public SendTransactionRequest(@NotNull List<String> signatures, int compression,
             String packagedContextFreeData, @NotNull String packTrx) {
-        super(signatures, compression, packagedContextFreeData, packTrx);
+        this.signatures = signatures;
+        this.compression = compression;
+        this.packagedContextFreeData = packagedContextFreeData;
+        this.packTrx = packTrx;
     }
 
-    public byte[] toBinary() {
-        String sendTransactionRequestAsString = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).toJson(this);
-        byte[] sendTransactionRequestAsBytes = sendTransactionRequestAsString.getBytes();
-        byte[] prependedTransactionRequestAsBytes = new byte[1 + sendTransactionRequestAsBytes.length];
-        prependedTransactionRequestAsBytes[0] = (char)0;
-        for(int j = 0; j < sendTransactionRequestAsBytes.length; j++) {
-            prependedTransactionRequestAsBytes[j + 1] = sendTransactionRequestAsBytes[j];
-        }
+    /**
+     * Gets list of signatures required to authorize transaction.
+     *
+     * @return the list of signatures
+     */
+    @NotNull
+    public List<String> getSignatures() {
+        return signatures;
+    }
 
-        return prependedTransactionRequestAsBytes;
+    /**
+     * Sets list of signatures required to authorize transaction.
+     *
+     * @param signatures the list of signatures.
+     */
+    public void setSignatures(@NotNull List<String> signatures) {
+        this.signatures = signatures;
+    }
+
+    /**
+     * Gets the compression used, usually 0.
+     *
+     * @return the compression.
+     */
+    public int getCompression() {
+        return compression;
+    }
+
+    /**
+     * Sets the compression used, usually 0.
+     *
+     * @param compression the compression.
+     */
+    public void setCompression(int compression) {
+        this.compression = compression;
+    }
+
+    /**
+     * Gets packaged context free data in hex.
+     *
+     * @return the packaged context free data in hex.
+     */
+    public String getPackagedContextFreeData() {
+        return packagedContextFreeData;
+    }
+
+    /**
+     * Sets packaged context free data in hex
+     *
+     * @param packagedContextFreeData the packaged context free data in hex.
+     */
+    public void setPackagedContextFreeData(String packagedContextFreeData) {
+        this.packagedContextFreeData = packagedContextFreeData;
+    }
+
+    /**
+     * Gets the packed transaction (serialized transaction).
+     * <br> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
+     *
+     * @return the Pack Transaction (Serialized Transaction).
+     */
+    @NotNull
+    public String getPackTrx() {
+        return packTrx;
+    }
+
+    /**
+     * Sets the packed transaction (serialized transaction).
+     * <br> It is the serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
+     *
+     * @param packTrx the packed transaction (serialized transaction).
+     */
+    public void setPackTrx(@NotNull String packTrx) {
+        this.packTrx = packTrx;
     }
 }

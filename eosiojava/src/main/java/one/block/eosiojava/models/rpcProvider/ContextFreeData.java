@@ -3,8 +3,9 @@ package one.block.eosiojava.models.rpcProvider;
 import java.nio.ByteBuffer;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
-import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
+import one.block.eosiojava.interfaces.IAMQPProvider;
 import org.bitcoinj.core.Sha256Hash;
 import org.bouncycastle.util.encoders.Hex;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +57,8 @@ public class ContextFreeData {
     }
 
     /**
-     * Gets the hex representation of the data to be used by {@link IRPCProvider#pushTransaction(PushTransactionRequest)}
+     * Gets the hex representation of the data to be used by {@link IRPCProvider#sendTransaction(SendTransactionRequest)}
+     * or {@link IAMQPProvider#send(byte[])} depending on configuration
      * @return the hexed data
      */
     public String getHexed() {
