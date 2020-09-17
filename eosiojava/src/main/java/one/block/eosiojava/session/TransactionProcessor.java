@@ -13,6 +13,8 @@ import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.serializationProvider.DeserializeError;
+import one.block.eosiojava.error.serializationProvider.DeserializeReturnValueError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -25,6 +27,7 @@ import one.block.eosiojava.error.session.TransactionCreateSignatureRequestKeyErr
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestRequiredKeysEmptyError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestRpcError;
 import one.block.eosiojava.error.session.TransactionCreateSignatureRequestSerializationError;
+import one.block.eosiojava.error.session.TransactionFormatPushTransactionResponseError;
 import one.block.eosiojava.error.session.TransactionGetSignatureDeserializationError;
 import one.block.eosiojava.error.session.TransactionGetSignatureError;
 import one.block.eosiojava.error.session.TransactionGetSignatureNotAllowModifyTransactionError;
@@ -43,6 +46,8 @@ import one.block.eosiojava.interfaces.IABIProvider;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.interfaces.ISerializationProvider;
 import one.block.eosiojava.interfaces.ISignatureProvider;
+import one.block.eosiojava.models.abiProvider.Abi;
+import one.block.eosiojava.models.rpcProvider.response.ActionTrace;
 import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.Action;
@@ -542,10 +547,26 @@ public class TransactionProcessor {
         PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
                 0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
-            return this.pushTransaction(pushTransactionRequest);
-        } catch (TransactionPushTransactionError transactionPushTransactionError) {
+            return formatPushTransactionResponse(this.pushTransaction(pushTransactionRequest));
+        } catch (TransactionPushTransactionError | TransactionFormatPushTransactionResponseError transactionPushTransactionError) {
             throw new TransactionSignAndBroadCastError(transactionPushTransactionError);
         }
+    }
+
+    private PushTransactionResponse formatPushTransactionResponse(PushTransactionResponse response)
+            throws TransactionFormatPushTransactionResponseError {
+        List<ActionTrace> actionTraces = response.getActionTraces();
+        for (ActionTrace actionTrace : actionTraces) {
+            if (actionTrace.hasReturnValue()) {
+                try {
+                    AbiEosSerializationObject deserializationObject = deserializeActionTraceReturnValue(actionTrace, chainId, abiProvider);
+                    actionTrace.setDeserializedReturnValue(deserializationObject.getJson());
+                } catch (DeserializeReturnValueError transactionCreateSignatureRequestError) {
+                    throw new TransactionFormatPushTransactionResponseError(transactionCreateSignatureRequestError);
+                }
+            }
+        }
+        return response;
     }
 
     /**
@@ -968,12 +989,46 @@ public class TransactionProcessor {
         }
 
         AbiEosSerializationObject actionAbiEosSerializationObject = new AbiEosSerializationObject(
-                action.getAccount(), action.getName(),
-                null, actionAbiJSON);
+                action.getAccount(), action.getName(), actionAbiJSON);
         actionAbiEosSerializationObject.setHex("");
 
         // !!! At this step, the data field of the action is still in JSON format.
         actionAbiEosSerializationObject.setJson(action.getData());
+
+        return actionAbiEosSerializationObject;
+    }
+
+    private AbiEosSerializationObject deserializeActionTraceReturnValue(ActionTrace actionTrace, String chainId, IABIProvider abiProvider)
+            throws DeserializeReturnValueError {
+        String actionAbiJSON;
+        try {
+            actionAbiJSON = abiProvider
+                    .getAbi(chainId, new EOSIOName(actionTrace.getAccountName()));
+        } catch (GetAbiError getAbiError) {
+            throw new DeserializeReturnValueError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_GET_ABI_ERROR,
+                            actionTrace.getAccountName()), getAbiError);
+        }
+
+        Abi abi = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(actionAbiJSON, Abi.class);
+
+        AbiEosSerializationObject actionAbiEosSerializationObject = new AbiEosSerializationObject(
+                abi.getActionReturnTypeByActionName(actionTrace.getActionName()), actionAbiJSON);
+
+        // !!! At this step, the data field of the action is still in HEX format.
+        actionAbiEosSerializationObject.setHex(actionTrace.getReturnValue());
+
+        try {
+            this.serializationProvider.deserialize(actionAbiEosSerializationObject);
+            if (actionAbiEosSerializationObject.getJson().isEmpty()) {
+                throw new DeserializeReturnValueError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_EMPTY);
+            }
+        } catch (DeserializeError | DeserializeReturnValueError deserializeError) {
+            throw new DeserializeReturnValueError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_ERROR,
+                            actionTrace.getAccountName()), deserializeError);
+        }
 
         return actionAbiEosSerializationObject;
     }

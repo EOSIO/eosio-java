@@ -24,6 +24,10 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 
 ## Updates
 
+7/7/20
+
+Version 0.1.3 Allows for deserialization of action return value structs.
+
 2/25/20
 
 Version 0.1.2 Uses JDK11 to build and targets 1.8 for source and target compatibility.
@@ -148,7 +152,7 @@ EOSIO SDK for Java _does not include_ an RPC provider implementation; one must b
 
 ### Serialization Provider Protocol
 
-The Serialization Provider is responsible for ABI-driven transaction and action serialization and deserialization between JSON and binary data representations. These implementations often contain platform-sensitive C++ code and larger dependencies. For those reasons, EOSIO SDK for Java _does not include_ a serialization provider implementation; one must be installed separately.
+The Serialization Provider is responsible for ABI-driven transaction, action, and struct serialization and deserialization between JSON and binary data representations. These implementations often contain platform-sensitive C++ code and larger dependencies. For those reasons, EOSIO SDK for Java _does not include_ a serialization provider implementation; one must be installed separately.
 
 * [ISerializationProvider](eosiojava/src/main/java/one/block/eosiojava/interfaces/ISerializationProvider.java)
 * [ABIEOS Serialization Provider Implementation](https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider) - Currently supports Android 6 (Marshmallow)+

@@ -10,6 +10,7 @@ import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.response.ActionTrace;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.session.TransactionProcessor;
@@ -316,8 +317,17 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY = "Can't call broadcast because Signature is empty. Make sure of calling sign before calling broadcast.";
 
     /**
-     * Error message get thrown if {@link TransactionProcessor#getSignatures()} is empty during process of {@link TransactionProcessor#signAndBroadcast()} ()}
+     * Error message get thrown if {@link TransactionProcessor#getSignatures()} is empty during process of {@link TransactionProcessor#signAndBroadcast()}
      */
     public static final String TRANSACTION_PROCESSOR_SIGN_BROADCAST_SIGN_EMPTY = "Can't call sign and broadcast because Signature is empty. Make sure of calling sign before calling sign and broadcast.";
 
+    /**
+     * Error message get thrown if return value's deserialization process gets an error after calling {@link ISerializationProvider#deserialize(AbiEosSerializationObject)}
+     */
+    public static final String TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_ERROR = "Error happened on deserializing return value [%s]";
+
+    /**
+     * Error message thrown if return value's deserialization process is empty after calling {@link ISerializationProvider#deserialize(AbiEosSerializationObject)}
+     */
+    public static final String TRANSACTION_PROCESSOR_DESERIALIZE_RETURN_VALUE_EMPTY = "Deserialization of return value expected result, but was empty.";
 }
