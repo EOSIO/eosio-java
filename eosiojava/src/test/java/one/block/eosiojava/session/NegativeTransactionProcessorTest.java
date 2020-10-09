@@ -17,7 +17,7 @@ import one.block.eosiojava.error.abiProvider.GetAbiError;
 import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -30,7 +30,7 @@ import one.block.eosiojava.error.session.TransactionPrepareError;
 import one.block.eosiojava.error.session.TransactionPrepareInputError;
 import one.block.eosiojava.error.session.TransactionPrepareRpcError;
 import one.block.eosiojava.error.session.TransactionProcessorConstructorInputError;
-import one.block.eosiojava.error.session.TransactionPushTransactionError;
+import one.block.eosiojava.error.session.TransactionSendTransactionError;
 import one.block.eosiojava.error.session.TransactionSignError;
 import one.block.eosiojava.error.signatureProvider.GetAvailableKeysError;
 import one.block.eosiojava.error.signatureProvider.SignTransactionError;
@@ -46,7 +46,7 @@ import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
@@ -407,22 +407,23 @@ public class NegativeTransactionProcessorTest {
     //region negative tests for broadcast
 
     @Test
-    public void broadCast_thenFailWithPushTransactionError() throws TransactionBroadCastError {
+    public void broadCast_thenFailWithSendTransactionError() throws TransactionBroadCastError {
         exceptionRule.expect(TransactionBroadCastError.class);
         exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR);
-        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(TransactionPushTransactionError.class));
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(
+                TransactionSendTransactionError.class));
 
         // Mock RpcProvider
         this.mockGetInfoPositively();
         this.mockGetBlockPositively();
         this.mockRequiredKeys(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
 
-        // Mock PushTransaction RPC to throw error
+        // Mock SendTransaction RPC to throw error
         try {
-            when(this.mockedRpcProvider.pushTransaction(any(PushTransactionRequest.class))).thenThrow(new PushTransactionRpcError());
-        } catch (PushTransactionRpcError pushTransactionRpcError) {
-            pushTransactionRpcError.printStackTrace();
-            fail("Exception should not be thrown here for mocking pushTransaction");
+            when(this.mockedRpcProvider.sendTransaction(any(SendTransactionRequest.class))).thenThrow(new SendTransactionRpcError());
+        } catch (SendTransactionRpcError sendTransactionRpcError) {
+            sendTransactionRpcError.printStackTrace();
+            fail("Exception should not be thrown here for mocking sendTransaction");
         }
 
         // Mock AbiProvider

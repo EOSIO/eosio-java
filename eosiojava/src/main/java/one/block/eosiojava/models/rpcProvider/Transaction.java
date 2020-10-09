@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * The Transaction class which has data of actions for each transaction. It holds the serialized
- * action data that will be pushed to the blockchain.
+ * action data that will be sent to the blockchain.
  */
 public class Transaction implements Serializable {
 

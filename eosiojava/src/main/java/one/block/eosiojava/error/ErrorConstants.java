@@ -10,6 +10,7 @@ import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.session.TransactionProcessor;
@@ -271,6 +272,11 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION = "Error happened on calling pushTransaction RPC call";
 
     /**
+     * Error message get thrown if {@link IRPCProvider#sendTransaction(SendTransactionRequest)} returns error.
+     */
+    public static final String TRANSACTION_PROCESSOR_RPC_SEND_TRANSACTION = "Error happened on calling sendTransaction RPC call";
+
+    /**
      * Error message get thrown if {@link TransactionProcessor#serialize()}
      */
     public static final String TRANSACTION_PROCESSOR_SERIALIZE_ERROR = "Error happened on calling serializeTransaction";
@@ -281,9 +287,9 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_SIGN_CREATE_SIGN_REQUEST_ERROR = "Error happened on creating signature request for Signature Provider to sign!";
 
     /**
-     * Error message get thrown if error happens during pushing transaction to backend
+     * Error message get thrown if error happens during sending transaction to backend
      */
-    public static final String TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR = "Error happened on pushing transaction to chain!";
+    public static final String TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR = "Error happened on sending transaction to chain!";
 
     /**
      * Error message get thrown if required keys from {@link GetRequiredKeysResponse} is not subset of keys from {@link ISignatureProvider#getAvailableKeys()}
