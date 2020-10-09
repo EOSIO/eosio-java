@@ -11,12 +11,12 @@ import java.math.BigInteger;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRawAbiRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
-import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -148,29 +148,29 @@ public class RpcModelTest {
     }
 
     /**
-     * Test PushTransactionRequest
+     * Test SendTransactionRequest
      */
     @Test
-    public void PushTransactionRequestTest() {
+    public void SendTransactionRequestTest() {
         String jsonContent = "{\"signatures\":[\"signature in EOS format\"],\"compression\":0,\"packed_context_free_data\":\"\",\"packed_trx\":\"packed transaction\"}";
 
         // FromJSON test
-        PushTransactionRequest pushTransactionRequest = this.gson
-                .fromJson(jsonContent, PushTransactionRequest.class);
-        assertNotNull(pushTransactionRequest);
-        assertEquals(0, pushTransactionRequest.getCompression());
+        SendTransactionRequest sendTransactionRequest = this.gson
+                .fromJson(jsonContent, SendTransactionRequest.class);
+        assertNotNull(sendTransactionRequest);
+        assertEquals(0, sendTransactionRequest.getCompression());
         assertEquals(
                 "packed transaction",
-                pushTransactionRequest.getPackTrx());
-        assertEquals("", pushTransactionRequest.getPackagedContextFreeData());
-        assertNotNull(pushTransactionRequest.getSignatures());
-        assertEquals(1, pushTransactionRequest.getSignatures().size());
+                sendTransactionRequest.getPackTrx());
+        assertEquals("", sendTransactionRequest.getPackagedContextFreeData());
+        assertNotNull(sendTransactionRequest.getSignatures());
+        assertEquals(1, sendTransactionRequest.getSignatures().size());
         assertEquals(
                 "signature in EOS format",
-                pushTransactionRequest.getSignatures().get(0));
+                sendTransactionRequest.getSignatures().get(0));
 
         // ToJSON test
-        String toJSON = this.gson.toJson(pushTransactionRequest);
+        String toJSON = this.gson.toJson(sendTransactionRequest);
         assertNotNull(toJSON);
         assertNotEquals("", toJSON);
         assertEquals(jsonContent, toJSON);
@@ -274,21 +274,21 @@ public class RpcModelTest {
     }
 
     /**
-     * Test PushTransactionResponse
+     * Test SendTransactionResponse
      */
     @Test
-    public void PushTransactionResponseTest() {
+    public void SendTransactionResponseTest() {
         String jsonContent = "{\"transaction_id\":\"dump_transaction_id\",\"processed\":{\"id\":\"dump_id\",\"block_num\":1231214214,\"block_time\":\"2019-12-12T12:12:12.500\",\"receipt\":{\"status\":\"executed\",\"cpu_usage_us\":1,\"net_usage_words\":1},\"elapsed\":1,\"net_usage\":1,\"scheduled\":false,\"action_traces\":[{\"receipt\":{\"receiver\":\"eosio.assert\",\"act_digest\":\"digest\",\"global_sequence\":1,\"recv_sequence\":1,\"auth_sequence\":[],\"code_sequence\":1,\"abi_sequence\":1},\"act\":{\"account\":\"eosio.assert\",\"name\":\"require\",\"authorization\":[],\"data\":{\"chain_params_hash\":\"hash\",\"manifest_id\":\"manifest id\",\"actions\":[{\"contract\":\"eosio.token\",\"action\":\"transfer\"}],\"abi_hashes\":[\"abi hashes\"]},\"hex_data\":\"hex data\"},\"context_free\":false,\"elapsed\":1,\"cpu_usage\":0,\"console\":\"\",\"total_cpu_usage\":0,\"trx_id\":\"transaction id\",\"block_num\":1,\"block_time\":\"2019-12-12T12:12:12.500\",\"account_ram_deltas\":[],\"inline_traces\":[]},{\"receipt\":{\"receiver\":\"eosio.token\",\"act_digest\":\"digest\",\"global_sequence\":1,\"recv_sequence\":1,\"auth_sequence\":[[\"dummy_account\",1]],\"code_sequence\":1,\"abi_sequence\":1},\"act\":{\"account\":\"eosio.token\",\"name\":\"transfer\",\"authorization\":[{\"actor\":\"dummy_account\",\"permission\":\"active\"}],\"data\":{\"from\":\"dummy_account\",\"to\":\"dummy_account_2\",\"quantity\":\"1.0000 EOS\",\"memo\":\"dummy memo\"},\"hex_data\":\"hex data\"},\"context_free\":false,\"elapsed\":1,\"cpu_usage\":0,\"console\":\"\",\"total_cpu_usage\":0,\"trx_id\":\"transaction id\",\"block_num\":123123123,\"block_time\":\"2019-12-12T12:12:12.500\",\"account_ram_deltas\":[],\"inline_traces\":[{\"receipt\":{\"receiver\":\"dummy_account\",\"act_digest\":\"digest\",\"global_sequence\":1,\"recv_sequence\":1,\"auth_sequence\":[[\"dummy_account\",1]],\"code_sequence\":1,\"abi_sequence\":1},\"act\":{\"account\":\"eosio.token\",\"name\":\"transfer\",\"authorization\":[{\"actor\":\"dummy_account\",\"permission\":\"active\"}],\"data\":{\"from\":\"dummy_account\",\"to\":\"dummy_account_2\",\"quantity\":\"1.0000 EOS\",\"memo\":\"dummy memo\"},\"hex_data\":\"hex data\"},\"context_free\":false,\"elapsed\":1,\"cpu_usage\":0,\"console\":\"\",\"total_cpu_usage\":0,\"trx_id\":\"transaction id\",\"block_num\":1,\"block_time\":\"2019-12-12T12:12:12.500\",\"account_ram_deltas\":[],\"inline_traces\":[]},{\"receipt\":{\"receiver\":\"dummy_account_2\",\"act_digest\":\"digest\",\"global_sequence\":1,\"recv_sequence\":1,\"auth_sequence\":[[\"dummy_account\",111]],\"code_sequence\":1,\"abi_sequence\":1},\"act\":{\"account\":\"eosio.token\",\"name\":\"transfer\",\"authorization\":[{\"actor\":\"dummy_account\",\"permission\":\"active\"}],\"data\":{\"from\":\"dummy_account\",\"to\":\"dummy_account_2\",\"quantity\":\"1.0000 EOS\",\"memo\":\"dummy memo\"},\"hex_data\":\"hex data\"},\"context_free\":false,\"elapsed\":1,\"cpu_usage\":0,\"console\":\"\",\"total_cpu_usage\":0,\"trx_id\":\"transaction id\",\"block_num\":123123,\"block_time\":\"2019-12-12T12:12:12.500\",\"account_ram_deltas\":[],\"inline_traces\":[]}]}]}}";
 
         // FromJSON test
-        PushTransactionResponse pushTransactionResponse = this.gson
-                .fromJson(jsonContent, PushTransactionResponse.class);
-        assertNotNull(pushTransactionResponse);
-        assertEquals("dump_transaction_id", pushTransactionResponse.getTransactionId());
-        assertEquals("dump_id", pushTransactionResponse.getProcessed().get("id"));
+        SendTransactionResponse sendTransactionResponse = this.gson
+                .fromJson(jsonContent, SendTransactionResponse.class);
+        assertNotNull(sendTransactionResponse);
+        assertEquals("dump_transaction_id", sendTransactionResponse.getTransactionId());
+        assertEquals("dump_id", sendTransactionResponse.getProcessed().get("id"));
 
         // ToJSON test
-        String toJSON = this.gson.toJson(pushTransactionResponse);
+        String toJSON = this.gson.toJson(sendTransactionResponse);
         assertNotNull(toJSON);
         assertNotEquals("", toJSON);
         // This test does not do verify toJSON with original json content because they are generated different values due to deep level model which is not defined in the source code.

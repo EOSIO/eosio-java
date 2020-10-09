@@ -110,7 +110,7 @@ actions.add(new Action("eosio.token", "transfer", authorizations, jsonData));
 
 processor.prepare(actions);
 
-PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
+SendTransactionResponse sendTransactionResponse = processor.signAndBroadcast();
 ```
 
 ## Android Example App
