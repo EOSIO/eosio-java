@@ -15,6 +15,7 @@ import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
+import one.block.eosiojava.error.serializationProvider.SerializePackedTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.error.session.TransactionBroadCastEmptySignatureError;
 import one.block.eosiojava.error.session.TransactionBroadCastError;
@@ -197,6 +198,11 @@ public class TransactionProcessor {
      * Default is false.
      */
     private boolean isTransactionModificationAllowed;
+
+    /**
+     * Prefix for packed transaction v0
+     */
+    private static final String PACKED_TRANSACTION_V0_PREFIX = "00";
 
     /**
      * Constructor with all provider references from {@link TransactionSession}
@@ -1149,5 +1155,17 @@ public class TransactionProcessor {
         return this.contextFreeData;
     }
 
+    /**
+     * Return the current transaction serialized in packed V0 format.
+     * @return Hex string format for the serialized transaction.
+     * @throws SerializePackedTransactionError Thrown if error occurs during the serialization of the packed transaction by the provider.
+     */
+    public String getPackedTransactionV0()
+            throws SerializePackedTransactionError {
+        String json = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).toJson(this.toJSON());
+        String packedTransactionV0 = this.serializationProvider.serializePackedTransaction(json);
+
+        return PACKED_TRANSACTION_V0_PREFIX + packedTransactionV0;
+    }
     //endregion
 }
