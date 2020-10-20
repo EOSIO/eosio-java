@@ -115,6 +115,19 @@ actions.add(new Action("eosio.token", "transfer", authorizations, jsonData));
 processor.prepare(actions);
 
 SendTransactionResponse sendTransactionResponse = processor.signAndBroadcast();
+
+// Starting with EOSIO 2.1 actions can have return values associated with them.
+// If the actions have return values they can be accessed from the response.
+ArrayList<Object> actionReturnValues = sendTransactionResponse.getActionValues();
+
+// Or
+try {
+    Double actionReturnValue = response.getActionValueAtIndex(index, Double.class);
+} catch (IndexOutOfBoundsException outOfBoundsError) {
+    // Handle out of bounds error
+} catch (ClassCastException castError) {
+    // Handle class casting error
+}
 ```
 
 ## Android Example App
