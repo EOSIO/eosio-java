@@ -50,6 +50,11 @@ public class Action implements Serializable {
     private boolean isContextFree;
 
     /**
+     * Action return value after transaction processing.
+     */
+    private transient Object returnValue;
+
+    /**
      * Instantiates a new action.
      *
      * @param account the Contract account name.
@@ -171,4 +176,22 @@ public class Action implements Serializable {
      * @param isContextFree whether or not this action is context free.
      */
     public void setIsContextFree(@NotNull boolean isContextFree) { this.isContextFree = isContextFree; }
+
+    /**
+     * Gets the action's return value after transaction processing.
+     * @return returnValue action return value after transaction processing.  If there wasn't one, returns null.
+     */
+    public Object getReturnValue() {
+        return returnValue;
+    }
+
+    /**
+     * Sets the action return value.
+     * @param returnValue return value of the action after transaction processing, if there is one.  If there is not,
+     *                    the value should be null.
+     */
+    public void setReturnValue(Object returnValue) {
+        this.returnValue = returnValue;
+    }
+
 }
