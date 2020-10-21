@@ -14,10 +14,7 @@ import java.util.List;
 import one.block.eosiojava.error.EosioError;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
-import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
-import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
-import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.*;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -44,9 +41,11 @@ import one.block.eosiojava.models.rpcProvider.Action;
 import one.block.eosiojava.models.rpcProvider.Authorization;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.response.GetBlockInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
@@ -112,17 +111,17 @@ public class NegativeTransactionProcessorTest {
     @Test
     public void prepare_thenFailWithGetBlockError() throws TransactionPrepareError {
         exceptionRule.expect(TransactionPrepareRpcError.class);
-        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK);
-        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(GetBlockRpcError.class));
+        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK_INFO);
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(GetBlockInfoRpcError.class));
 
         // Mock RpcProvider
         this.mockGetInfoPositively();
 
         try {
-            when(this.mockedRpcProvider.getBlock(any(GetBlockRequest.class))).thenThrow(new GetBlockRpcError());
-        } catch (GetBlockRpcError getBlockRpcError) {
-            getBlockRpcError.printStackTrace();
-            fail("Exception should not be thrown here for mocking getBlock");
+            when(this.mockedRpcProvider.getBlockInfo(any(GetBlockInfoRequest.class))).thenThrow(new GetBlockInfoRpcError());
+        } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
+            getBlockInfoRpcError.printStackTrace();
+            fail("Exception should not be thrown here for mocking getBlockInfo");
         }
 
         TransactionProcessor processor = session.getTransactionProcessor();
@@ -531,11 +530,11 @@ public class NegativeTransactionProcessorTest {
 
     private void mockGetBlockPositively() {
         try {
-            when(this.mockedRpcProvider.getBlock(any(GetBlockRequest.class)))
-                    .thenReturn(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class));
-        } catch (GetBlockRpcError getBlockRpcError) {
-            getBlockRpcError.printStackTrace();
-            fail("Exception should not be thrown here for mocking getBlock");
+            when(this.mockedRpcProvider.getBlockInfo(any(GetBlockInfoRequest.class)))
+                    .thenReturn(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class));
+        } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
+            getBlockInfoRpcError.printStackTrace();
+            fail("Exception should not be thrown here for mocking getBlockInfo");
         }
     }
 
@@ -594,7 +593,7 @@ public class NegativeTransactionProcessorTest {
             + "    \"server_version_string\": \"v1.3.0\"\n"
             + "}";
 
-    private static final String mockedGetBlockResponse = "{\n"
+    private static final String mockedGetBlockInfoResponse = "{\n"
             + "    \"timestamp\": \"2019-04-01T22:08:38.500\",\n"
             + "    \"producer\": \"bp\",\n"
             + "    \"confirmed\": 0,\n"
@@ -602,11 +601,7 @@ public class NegativeTransactionProcessorTest {
             + "    \"transaction_mroot\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n"
             + "    \"action_mroot\": \"1\",\n"
             + "    \"schedule_version\": 3,\n"
-            + "    \"new_producers\": null,\n"
-            + "    \"header_extensions\": [],\n"
             + "    \"producer_signature\": \"SIG\",\n"
-            + "    \"transactions\": [],\n"
-            + "    \"block_extensions\": [],\n"
             + "    \"id\": \"1\",\n"
             + "    \"block_num\": 31984399,\n"
             + "    \"ref_block_prefix\": " + refBlockPrefix + "\n"

@@ -9,10 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
-import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
-import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
-import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.*;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializePackedTransactionError;
@@ -50,13 +47,11 @@ import one.block.eosiojava.models.rpcProvider.Action;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
-import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
-import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.response.*;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
@@ -408,18 +403,18 @@ public class TransactionProcessor {
             headBlockNum = BigInteger.valueOf(blockBehindConfig);
         }
 
-        GetBlockResponse getBlockResponse;
+        GetBlockInfoResponse getBlockInfoResponse;
         try {
-            getBlockResponse = this.rpcProvider
-                    .getBlock(new GetBlockRequest(headBlockNum.toString()));
-        } catch (GetBlockRpcError getBlockRpcError) {
+            getBlockInfoResponse = this.rpcProvider
+                    .getBlockInfo(new GetBlockInfoRequest(headBlockNum));
+        } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
             throw new TransactionPrepareRpcError(
-                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK, getBlockRpcError);
+                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK_INFO, getBlockInfoRpcError);
         }
 
         // Restrict the refBlockNum to 32 bit unsigned value
-        BigInteger refBlockNum = getBlockResponse.getBlockNum().and(BigInteger.valueOf(0xffff));
-        BigInteger refBlockPrefix = getBlockResponse.getRefBlockPrefix();
+        BigInteger refBlockNum = getBlockInfoResponse.getBlockNum().and(BigInteger.valueOf(0xffff));
+        BigInteger refBlockPrefix = getBlockInfoResponse.getRefBlockPrefix();
 
         preparingTransaction.setRefBlockNum(refBlockNum);
         preparingTransaction.setRefBlockPrefix(refBlockPrefix);
