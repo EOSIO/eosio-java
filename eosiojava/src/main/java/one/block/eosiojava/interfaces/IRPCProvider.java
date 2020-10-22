@@ -56,17 +56,6 @@ public interface IRPCProvider {
     /**
      * This method expects a transaction in JSON format and will attempt to apply it to the blockchain.
      *
-     * @param pushTransactionRequest the transaction to push with signatures.
-     * @return the push transaction response
-     * @throws PushTransactionRpcError thrown if there are any exceptions/backend error during the
-     * pushTransaction() process.
-     */
-    @NotNull
-    PushTransactionResponse pushTransaction(PushTransactionRequest pushTransactionRequest) throws PushTransactionRpcError;
-
-    /**
-     * This method expects a transaction in JSON format and will attempt to apply it to the blockchain.
-     *
      * @param sendTransactionRequest the transaction to push with signatures.
      * @return the send transaction response
      * @throws SendTransactionRpcError thrown if there are any exceptions/backend error during the

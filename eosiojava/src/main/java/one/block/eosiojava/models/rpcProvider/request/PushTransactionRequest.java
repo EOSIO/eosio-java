@@ -5,36 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The request of PushTransactionRequest RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#pushTransaction(PushTransactionRequest)}
+ * The request of PushTransactionRequest RPC call.
  */
-public class PushTransactionRequest {
-
-    /**
-     * List of signatures required to authorize transaction
-     */
-    @SerializedName("signatures")
-    @NotNull
-    private List<String> signatures;
-
-    /**
-     * The compression used, usually 0.
-     */
-    @SerializedName("compression")
-    private int compression;
-
-    /**
-     * Context free data in hex
-     */
-    @SerializedName("packed_context_free_data")
-    private String packagedContextFreeData;
-
-    /**
-     * The Pack Transaction (Serialized Transaction).
-     * <br> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
-     */
-    @SerializedName("packed_trx")
-    @NotNull
-    private String packTrx;
+public class PushTransactionRequest extends SendTransactionRequest {
 
     /**
      * Instantiates a new PushTransactionRequest.
@@ -47,10 +20,7 @@ public class PushTransactionRequest {
      */
     public PushTransactionRequest(@NotNull List<String> signatures, int compression,
             String packagedContextFreeData, @NotNull String packTrx) {
-        this.signatures = signatures;
-        this.compression = compression;
-        this.packagedContextFreeData = packagedContextFreeData;
-        this.packTrx = packTrx;
+        super(signatures, compression, packagedContextFreeData, packTrx);
     }
 
     /**
@@ -60,7 +30,7 @@ public class PushTransactionRequest {
      */
     @NotNull
     public List<String> getSignatures() {
-        return signatures;
+        return super.getSignatures();
     }
 
     /**
@@ -69,7 +39,7 @@ public class PushTransactionRequest {
      * @param signatures the list of signatures.
      */
     public void setSignatures(@NotNull List<String> signatures) {
-        this.signatures = signatures;
+        super.setSignatures(signatures);
     }
 
     /**
@@ -78,7 +48,7 @@ public class PushTransactionRequest {
      * @return the compression.
      */
     public int getCompression() {
-        return compression;
+        return super.getCompression();
     }
 
     /**
@@ -87,7 +57,7 @@ public class PushTransactionRequest {
      * @param compression the compression.
      */
     public void setCompression(int compression) {
-        this.compression = compression;
+        super.setCompression(compression);
     }
 
     /**
@@ -96,7 +66,7 @@ public class PushTransactionRequest {
      * @return the packaged context free data in hex.
      */
     public String getPackagedContextFreeData() {
-        return packagedContextFreeData;
+        return super.getPackagedContextFreeData();
     }
 
     /**
@@ -105,7 +75,7 @@ public class PushTransactionRequest {
      * @param packagedContextFreeData the packaged context free data in hex.
      */
     public void setPackagedContextFreeData(String packagedContextFreeData) {
-        this.packagedContextFreeData = packagedContextFreeData;
+        super.setPackagedContextFreeData(packagedContextFreeData);
     }
 
     /**
@@ -116,7 +86,7 @@ public class PushTransactionRequest {
      */
     @NotNull
     public String getPackTrx() {
-        return packTrx;
+        return super.getPackTrx();
     }
 
     /**
@@ -126,6 +96,6 @@ public class PushTransactionRequest {
      * @param packTrx the packed transaction (serialized transaction).
      */
     public void setPackTrx(@NotNull String packTrx) {
-        this.packTrx = packTrx;
+        super.setPackTrx(packTrx);
     }
 }

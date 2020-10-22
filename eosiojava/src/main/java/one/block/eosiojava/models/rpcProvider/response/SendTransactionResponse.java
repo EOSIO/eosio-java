@@ -2,7 +2,9 @@ package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 
@@ -10,7 +12,16 @@ import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
  * The response of the sendTransaction() RPC call
  * {@link one.block.eosiojava.interfaces.IRPCProvider#sendTransaction(SendTransactionRequest)}
  */
-public class SendTransactionResponse extends PushTransactionResponse {
+public class SendTransactionResponse {
+
+    /**
+     * The transaction id of the successful transaction.
+     */
+    @SerializedName("transaction_id")
+    private String transactionId;
+
+    @SerializedName("processed")
+    private Map processed;
 
     /**
      * Gets the transaction id of the successful transaction.
@@ -18,7 +29,7 @@ public class SendTransactionResponse extends PushTransactionResponse {
      * @return The successful transaction id.
      */
     public String getTransactionId() {
-        return super.getTransactionId();
+        return transactionId;
     }
 
     /**
@@ -27,7 +38,7 @@ public class SendTransactionResponse extends PushTransactionResponse {
      * @return The successful processed details of the transaction.
      */
     public Map getProcessed() {
-        return super.getProcessed();
+        return processed;
     }
 
     /**
@@ -40,7 +51,13 @@ public class SendTransactionResponse extends PushTransactionResponse {
      * @return ArrayList of Objects containing the return values from the response.
      */
     public ArrayList<Object> getActionValues() {
-        return super.getActionValues();
+        ArrayList<Object> returnValues = new ArrayList<Object>();
+        if (processed == null) { return returnValues; }
+        if (!processed.containsKey("action_traces")) { return returnValues; }
+        for (Map trace : (List<Map>) processed.get("action_traces")) {
+            returnValues.add(trace.getOrDefault("return_value_data", null));
+        }
+        return returnValues;
     }
 
     /**
@@ -52,6 +69,9 @@ public class SendTransactionResponse extends PushTransactionResponse {
      * @throws IndexOutOfBoundsException if an incorrect index is requested.
      */
     public <T> T getActionValueAtIndex(int index, Class<T> clazz) throws IndexOutOfBoundsException, ClassCastException {
-        return super.getActionValueAtIndex(index, clazz);
+        ArrayList<Object> actionValues = getActionValues();
+        if (actionValues == null) { return null; }
+        Object actionValuesObj = actionValues.get(index);
+        return clazz.cast(actionValuesObj);
     }
 }

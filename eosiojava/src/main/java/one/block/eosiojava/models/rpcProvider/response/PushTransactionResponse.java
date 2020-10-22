@@ -12,16 +12,7 @@ import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
  * The response of the pushTransaction() RPC call
  * {@link one.block.eosiojava.interfaces.IRPCProvider#pushTransaction(PushTransactionRequest)}
  */
-public class PushTransactionResponse {
-
-    /**
-     * The transaction id of the successful transaction.
-     */
-    @SerializedName("transaction_id")
-    private String transactionId;
-
-    @SerializedName("processed")
-    private Map processed;
+public class PushTransactionResponse extends SendTransactionResponse {
 
     /**
      * Gets the transaction id of the successful transaction.
@@ -29,7 +20,7 @@ public class PushTransactionResponse {
      * @return The successful transaction id.
      */
     public String getTransactionId() {
-        return transactionId;
+        return super.getTransactionId();
     }
 
     /**
@@ -38,7 +29,7 @@ public class PushTransactionResponse {
      * @return The successful processed details of the transaction.
      */
     public Map getProcessed() {
-        return processed;
+        return super.getProcessed();
     }
 
     /**
@@ -51,13 +42,7 @@ public class PushTransactionResponse {
      * @return ArrayList of Objects containing the return values from the response.
      */
     public ArrayList<Object> getActionValues() {
-        ArrayList<Object> returnValues = new ArrayList<Object>();
-        if (processed == null) { return returnValues; }
-        if (!processed.containsKey("action_traces")) { return returnValues; }
-        for (Map trace : (List<Map>) processed.get("action_traces")) {
-            returnValues.add(trace.getOrDefault("return_value_data", null));
-        }
-        return returnValues;
+        return super.getActionValues();
     }
 
     /**
@@ -69,9 +54,6 @@ public class PushTransactionResponse {
      * @throws IndexOutOfBoundsException if an incorrect index is requested.
      */
     public <T> T getActionValueAtIndex(int index, Class<T> clazz) throws IndexOutOfBoundsException, ClassCastException {
-        ArrayList<Object> actionValues = getActionValues();
-        if (actionValues == null) { return null; }
-        Object actionValuesObj = actionValues.get(index);
-        return clazz.cast(actionValuesObj);
+        return super.getActionValueAtIndex(index, clazz);
     }
 }
