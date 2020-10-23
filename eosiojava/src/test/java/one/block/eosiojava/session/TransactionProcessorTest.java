@@ -14,10 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
-import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
-import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
-import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.*;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -41,13 +38,11 @@ import one.block.eosiojava.models.rpcProvider.Authorization;
 import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
-import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
-import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.response.*;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
@@ -83,7 +78,7 @@ public class TransactionProcessorTest {
 
         this.mockRPC(
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class),
                 null, null);
 
         // Apply
@@ -390,7 +385,7 @@ public class TransactionProcessorTest {
     public void isAllowTransactionToBeModified() {
         this.mockRPC(
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_SENDTRANSACTION_RESPONE_JSON, SendTransactionResponse.class));
 
@@ -587,7 +582,7 @@ public class TransactionProcessorTest {
     private void mockDefaultSuccessData() {
         this.mockRPC(
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_SENDTRANSACTION_RESPONE_JSON, SendTransactionResponse.class));
 
@@ -662,7 +657,7 @@ public class TransactionProcessorTest {
 
     private void mockRPC(
             @Nullable GetInfoResponse getInfoResponse,
-            @Nullable GetBlockResponse getBlockResponse,
+            @Nullable GetBlockInfoResponse getBlockInfoResponse,
             @Nullable GetRequiredKeysResponse getRequiredKeysResponse,
             @Nullable SendTransactionResponse sendTransactionResponse) {
 
@@ -675,12 +670,12 @@ public class TransactionProcessorTest {
             }
         }
 
-        if (getBlockResponse != null) {
+        if (getBlockInfoResponse != null) {
             try {
-                when(mockedRpcProvider.getBlock(any(GetBlockRequest.class))).thenReturn(getBlockResponse);
-            } catch (GetBlockRpcError getBlockRpcError) {
-                getBlockRpcError.printStackTrace();
-                fail("Exception should not be thrown here for mocking getBlock");
+                when(mockedRpcProvider.getBlockInfo(any(GetBlockInfoRequest.class))).thenReturn(getBlockInfoResponse);
+            } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
+                getBlockInfoRpcError.printStackTrace();
+                fail("Exception should not be thrown here for mocking getBlockInfo");
             }
         }
 
@@ -810,7 +805,7 @@ public class TransactionProcessorTest {
             + "    \"server_version_string\": \"v1.3.0\"\n"
             + "}";
 
-    private static final String mockedGetBlockResponse = "{\n"
+    private static final String mockedGetBlockInfoResponse = "{\n"
             + "    \"timestamp\": \"2019-04-01T22:08:38.500\",\n"
             + "    \"producer\": \"bp\",\n"
             + "    \"confirmed\": 0,\n"
@@ -818,11 +813,7 @@ public class TransactionProcessorTest {
             + "    \"transaction_mroot\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n"
             + "    \"action_mroot\": \"1\",\n"
             + "    \"schedule_version\": 3,\n"
-            + "    \"new_producers\": null,\n"
-            + "    \"header_extensions\": [],\n"
             + "    \"producer_signature\": \"SIG\",\n"
-            + "    \"transactions\": [],\n"
-            + "    \"block_extensions\": [],\n"
             + "    \"id\": \"1\",\n"
             + "    \"block_num\": 31984399,\n"
             + "    \"ref_block_prefix\": " + refBlockPrefix + "\n"

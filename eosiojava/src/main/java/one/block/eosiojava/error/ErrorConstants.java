@@ -162,9 +162,9 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_RPC_GET_INFO = "Error happened on calling GetInfo RPC.";
 
     /**
-     * Error message get thrown if {@link IRPCProvider#getBlock(GetBlockRequest)} thrown exception during process of {@link TransactionProcessor#prepare(List)}
+     * Error message get thrown if {@link IRPCProvider#getBlockInfo(GetBlockInfoRequest)} thrown exception during process of {@link TransactionProcessor#prepare(List)}
      */
-    public static final String TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK = "Error happened on calling GetBlock RPC.";
+    public static final String TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK_INFO = "Error happened on calling GetBlockInfo RPC.";
 
     /**
      * Error message get thrown if chain id from {@link GetInfoResponse#getChainId()} does not match with the input chain id

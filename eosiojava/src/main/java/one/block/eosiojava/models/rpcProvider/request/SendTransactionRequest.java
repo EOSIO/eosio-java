@@ -7,7 +7,34 @@ import org.jetbrains.annotations.NotNull;
 /**
  * The request of SendTransactionRequest RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#sendTransaction(SendTransactionRequest)}
  */
-public class SendTransactionRequest extends PushTransactionRequest {
+public class SendTransactionRequest {
+
+    /**
+     * List of signatures required to authorize transaction
+     */
+    @SerializedName("signatures")
+    @NotNull
+    private List<String> signatures;
+
+    /**
+     * The compression used, usually 0.
+     */
+    @SerializedName("compression")
+    private int compression;
+
+    /**
+     * Context free data in hex
+     */
+    @SerializedName("packed_context_free_data")
+    private String packagedContextFreeData;
+
+    /**
+     * The Pack Transaction (Serialized Transaction).
+     * <br> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
+     */
+    @SerializedName("packed_trx")
+    @NotNull
+    private String packTrx;
 
     /**
      * Instantiates a new SendTransactionRequest.
@@ -19,8 +46,11 @@ public class SendTransactionRequest extends PushTransactionRequest {
      * of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      */
     public SendTransactionRequest(@NotNull List<String> signatures, int compression,
-            String packagedContextFreeData, @NotNull String packTrx) {
-        super(signatures, compression, packagedContextFreeData, packTrx);
+                                  String packagedContextFreeData, @NotNull String packTrx) {
+        this.signatures = signatures;
+        this.compression = compression;
+        this.packagedContextFreeData = packagedContextFreeData;
+        this.packTrx = packTrx;
     }
 
     /**
@@ -30,7 +60,7 @@ public class SendTransactionRequest extends PushTransactionRequest {
      */
     @NotNull
     public List<String> getSignatures() {
-        return super.getSignatures();
+        return signatures;
     }
 
     /**
@@ -39,7 +69,7 @@ public class SendTransactionRequest extends PushTransactionRequest {
      * @param signatures the list of signatures.
      */
     public void setSignatures(@NotNull List<String> signatures) {
-        super.setSignatures(signatures);
+        this.signatures = signatures;
     }
 
     /**
@@ -48,7 +78,7 @@ public class SendTransactionRequest extends PushTransactionRequest {
      * @return the compression.
      */
     public int getCompression() {
-        return super.getCompression();
+        return compression;
     }
 
     /**
@@ -57,7 +87,7 @@ public class SendTransactionRequest extends PushTransactionRequest {
      * @param compression the compression.
      */
     public void setCompression(int compression) {
-        super.setCompression(compression);
+        this.compression = compression;
     }
 
     /**
@@ -66,7 +96,7 @@ public class SendTransactionRequest extends PushTransactionRequest {
      * @return the packaged context free data in hex.
      */
     public String getPackagedContextFreeData() {
-        return super.getPackagedContextFreeData();
+        return packagedContextFreeData;
     }
 
     /**
@@ -75,7 +105,7 @@ public class SendTransactionRequest extends PushTransactionRequest {
      * @param packagedContextFreeData the packaged context free data in hex.
      */
     public void setPackagedContextFreeData(String packagedContextFreeData) {
-        super.setPackagedContextFreeData(packagedContextFreeData);
+        this.packagedContextFreeData = packagedContextFreeData;
     }
 
     /**
@@ -86,7 +116,7 @@ public class SendTransactionRequest extends PushTransactionRequest {
      */
     @NotNull
     public String getPackTrx() {
-        return super.getPackTrx();
+        return packTrx;
     }
 
     /**
@@ -96,6 +126,6 @@ public class SendTransactionRequest extends PushTransactionRequest {
      * @param packTrx the packed transaction (serialized transaction).
      */
     public void setPackTrx(@NotNull String packTrx) {
-        super.setPackTrx(packTrx);
+        this.packTrx = packTrx;
     }
 }
