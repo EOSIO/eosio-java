@@ -4,10 +4,12 @@ import com.google.gson.annotations.SerializedName;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+
+import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 
 /**
- * The response of getBlock() RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockRequest)}
+ * The response of getBlock() RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)}
  */
 public class GetBlockResponse {
 

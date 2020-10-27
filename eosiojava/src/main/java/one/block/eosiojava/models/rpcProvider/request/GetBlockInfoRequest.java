@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigInteger;
 
 /**
- * The request class for getBlockInfo() RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockInfoRequest)}
+ * The request class for getBlockInfo() RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)}
  */
 public class GetBlockInfoRequest {
 

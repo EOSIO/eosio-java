@@ -64,6 +64,7 @@ public class SendTransactionResponse {
      * Get the action value at the specified index, if it exists and return it as the passed in type.
      * @param index The index of the action value returns to retrieve.
      * @param clazz The class type to cast the action value to, if found.
+     * @param <T> Typed return.
      * @return The action value as the desired type or null if not found or is the wrong type.
      * @throws ClassCastException if the value cannot be cast to the requested type.
      * @throws IndexOutOfBoundsException if an incorrect index is requested.

@@ -267,11 +267,6 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_ERROR = "Error happened on calling deserializeTransaction to refresh transaction object with new values";
 
     /**
-     * Error message get thrown if {@link IRPCProvider#pushTransaction(PushTransactionRequest)} returns error.
-     */
-    public static final String TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION = "Error happened on calling pushTransaction RPC call";
-
-    /**
      * Error message get thrown if {@link IRPCProvider#sendTransaction(SendTransactionRequest)} returns error.
      */
     public static final String TRANSACTION_PROCESSOR_RPC_SEND_TRANSACTION = "Error happened on calling sendTransaction RPC call";

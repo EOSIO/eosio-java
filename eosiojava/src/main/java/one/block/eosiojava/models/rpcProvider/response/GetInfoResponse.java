@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.List;
 import one.block.eosiojava.interfaces.IRPCProvider;
 import one.block.eosiojava.models.rpcProvider.Transaction;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 
 /**
@@ -88,7 +89,7 @@ public class GetInfoResponse {
 
     /**
      * Gets the head block number. It is an argument used to specify the reference block to call {@link
-     * one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockRequest)} at {@link
+     * one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)} at {@link
      * one.block.eosiojava.session.TransactionProcessor#prepare(List)}
      * @return the head block number.
      */

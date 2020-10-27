@@ -175,7 +175,9 @@ public class TransactionProcessor {
      * <p>
      * - The expiration period for the transaction in seconds
      * <p>
-     * - How many blocks behind
+     * - Whether to use the last irreversible block or
+     * <p>
+     * - How many blocks behind the head block
      */
     @NotNull
     private TransactionConfig transactionConfig = new TransactionConfig();
@@ -265,7 +267,7 @@ public class TransactionProcessor {
      *              {@link TransactionPrepareInputError} thrown if input is invalid
      *              <br>
      *              {@link TransactionPrepareRpcError} thrown if any RPC call ({@link IRPCProvider#getInfo()}
-     *              and {@link IRPCProvider#getBlock(GetBlockRequest)}) return or throw an error
+     *              and {@link IRPCProvider#getBlockInfo(GetBlockInfoRequest)}) return or throw an error
      */
     public void prepare(@NotNull List<Action> actions) throws TransactionPrepareError {
         this.prepare(actions, new ArrayList<Action>());
@@ -294,7 +296,7 @@ public class TransactionProcessor {
      *              {@link TransactionPrepareInputError} thrown if input is invalid
      *              <br>
      *              {@link TransactionPrepareRpcError} thrown if any RPC call ({@link IRPCProvider#getInfo()}
-     *              and {@link IRPCProvider#getBlock(GetBlockRequest)}) return or throw an error
+     *              and {@link IRPCProvider#getBlockInfo(GetBlockInfoRequest)}) return or throw an error
      */
     public void prepare(@NotNull List<Action> actions, @NotNull List<Action> contextFreeActions) throws TransactionPrepareError {
         prepare(actions, contextFreeActions, new ArrayList<String>());
@@ -322,7 +324,7 @@ public class TransactionProcessor {
      *              {@link TransactionPrepareInputError} thrown if inputs are invalid
      *              <br>
      *              {@link TransactionPrepareRpcError} thrown if any RPC call ({@link IRPCProvider#getInfo()}
-     *              and {@link IRPCProvider#getBlock(GetBlockRequest)}) return or throw an error
+     *              and {@link IRPCProvider#getBlockInfo(GetBlockInfoRequest)}) return or throw an error
      */
     public void prepare(@NotNull List<Action> actions, @NotNull List<Action> contextFreeActions, @NotNull List<String> contextFreeData) throws TransactionPrepareError {
         if (actions.isEmpty()) {
@@ -370,13 +372,43 @@ public class TransactionProcessor {
                             getInfoResponse.getChainId()));
         }
 
-        if (preparingTransaction.getExpiration().isEmpty()) {
-            String strHeadBlockTime = getInfoResponse.getHeadBlockTime();
+        // Assigning value to refBlockNum and refBlockPrefix
 
-            long headBlockTime;
+        BigInteger taposBlockNum;
+
+        boolean useLastIrreversibleConfig = this.transactionConfig.getUseLastIrreversible();
+        int blockBehindConfig = this.transactionConfig.getBlocksBehind();
+
+        if (useLastIrreversibleConfig) {
+            taposBlockNum = getInfoResponse.getLastIrreversibleBlockNum();
+        } else {
+            if (getInfoResponse.getHeadBlockNum().compareTo(BigInteger.valueOf(blockBehindConfig))
+                    > 0) {
+                taposBlockNum = getInfoResponse.getHeadBlockNum()
+                        .subtract(BigInteger.valueOf(blockBehindConfig));
+            } else {
+                taposBlockNum = BigInteger.valueOf(blockBehindConfig);
+            }
+        }
+
+        GetBlockInfoResponse getBlockInfoResponse;
+        try {
+            getBlockInfoResponse = this.rpcProvider
+                    .getBlockInfo(new GetBlockInfoRequest(taposBlockNum));
+        } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
+            throw new TransactionPrepareRpcError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK_INFO, getBlockInfoRpcError);
+        }
+
+        // Calculate the expiration based on the taposBlockNum expiration
+        if (preparingTransaction.getExpiration().isEmpty()) {
+
+            String strHeadBlockTime = getBlockInfoResponse.getTimestamp();
+
+            long taposBlockTime;
 
             try {
-                headBlockTime = DateFormatter.convertBackendTimeToMilli(strHeadBlockTime);
+                taposBlockTime = DateFormatter.convertBackendTimeToMilli(strHeadBlockTime);
             } catch (ParseException e) {
                 throw new TransactionPrepareError(
                         ErrorConstants.TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR, e);
@@ -384,32 +416,9 @@ public class TransactionProcessor {
 
             int expiresSeconds = this.transactionConfig.getExpiresSeconds();
 
-            long expirationTimeInMilliseconds = headBlockTime + expiresSeconds * 1000;
+            long expirationTimeInMilliseconds = taposBlockTime + expiresSeconds * 1000;
             preparingTransaction.setExpiration(DateFormatter
                     .convertMilliSecondToBackendTimeString(expirationTimeInMilliseconds));
-        }
-
-        // Assigning value to refBlockNum and refBlockPrefix
-
-        BigInteger headBlockNum;
-
-        int blockBehindConfig = this.transactionConfig.getBlocksBehind();
-
-        if (getInfoResponse.getHeadBlockNum().compareTo(BigInteger.valueOf(blockBehindConfig))
-                > 0) {
-            headBlockNum = getInfoResponse.getHeadBlockNum()
-                    .subtract(BigInteger.valueOf(blockBehindConfig));
-        } else {
-            headBlockNum = BigInteger.valueOf(blockBehindConfig);
-        }
-
-        GetBlockInfoResponse getBlockInfoResponse;
-        try {
-            getBlockInfoResponse = this.rpcProvider
-                    .getBlockInfo(new GetBlockInfoRequest(headBlockNum));
-        } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
-            throw new TransactionPrepareRpcError(
-                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK_INFO, getBlockInfoRpcError);
         }
 
         // Restrict the refBlockNum to 32 bit unsigned value
