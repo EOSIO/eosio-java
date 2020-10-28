@@ -86,6 +86,8 @@ One of the most complicated and time consuming tasks about encryption can be fig
 
 Transactions are instantiated via a `TransactionSession()` which must be configured with a number of providers and a `TransactionProcessor()`, which manipulates and performs actions on a Transaction, prior to use. The code below shows a very barebones flow. Error handling has been omitted for clarity but should be handled in normal usage. (See [Provider Interface Architecture](#provider-interface-architecture) below for more information about providers.)
 
+Some parameters for transaction processing can be altered by the use of the `TransactionConfig`.  These are `useLastIrreversible`, `blocksBehind` and `expiresSeconds`.  `TransactionConfig` defaults to `useLastIrreversible` equal to true, `blocksBehind` to 3 and `expiresSeconds` to 300.  When `useLastIrreversible` is true, `blocksBehind` is ignored and `TransactionProcessor` uses the last irreversible block and `expiresSeconds` to calculate TAPOS.  Otherwise, `TransactionProcessor` uses the current head block minus the number specified in `blocksBehind` and `expiresSeconds` for TAPOS.  `TransactionConfig` defaults to `useLastIrreversible` to lessen the chances of transactions micro-forking under certain conditions.
+
 ```java
 IRPCProvider rpcProvider = new EosioJavaRpcProviderImpl("https://baseurl.com/v1/");
 ISerializationProvider serializationProvider = new AbiEosSerializationProviderImpl();
@@ -104,6 +106,18 @@ TransactionSession session = new TransactionSession(
 );
 
 TransactionProcessor processor = session.getTransactionProcessor();
+
+// Now the TransactionConfig can be altered, if desired
+TransactionConfig transactionConfig = processor.getTransactionConfig();
+
+// Use blocksBehind (default 3) the current head block to calculate TAPOS
+transactionConfig.setUseLastIrreversible(false);
+// Set the expiration time of transactions 600 seconds later than the timestamp
+// of the block used to calculate TAPOS
+transactionConfig.setExpiresSeconds(600);
+
+// Update the TransactionProcessor with the config changes
+processor.setTransactionConfig(transactionConfig);
 
 String jsonData = "{\n" +
         "\"from\": \"person1\",\n" +

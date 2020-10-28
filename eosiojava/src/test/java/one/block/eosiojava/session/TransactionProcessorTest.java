@@ -74,6 +74,10 @@ public class TransactionProcessorTest {
     public void prepare() {
         // Test start
         TransactionProcessor processor = session.getTransactionProcessor();
+        TransactionConfig transactionConfig = processor.getTransactionConfig();
+        transactionConfig.setUseLastIrreversible(false);
+        transactionConfig.setExpiresSeconds(600);
+        processor.setTransactionConfig(transactionConfig);
         assertNotNull(processor);
 
         this.mockRPC(
