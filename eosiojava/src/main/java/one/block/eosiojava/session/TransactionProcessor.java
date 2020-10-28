@@ -48,7 +48,6 @@ import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
-import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.*;
@@ -411,7 +410,7 @@ public class TransactionProcessor {
                 taposBlockTime = DateFormatter.convertBackendTimeToMilli(strHeadBlockTime);
             } catch (ParseException e) {
                 throw new TransactionPrepareError(
-                        ErrorConstants.TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR, e);
+                        ErrorConstants.TRANSACTION_PROCESSOR_TAPOS_BLOCK_TIME_PARSE_ERROR, e);
             }
 
             int expiresSeconds = this.transactionConfig.getExpiresSeconds();

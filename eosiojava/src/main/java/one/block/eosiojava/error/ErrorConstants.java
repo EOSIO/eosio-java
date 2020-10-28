@@ -179,7 +179,7 @@ public class ErrorConstants {
     /**
      * Error message get thrown if parsing head block time from {@link GetInfoResponse#getHeadBlockTime()} get error
      */
-    public static final String TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR = "Failed to parse head block time";
+    public static final String TRANSACTION_PROCESSOR_TAPOS_BLOCK_TIME_PARSE_ERROR = "Failed to parse TAPOS block time";
 
     /**
      * Error message get thrown if making clone version of transaction is failed.

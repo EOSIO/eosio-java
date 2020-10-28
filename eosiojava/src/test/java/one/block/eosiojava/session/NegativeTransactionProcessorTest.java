@@ -42,11 +42,9 @@ import one.block.eosiojava.models.rpcProvider.Authorization;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
-import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetBlockInfoResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
@@ -131,7 +129,7 @@ public class NegativeTransactionProcessorTest {
     @Test
     public void prepare_thenFailWithWrongDateFormat() throws TransactionPrepareError {
         exceptionRule.expect(TransactionPrepareError.class);
-        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR);
+        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_TAPOS_BLOCK_TIME_PARSE_ERROR);
         exceptionRule.expectCause(IsInstanceOf.<Exception>instanceOf(ParseException.class));
 
         String weirdHeadBlockTime = "2019-04-01TGM22:08:40.000";
@@ -151,11 +149,27 @@ public class NegativeTransactionProcessorTest {
                 + "    \"server_version_string\": \"v1.3.0\"\n"
                 + "}";
 
+        String mockedGetBlockInfoResponseWithWeirdDateFormat = "{\n"
+                + "    \"timestamp\": \"" + weirdHeadBlockTime + "\",\n"
+                + "    \"producer\": \"bp\",\n"
+                + "    \"confirmed\": 0,\n"
+                + "    \"previous\": \"1\",\n"
+                + "    \"transaction_mroot\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n"
+                + "    \"action_mroot\": \"1\",\n"
+                + "    \"schedule_version\": 3,\n"
+                + "    \"producer_signature\": \"SIG\",\n"
+                + "    \"id\": \"1\",\n"
+                + "    \"block_num\": 31984399,\n"
+                + "    \"ref_block_prefix\": " + refBlockPrefix + "\n"
+                + "}";
+
         try {
             when(this.mockedRpcProvider.getInfo())
                     .thenReturn(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponseWithWeirdDateFormat, GetInfoResponse.class));
-        } catch (GetInfoRpcError getInfoRpcError) {
-            getInfoRpcError.printStackTrace();
+            when(this.mockedRpcProvider.getBlockInfo(any(GetBlockInfoRequest.class)))
+                    .thenReturn(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponseWithWeirdDateFormat, GetBlockInfoResponse.class));
+        } catch (GetInfoRpcError | GetBlockInfoRpcError rpcProviderError) {
+            rpcProviderError.printStackTrace();
             fail("Exception should not be thrown here for mocking getInfo");
         }
 
