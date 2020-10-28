@@ -1,5 +1,7 @@
 package one.block.eosiojava.models.rpcProvider;
 
+import one.block.eosiojava.interfaces.IRPCProvider;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 
@@ -22,6 +24,12 @@ public class TransactionConfig {
     private static final int DEFAULT_EXPIRES_SECONDS = 5 * 60;
 
     /**
+     * Default useLastIrreversible to use last irreversible block rather than blocksBehind when
+     * calculating TAPOS
+     */
+    private static final boolean DEFAULT_USE_LAST_IRREVERSIBLE = true;
+
+    /**
      * The Expires seconds.
      * <br>
      * Append this value to {@link GetInfoResponse#getHeadBlockTime()} in second then assign it to
@@ -33,9 +41,19 @@ public class TransactionConfig {
      * The amount blocks behind from head block.
      * <br>
      * It is an argument to calculate head block number to call {@link
-     * one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockRequest)}
+     * one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)}
      */
     private int blocksBehind = DEFAULT_BLOCKS_BEHIND;
+
+    /**
+     * Use the last irreversible block when calculating TAPOS rather than blocks behind.
+     * <br>
+     * Mutually exclusive with {@link TransactionConfig#setBlocksBehind(int)}.  If set,
+     * {@link TransactionConfig#getBlocksBehind()} will be ignored and TAPOS will be calculated by fetching the last
+     * irreversible block with {@link IRPCProvider#getInfo()} and the expiration for the transaction
+     * will be set {@link TransactionConfig#setExpiresSeconds(int)} after that block's time.
+     */
+    private boolean useLastIrreversible = DEFAULT_USE_LAST_IRREVERSIBLE;
 
     /**
      * Gets the expiration time for the transaction.
@@ -64,8 +82,7 @@ public class TransactionConfig {
     /**
      * Gets blocks behind.
      * <br>
-     * It is an argument to calculate head block number to call {@link
-     * one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockRequest)}
+     * It is an argument to calculate head block number to call {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)}
      * @return the blocks behind
      */
     public int getBlocksBehind() {
@@ -76,10 +93,28 @@ public class TransactionConfig {
      * Sets blocks behind.
      * <br>
      * It is an argument to calculate head block number to call {@link
-     * one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockRequest)}
+     * one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)}
      * @param blocksBehind the blocks behind
      */
     public void setBlocksBehind(int blocksBehind) {
         this.blocksBehind = blocksBehind;
+    }
+
+    /**
+     * Gets useLastIrreversible.
+     * <br>
+     * It is an argument to calculate TAPOS from the last irreversible block rather than blocks behind the head block
+     * @return useLastIrreversible whether to use the last irreversible block for calculating TAPOS
+     */
+    public boolean getUseLastIrreversible() { return useLastIrreversible; }
+
+    /**
+     * Sets useLastIrreversible.
+     * <br>
+     * It is an argument to calculate TAPOS from the last irreversible block rather than blocks behind the head block
+     * @param useLastIrreversible whether to use the last irreversible block
+     */
+    public void setUseLastIrreversible(boolean useLastIrreversible) {
+        this.useLastIrreversible = useLastIrreversible;
     }
 }

@@ -179,7 +179,7 @@ public class ErrorConstants {
     /**
      * Error message get thrown if parsing head block time from {@link GetInfoResponse#getHeadBlockTime()} get error
      */
-    public static final String TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR = "Failed to parse head block time";
+    public static final String TRANSACTION_PROCESSOR_TAPOS_BLOCK_TIME_PARSE_ERROR = "Failed to parse TAPOS block time";
 
     /**
      * Error message get thrown if making clone version of transaction is failed.
@@ -265,11 +265,6 @@ public class ErrorConstants {
      * Error message get thrown if {@link ISerializationProvider#deserializeTransaction} returns error during deserialize modified serialized transaction inside {@link EosioTransactionSignatureResponse} which return from {@link ISignatureProvider#signTransaction(EosioTransactionSignatureRequest)}
      */
     public static final String TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_ERROR = "Error happened on calling deserializeTransaction to refresh transaction object with new values";
-
-    /**
-     * Error message get thrown if {@link IRPCProvider#pushTransaction(PushTransactionRequest)} returns error.
-     */
-    public static final String TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION = "Error happened on calling pushTransaction RPC call";
 
     /**
      * Error message get thrown if {@link IRPCProvider#sendTransaction(SendTransactionRequest)} returns error.

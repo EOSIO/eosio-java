@@ -782,8 +782,8 @@ public class TransactionProcessorTest {
 
 
     // Expectation
-    // headBlockTime + default 5 minutes
-    private static final String expectedExpiration = "2019-04-01T22:13:40.000";
+    // getBlockInfo Timestamp + default 5 minutes
+    private static final String expectedExpiration = "2019-04-01T22:13:38.500";
     private static TransactionConfig transactionConfig = new TransactionConfig();
     private static final BigInteger expectedRefBlockNum = headBlockNum.subtract(BigInteger.valueOf(transactionConfig.getBlocksBehind()))
             .and(BigInteger.valueOf(0xffff));
