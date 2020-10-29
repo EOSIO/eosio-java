@@ -106,9 +106,4 @@ artifactory {
         }
     }
 }
-//Remove deleteOldVersion{} block if you are not using Artifactory
-task deleteOldVersion(){
-    def auth = artifactory_username + ':' + artifactory_password
-    def repo = artifactory_contextURL + '/android-libs-scratch-local' + '/one/block/eosiojava'
-    ['curl', '-XDELETE', 'POST', '-u', auth, repo].execute()
-}
+
