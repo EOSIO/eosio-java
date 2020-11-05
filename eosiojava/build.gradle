@@ -47,7 +47,7 @@ test {
 
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '0.1.6-eosio2.1'
+def libraryVersion = '1.0.0'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'
