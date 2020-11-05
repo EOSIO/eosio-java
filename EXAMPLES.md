@@ -167,9 +167,9 @@ try {
 
     // Start parsing additional values from response.
     JSONObject processed = new JSONObject(response.getProcessed());
-    JSONObject receipt = (JSONObject) processed.get("receipt");
+    JSONObject receipt = new JSONObject((Map) processed.get("receipt"));
     String status = (String) receipt.get("status");
-    BigInteger cpuUsage = (BigInteger) receipt.get("cpu_usage_us");
+    Double cpuUsage = (Double) receipt.get("cpu_usage_us");
     // Extract other values as desired
 
     println(Boolean.toString(true), "Finished!  Your transaction id is:  " + response.getTransactionId());
