@@ -2,6 +2,7 @@ package one.block.eosiojava.models.rpcProvider.response;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.beans.Transient;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,10 @@ public class SendTransactionResponse {
 
     @SerializedName("processed")
     private Map processed;
+
+    private transient static final String ACTION_TRACES_NAME = "action_traces";
+
+    private transient static final String RETURN_VALUE_DATA_NAME = "return_value_data";
 
     /**
      * Gets the transaction id of the successful transaction.
@@ -53,9 +58,9 @@ public class SendTransactionResponse {
     public ArrayList<Object> getActionValues() {
         ArrayList<Object> returnValues = new ArrayList<Object>();
         if (processed == null) { return returnValues; }
-        if (!processed.containsKey("action_traces")) { return returnValues; }
-        for (Map trace : (List<Map>) processed.get("action_traces")) {
-            returnValues.add(trace.getOrDefault("return_value_data", null));
+        if (!processed.containsKey(ACTION_TRACES_NAME)) { return returnValues; }
+        for (Map trace : (List<Map>) processed.get(ACTION_TRACES_NAME)) {
+            returnValues.add(trace.getOrDefault(RETURN_VALUE_DATA_NAME, null));
         }
         return returnValues;
     }
