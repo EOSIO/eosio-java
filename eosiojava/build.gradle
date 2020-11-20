@@ -39,9 +39,15 @@ dependencies {
     api 'org.slf4j:slf4j-jdk14:1.7.25'
 }
 
+test {
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
 def libraryGroupId = 'one.block'
 def libraryArtifactId = 'eosiojava'
-def libraryVersion = '0.1.2'
+def libraryVersion = '1.0.0'
 
 task sourcesJar(type: Jar, dependsOn: classes){
     classifier = 'sources'
@@ -100,9 +106,4 @@ artifactory {
         }
     }
 }
-//Remove deleteOldVersion{} block if you are not using Artifactory
-task deleteOldVersion(){
-    def auth = artifactory_username + ':' + artifactory_password
-    def repo = artifactory_contextURL + '/android-libs-scratch-local' + '/one/block/eosiojava'
-    ['curl', '-XDELETE', 'POST', '-u', auth, repo].execute()
-}
+

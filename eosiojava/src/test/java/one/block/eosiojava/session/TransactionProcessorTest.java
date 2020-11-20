@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
-import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
+import one.block.eosiojava.error.rpcProvider.GetBlockInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -41,13 +41,10 @@ import one.block.eosiojava.models.rpcProvider.Authorization;
 import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
-import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
-import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
-import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.response.*;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
@@ -83,7 +80,7 @@ public class TransactionProcessorTest {
 
         this.mockRPC(
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class),
                 null, null);
 
         // Apply
@@ -144,9 +141,9 @@ public class TransactionProcessorTest {
         }
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.broadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+            SendTransactionResponse sendTransactionResponse = processor.broadcast();
+            assertNotNull(sendTransactionResponse);
+            assertEquals(DUMP_TRANSACTION_ID, sendTransactionResponse.getTransactionId());
         } catch (TransactionBroadCastError transactionBroadCastError) {
             transactionBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling broadcast");
@@ -160,9 +157,9 @@ public class TransactionProcessorTest {
         assertNotNull(processor);
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+            SendTransactionResponse sendTransactionResponse = processor.signAndBroadcast();
+            assertNotNull(sendTransactionResponse);
+            assertEquals(DUMP_TRANSACTION_ID, sendTransactionResponse.getTransactionId());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling signAndBroadcast");
@@ -377,9 +374,9 @@ public class TransactionProcessorTest {
         processor.setRequiredKeys(requiredKeys);
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+            SendTransactionResponse sendTransactionResponse = processor.signAndBroadcast();
+            assertNotNull(sendTransactionResponse);
+            assertEquals(DUMP_TRANSACTION_ID, sendTransactionResponse.getTransactionId());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for calling signAndBroadcast");
@@ -390,9 +387,9 @@ public class TransactionProcessorTest {
     public void isAllowTransactionToBeModified() {
         this.mockRPC(
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_PUSHTRANSACTION_RESPONE_JSON, PushTransactionResponse.class));
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_SENDTRANSACTION_RESPONE_JSON, SendTransactionResponse.class));
 
         this.mockAbiProvider(EOSIOTOKENABIJSON);
         this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction);
@@ -415,9 +412,9 @@ public class TransactionProcessorTest {
         assertTrue(processor.isTransactionModificationAllowed());
 
        try {
-           PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-           assertNotNull(pushTransactionResponse);
-           assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+           SendTransactionResponse sendTransactionResponse = processor.signAndBroadcast();
+           assertNotNull(sendTransactionResponse);
+           assertEquals(DUMP_TRANSACTION_ID, sendTransactionResponse.getTransactionId());
 
            // after signing and broadcast, serialized transaction is updated
            assertEquals(MOCKED_TRANSACTION_HEX_MODIFIED, processor.getSerializedTransaction());
@@ -456,9 +453,9 @@ public class TransactionProcessorTest {
         }
 
         try {
-            PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
-            assertNotNull(pushTransactionResponse);
-            assertEquals(DUMP_TRANSACTION_ID, pushTransactionResponse.getTransactionId());
+            SendTransactionResponse sendTransactionResponse = processor.signAndBroadcast();
+            assertNotNull(sendTransactionResponse);
+            assertEquals(DUMP_TRANSACTION_ID, sendTransactionResponse.getTransactionId());
         } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
             transactionSignAndBroadCastError.printStackTrace();
             fail("Exception should not be thrown here for sign and broadcast");
@@ -587,9 +584,9 @@ public class TransactionProcessorTest {
     private void mockDefaultSuccessData() {
         this.mockRPC(
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class),
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_PUSHTRANSACTION_RESPONE_JSON, PushTransactionResponse.class));
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_SENDTRANSACTION_RESPONE_JSON, SendTransactionResponse.class));
 
         this.mockAbiProvider(EOSIOTOKENABIJSON);
         this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction);
@@ -662,9 +659,9 @@ public class TransactionProcessorTest {
 
     private void mockRPC(
             @Nullable GetInfoResponse getInfoResponse,
-            @Nullable GetBlockResponse getBlockResponse,
+            @Nullable GetBlockInfoResponse getBlockInfoResponse,
             @Nullable GetRequiredKeysResponse getRequiredKeysResponse,
-            @Nullable PushTransactionResponse pushTransactionResponse) {
+            @Nullable SendTransactionResponse sendTransactionResponse) {
 
         if (getInfoResponse != null) {
             try {
@@ -675,12 +672,12 @@ public class TransactionProcessorTest {
             }
         }
 
-        if (getBlockResponse != null) {
+        if (getBlockInfoResponse != null) {
             try {
-                when(mockedRpcProvider.getBlock(any(GetBlockRequest.class))).thenReturn(getBlockResponse);
-            } catch (GetBlockRpcError getBlockRpcError) {
-                getBlockRpcError.printStackTrace();
-                fail("Exception should not be thrown here for mocking getBlock");
+                when(mockedRpcProvider.getBlockInfo(any(GetBlockInfoRequest.class))).thenReturn(getBlockInfoResponse);
+            } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
+                getBlockInfoRpcError.printStackTrace();
+                fail("Exception should not be thrown here for mocking getBlockInfo");
             }
         }
 
@@ -693,12 +690,12 @@ public class TransactionProcessorTest {
             }
         }
 
-        if (pushTransactionResponse != null) {
+        if (sendTransactionResponse != null) {
             try {
-                when(this.mockedRpcProvider.pushTransaction(any(PushTransactionRequest.class))).thenReturn(pushTransactionResponse);
-            } catch (PushTransactionRpcError pushTransactionRpcError) {
-                pushTransactionRpcError.printStackTrace();
-                fail("Exception should not be thrown here for mocking pushTransaction");
+                when(this.mockedRpcProvider.sendTransaction(any(SendTransactionRequest.class))).thenReturn(sendTransactionResponse);
+            } catch (SendTransactionRpcError sendTransactionRpcError) {
+                sendTransactionRpcError.printStackTrace();
+                fail("Exception should not be thrown here for mocking sendTransaction");
             }
         }
     }
@@ -771,7 +768,7 @@ public class TransactionProcessorTest {
     private static final String EOSIOTOKENABIJSON = "{\"version\":\"eosio::abi/1.0\",\"types\":[{\"new_type_name\":\"account_name\",\"type\":\"name\"}],\"structs\":[{\"name\":\"transfer\",\"base\":\"\",\"fields\":[{\"name\":\"from\",\"type\":\"account_name\"},{\"name\":\"to\",\"type\":\"account_name\"},{\"name\":\"quantity\",\"type\":\"asset\"},{\"name\":\"memo\",\"type\":\"string\"}]},{\"name\":\"create\",\"base\":\"\",\"fields\":[{\"name\":\"issuer\",\"type\":\"account_name\"},{\"name\":\"maximum_supply\",\"type\":\"asset\"}]},{\"name\":\"issue\",\"base\":\"\",\"fields\":[{\"name\":\"to\",\"type\":\"account_name\"},{\"name\":\"quantity\",\"type\":\"asset\"},{\"name\":\"memo\",\"type\":\"string\"}]},{\"name\":\"account\",\"base\":\"\",\"fields\":[{\"name\":\"balance\",\"type\":\"asset\"}]},{\"name\":\"currency_stats\",\"base\":\"\",\"fields\":[{\"name\":\"supply\",\"type\":\"asset\"},{\"name\":\"max_supply\",\"type\":\"asset\"},{\"name\":\"issuer\",\"type\":\"account_name\"}]}],\"actions\":[{\"name\":\"transfer\",\"type\":\"transfer\",\"ricardian_contract\":\"---\\ntitle: Token Transfer\\nsummary: Transfer tokens from one account to another.\\nicon: https://cdn.testnet.dev.b1ops.net/token-transfer.png#ce51ef9f9eeca3434e85507e0ed49e76fff1265422bded0255f3196ea59c8b0c\\n---\\n\\n## Transfer Terms & Conditions\\n\\nI, {{from}}, certify the following to be true to the best of my knowledge:\\n\\n1. I certify that {{quantity}} is not the proceeds of fraudulent or violent activities.\\n2. I certify that, to the best of my knowledge, {{to}} is not supporting initiation of violence against others.\\n3. I have disclosed any contractual terms & conditions with respect to {{quantity}} to {{to}}.\\n\\nI understand that funds transfers are not reversible after the {{$transaction.delay_sec}} seconds or other delay as configured by {{from}}'s permissions.\\n\\nIf this action fails to be irreversibly confirmed after receiving goods or services from '{{to}}', I agree to either return the goods or services or resend {{quantity}} in a timely manner.\"},{\"name\":\"issue\",\"type\":\"issue\",\"ricardian_contract\":\"\"},{\"name\":\"create\",\"type\":\"create\",\"ricardian_contract\":\"\"}],\"tables\":[{\"name\":\"accounts\",\"index_type\":\"i64\",\"key_names\":[\"currency\"],\"key_types\":[\"uint64\"],\"type\":\"account\"},{\"name\":\"stat\",\"index_type\":\"i64\",\"key_names\":[\"currency\"],\"key_types\":[\"uint64\"],\"type\":\"currency_stats\"}],\"ricardian_clauses\":[],\"error_messages\":[],\"abi_extensions\":[],\"variants\":[]}";
 
     private static final String DUMP_TRANSACTION_ID = "17335a29eae22e531966f3775e44f8b02173e780c9549881e01e470ff0ab46ce";
-    private static final String MOCKED_PUSHTRANSACTION_RESPONE_JSON = "{\"transaction_id\":\"" + DUMP_TRANSACTION_ID + "\"}";
+    private static final String MOCKED_SENDTRANSACTION_RESPONE_JSON = "{\"transaction_id\":\"" + DUMP_TRANSACTION_ID + "\"}";
 
     private static final BigInteger headBlockNum = BigInteger.valueOf(31984402L);
     private static final String headBlockTime = "2019-04-01T22:08:40.000";
@@ -787,8 +784,8 @@ public class TransactionProcessorTest {
 
 
     // Expectation
-    // headBlockTime + default 5 minutes
-    private static final String expectedExpiration = "2019-04-01T22:13:40.000";
+    // getBlockInfo Timestamp + default 5 minutes
+    private static final String expectedExpiration = "2019-04-01T22:13:38.500";
     private static TransactionConfig transactionConfig = new TransactionConfig();
     private static final BigInteger expectedRefBlockNum = headBlockNum.subtract(BigInteger.valueOf(transactionConfig.getBlocksBehind()))
             .and(BigInteger.valueOf(0xffff));
@@ -810,7 +807,7 @@ public class TransactionProcessorTest {
             + "    \"server_version_string\": \"v1.3.0\"\n"
             + "}";
 
-    private static final String mockedGetBlockResponse = "{\n"
+    private static final String mockedGetBlockInfoResponse = "{\n"
             + "    \"timestamp\": \"2019-04-01T22:08:38.500\",\n"
             + "    \"producer\": \"bp\",\n"
             + "    \"confirmed\": 0,\n"
@@ -818,11 +815,7 @@ public class TransactionProcessorTest {
             + "    \"transaction_mroot\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n"
             + "    \"action_mroot\": \"1\",\n"
             + "    \"schedule_version\": 3,\n"
-            + "    \"new_producers\": null,\n"
-            + "    \"header_extensions\": [],\n"
             + "    \"producer_signature\": \"SIG\",\n"
-            + "    \"transactions\": [],\n"
-            + "    \"block_extensions\": [],\n"
             + "    \"id\": \"1\",\n"
             + "    \"block_num\": 31984399,\n"
             + "    \"ref_block_prefix\": " + refBlockPrefix + "\n"

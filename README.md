@@ -24,13 +24,22 @@ To date, EOSIO SDK for Java has only been tested on Android. The goal, however, 
 
 ## Updates
 
-2/25/20
+10/22/20
+Version 0.1.5 
+Adds support for GetBlockInfo which replaces GetBlock in IRPCProvider as the preferred way to calculate TAPOS for transactions.  GetBlock is still available.
+Removes PushTransaction from IRPCProvider in favor of SendTransaction.  PushTransaction is still available.
 
-Version 0.1.2 Uses JDK11 to build and targets 1.8 for source and target compatibility.
+10/9/2020
+Version 0.1.3 
+Adds support for send_transaction endpoint, return values and kv tables.
+
+2/25/20
+Version 0.1.2
+Uses JDK11 to build and targets 1.8 for source and target compatibility.
 
 2/21/20
-
-Version 0.1.1 Fixes a transaction expiration error.
+Version 0.1.1
+Fixes a transaction expiration error.
 
 ## Installation
 
@@ -49,10 +58,10 @@ Since EOSIO SDK for Java is not an Android specific project, we recommend using 
 To use EOSIO SDK for Java in your app, add the following modules to your build.gradle:
 
 ```groovy
-implementation 'one.block:eosiojava:0.1.2'
-implementation 'one.block:eosiojavasoftkeysignatureprovider:0.1.3'
-implementation 'one.block:eosiojavaandroidabieosserializationprovider:0.1.1'
-implementation 'one.block:eosiojavarpcprovider:0.1.1'
+implementation 'one.block:eosiojava:1.0.0'
+implementation 'one.block:eosiojavasoftkeysignatureprovider:1.0.0'
+implementation 'one.block:eosiojavaandroidabieosserializationprovider:1.0.0'
+implementation 'one.block:eosio-java-rpc-provider:1.0.0'
 ```
 
 If you are using EOSIO SDK for Java, or any library that depends on it, in an Android application, you must also add the following to your application's `build.gradle` file in the `android` section:
@@ -77,6 +86,8 @@ One of the most complicated and time consuming tasks about encryption can be fig
 
 Transactions are instantiated via a `TransactionSession()` which must be configured with a number of providers and a `TransactionProcessor()`, which manipulates and performs actions on a Transaction, prior to use. The code below shows a very barebones flow. Error handling has been omitted for clarity but should be handled in normal usage. (See [Provider Interface Architecture](#provider-interface-architecture) below for more information about providers.)
 
+Some parameters for transaction processing can be altered by the use of the `TransactionConfig`.  These are `useLastIrreversible`, `blocksBehind` and `expiresSeconds`.  `TransactionConfig` defaults to `useLastIrreversible` equal to true, `blocksBehind` to 3 and `expiresSeconds` to 300.  When `useLastIrreversible` is true, `blocksBehind` is ignored and `TransactionProcessor` uses the last irreversible block and `expiresSeconds` to calculate TAPOS.  Otherwise, `TransactionProcessor` uses the current head block minus the number specified in `blocksBehind` and `expiresSeconds` for TAPOS.  `TransactionConfig` defaults to `useLastIrreversible` to lessen the chances of transactions micro-forking under certain conditions.
+
 ```java
 IRPCProvider rpcProvider = new EosioJavaRpcProviderImpl("https://baseurl.com/v1/");
 ISerializationProvider serializationProvider = new AbiEosSerializationProviderImpl();
@@ -96,6 +107,18 @@ TransactionSession session = new TransactionSession(
 
 TransactionProcessor processor = session.getTransactionProcessor();
 
+// Now the TransactionConfig can be altered, if desired
+TransactionConfig transactionConfig = processor.getTransactionConfig();
+
+// Use blocksBehind (default 3) the current head block to calculate TAPOS
+transactionConfig.setUseLastIrreversible(false);
+// Set the expiration time of transactions 600 seconds later than the timestamp
+// of the block used to calculate TAPOS
+transactionConfig.setExpiresSeconds(600);
+
+// Update the TransactionProcessor with the config changes
+processor.setTransactionConfig(transactionConfig);
+
 String jsonData = "{\n" +
         "\"from\": \"person1\",\n" +
         "\"to\": \"person2\",\n" +
@@ -110,7 +133,20 @@ actions.add(new Action("eosio.token", "transfer", authorizations, jsonData));
 
 processor.prepare(actions);
 
-PushTransactionResponse pushTransactionResponse = processor.signAndBroadcast();
+SendTransactionResponse sendTransactionResponse = processor.signAndBroadcast();
+
+// Starting with EOSIO 2.1 actions can have return values associated with them.
+// If the actions have return values they can be accessed from the response.
+ArrayList<Object> actionReturnValues = sendTransactionResponse.getActionValues();
+
+// Or
+try {
+    Double actionReturnValue = response.getActionValueAtIndex(index, Double.class);
+} catch (IndexOutOfBoundsException outOfBoundsError) {
+    // Handle out of bounds error
+} catch (ClassCastException castError) {
+    // Handle class casting error
+}
 ```
 
 ## Android Example App
@@ -141,7 +177,7 @@ The RPC Provider is responsible for all [RPC calls to nodeos](https://developers
 EOSIO SDK for Java _does not include_ an RPC provider implementation; one must be installed separately.
 
 * [IRPCProvider](eosiojava/src/main/java/one/block/eosiojava/interfaces/IRPCProvider.java)
-* [Default RPC Provder](https://github.com/EOSIO/eosio-java-android-rpc-provider) - Currently supports Android 6 (Marshmallow)+
+* [Default RPC Provder](https://github.com/EOSIO/eosio-java-android-rpc-provider) - Currently supports Android 6 (Marshmallow)+ as well as non-Android Java platforms
 * [Nodeos RPC Reference Documentation](https://developers.eos.io/eosio-nodeos/reference)
 
 *_Alternate RPC providers can be used assuming they conform to the minimal [RPC Provider Interface](eosiojava/src/main/java/one/block/eosiojava/interfaces/IRPCProvider.java). The core EOSIO SDK for Java library depends only on the five RPC endpoints set forth in that Interface. Other endpoints, however, are planned to be exposed in the [default RPC provider](https://github.com/EOSIO/eosio-java-android-rpc-provider)._
