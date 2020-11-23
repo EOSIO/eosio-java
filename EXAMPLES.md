@@ -1,24 +1,24 @@
 # EOSIO SDK for Java Examples
 
-EOSIO SDK for Java contains an extensive set of functionality beyond the basics required for transactions.  The code snippets below show how to use some of this extended functionality.  It is important to note that these are simply example snippets and may not work the way you expect if you just copy and paste them into a method.  
+EOSIO SDK for Java contains an extensive set of functionality beyond the basics required for transactions. The code snippets below show how to use some of this extended functionality. It is important to note that these are simply example snippets and may not work the way you expect if you just copy and paste them into a method.
 
-Note: For clarity, these examples use the soft key signature provider which is NOT recommended for production use!
+Note: For clarity, these examples use the Softkey Signature Provider, which is NOT recommended for production use!
 
 ## Basic Transaction Examples
 
 ### Submitting a Transaction
 
-Basic submission of a transaction is shown in the main [README.md](README.md) file at the top level of the repository.  Please see the [Basic Usage](README.md/#basic-usage) example for details.
+Basic submission of a transaction is shown in the main [README.md](README.md) file at the top level of the repository. Please see the [Basic Usage](README.md/#basic-usage) example for details.
 
 ### How to Transfer an EOSIO Token
 
-The [Basic Usage](README.md/#basic-usage) example in the top level [README.md](README.md) file is an example of transferring an EOSIO token.  Please see that example for details.
+The [Basic Usage](README.md/#basic-usage) example in the top level [README.md](README.md) file is an example of transferring an EOSIO token. Please see that example for details.
 
 ## Extended Transaction Examples
 
 ### Retrieving Action Return Values From Transactions
 
-This snippet calls a transaction that returns a 32-bit numeric value.  The user is required to know the correct type that the action returns in order to cast successfully.  Each action will contain its return value, if the server provided one.
+This snippet calls a transaction that returns a 32-bit numeric value. The user is required to know the correct type that the action returns in order to cast successfully. Each action will contain its return value, if the server provided one.
 
 ```java
 // Creating serialization provider
@@ -54,7 +54,7 @@ try {
     return null;
 }
 
-// Creating TransactionProcess
+// Creating TransactionProcessor
 TransactionSession session = new TransactionSession(serializationProvider, rpcProvider, abiProvider, signatureProvider);
 TransactionProcessor processor = session.getTransactionProcessor();
 
@@ -66,7 +66,7 @@ Action action = new Action("returnvalue", "actionresret", Collections.singletonL
 int index = 0;
 try {
 
-    // Prepare transaction with above action. A transaction can be executed with multiple action.
+    // Prepare transaction with above action. A transaction can be executed with multiple actions.
     println("Preparing Transaction...");
     processor.prepare(Collections.singletonList(action));
 
@@ -83,10 +83,10 @@ try {
     transactionPrepareError.printStackTrace();
     println(Boolean.toString(false), transactionPrepareError.getLocalizedMessage());
 } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
-    // Happens if Sign transaction or broadcast transaction unsuccessful.
+    // Happens if sign transaction or broadcast transaction unsuccessful.
     transactionSignAndBroadCastError.printStackTrace();
 
-    // try to get backend error if the error come from backend
+    // try to get backend error if the error comes from backend
     RPCResponseError rpcResponseError = ErrorUtils.getBackendError(transactionSignAndBroadCastError);
     if (rpcResponseError != null) {
         String backendErrorMessage = ErrorUtils.getBackendErrorMessageFromResponse(rpcResponseError);
@@ -104,7 +104,7 @@ try {
 
 ### Accessing Extended Fields in Transaction Responses
 
-Using `signAndBroadcast()` provides an easy way to sign and submit transactions but the `SendTransactionResponse` defined in the `IRPCProvider` interface only specifically unmarshalls the transaction ID.  The remainder of the response decodes into a `Map` and requires additional processing to decode values from it.  In the example below some extra response properties are decoded. The [NODEOS Reference](https://developers.eos.io/eosio-nodeos/reference) is helpful for decoding other parts of responses that are not fully unmarshalled.  
+Using `signAndBroadcast()` provides an easy way to sign and submit transactions but the `SendTransactionResponse` defined in the `IRPCProvider` interface only specifically unmarshalls the transaction ID. The remainder of the response decodes into a `Map` and requires additional processing to decode values from it. In the example below some extra response properties are decoded. The [NODEOS Reference](https://developers.eos.io/manuals/eos/latest/nodeos/plugins/chain_api_plugin/api-reference/index) is helpful for decoding other parts of responses that are not fully unmarshalled.
 
 ```java
 // Creating serialization provider
@@ -140,7 +140,7 @@ try {
     return null;
 }
 
-// Creating TransactionProcess
+// Creating TransactionProcessor
 TransactionSession session = new TransactionSession(serializationProvider, rpcProvider, abiProvider, signatureProvider);
 TransactionProcessor processor = session.getTransactionProcessor();
 
@@ -157,7 +157,7 @@ Action action = new Action("eosio.token", "transfer", Collections.singletonList(
 int index = 0;
 try {
 
-    // Prepare transaction with above action. A transaction can be executed with multiple action.
+    // Prepare transaction with above action. A transaction can be executed with multiple actions.
     println("Preparing Transaction...");
     processor.prepare(Collections.singletonList(action));
 
@@ -178,7 +178,7 @@ try {
     transactionPrepareError.printStackTrace();
     println(Boolean.toString(false), transactionPrepareError.getLocalizedMessage());
 } catch (TransactionSignAndBroadCastError transactionSignAndBroadCastError) {
-    // Happens if Sign transaction or broadcast transaction unsuccessful.
+    // Happens if sign transaction or broadcast transaction unsuccessful.
     transactionSignAndBroadCastError.printStackTrace();
 
     // try to get backend error if the error come from backend
