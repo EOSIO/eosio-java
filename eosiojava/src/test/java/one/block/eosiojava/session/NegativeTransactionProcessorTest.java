@@ -14,10 +14,10 @@ import java.util.List;
 import one.block.eosiojava.error.EosioError;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
-import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
+import one.block.eosiojava.error.rpcProvider.GetBlockInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -30,7 +30,7 @@ import one.block.eosiojava.error.session.TransactionPrepareError;
 import one.block.eosiojava.error.session.TransactionPrepareInputError;
 import one.block.eosiojava.error.session.TransactionPrepareRpcError;
 import one.block.eosiojava.error.session.TransactionProcessorConstructorInputError;
-import one.block.eosiojava.error.session.TransactionPushTransactionError;
+import one.block.eosiojava.error.session.TransactionSendTransactionError;
 import one.block.eosiojava.error.session.TransactionSignError;
 import one.block.eosiojava.error.signatureProvider.GetAvailableKeysError;
 import one.block.eosiojava.error.signatureProvider.SignTransactionError;
@@ -44,10 +44,10 @@ import one.block.eosiojava.models.rpcProvider.Action;
 import one.block.eosiojava.models.rpcProvider.Authorization;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
-import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
-import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.response.GetBlockInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
@@ -112,17 +112,17 @@ public class NegativeTransactionProcessorTest {
     @Test
     public void prepare_thenFailWithGetBlockError() throws TransactionPrepareError {
         exceptionRule.expect(TransactionPrepareRpcError.class);
-        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK);
-        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(GetBlockRpcError.class));
+        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK_INFO);
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(GetBlockInfoRpcError.class));
 
         // Mock RpcProvider
         this.mockGetInfoPositively();
 
         try {
-            when(this.mockedRpcProvider.getBlock(any(GetBlockRequest.class))).thenThrow(new GetBlockRpcError());
-        } catch (GetBlockRpcError getBlockRpcError) {
-            getBlockRpcError.printStackTrace();
-            fail("Exception should not be thrown here for mocking getBlock");
+            when(this.mockedRpcProvider.getBlockInfo(any(GetBlockInfoRequest.class))).thenThrow(new GetBlockInfoRpcError());
+        } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
+            getBlockInfoRpcError.printStackTrace();
+            fail("Exception should not be thrown here for mocking getBlockInfo");
         }
 
         TransactionProcessor processor = session.getTransactionProcessor();
@@ -132,7 +132,7 @@ public class NegativeTransactionProcessorTest {
     @Test
     public void prepare_thenFailWithWrongDateFormat() throws TransactionPrepareError {
         exceptionRule.expect(TransactionPrepareError.class);
-        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR);
+        exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_TAPOS_BLOCK_TIME_PARSE_ERROR);
         exceptionRule.expectCause(IsInstanceOf.<Exception>instanceOf(ParseException.class));
 
         String weirdHeadBlockTime = "2019-04-01TGM22:08:40.000";
@@ -152,11 +152,27 @@ public class NegativeTransactionProcessorTest {
                 + "    \"server_version_string\": \"v1.3.0\"\n"
                 + "}";
 
+        String mockedGetBlockInfoResponseWithWeirdDateFormat = "{\n"
+                + "    \"timestamp\": \"" + weirdHeadBlockTime + "\",\n"
+                + "    \"producer\": \"bp\",\n"
+                + "    \"confirmed\": 0,\n"
+                + "    \"previous\": \"1\",\n"
+                + "    \"transaction_mroot\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n"
+                + "    \"action_mroot\": \"1\",\n"
+                + "    \"schedule_version\": 3,\n"
+                + "    \"producer_signature\": \"SIG\",\n"
+                + "    \"id\": \"1\",\n"
+                + "    \"block_num\": 31984399,\n"
+                + "    \"ref_block_prefix\": " + refBlockPrefix + "\n"
+                + "}";
+
         try {
             when(this.mockedRpcProvider.getInfo())
                     .thenReturn(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponseWithWeirdDateFormat, GetInfoResponse.class));
-        } catch (GetInfoRpcError getInfoRpcError) {
-            getInfoRpcError.printStackTrace();
+            when(this.mockedRpcProvider.getBlockInfo(any(GetBlockInfoRequest.class)))
+                    .thenReturn(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponseWithWeirdDateFormat, GetBlockInfoResponse.class));
+        } catch (GetInfoRpcError | GetBlockInfoRpcError rpcProviderError) {
+            rpcProviderError.printStackTrace();
             fail("Exception should not be thrown here for mocking getInfo");
         }
 
@@ -294,7 +310,7 @@ public class NegativeTransactionProcessorTest {
         this.mockGetAvailableKey(Arrays.asList("Key1", "Key2"));
 
         String mockedEmptyTransactionSignatureResponseJSON = "{"
-                + "\"serializeTransaction\": \"\","
+                + "\"serializedTransaction\": \"\","
                 + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
                 + "}";
 
@@ -337,7 +353,7 @@ public class NegativeTransactionProcessorTest {
         this.mockGetAvailableKey(Arrays.asList("Key1", "Key2"));
 
         String mockedEmptySignaturesSignatureResponseJSON = "{"
-                + "\"serializeTransaction\": \"" + MOCKED_TRANSACTION_HEX + "\","
+                + "\"serializedTransaction\": \"" + MOCKED_TRANSACTION_HEX + "\","
                 + "\"signatures\": []"
                 + "}";
 
@@ -407,22 +423,23 @@ public class NegativeTransactionProcessorTest {
     //region negative tests for broadcast
 
     @Test
-    public void broadCast_thenFailWithPushTransactionError() throws TransactionBroadCastError {
+    public void broadCast_thenFailWithSendTransactionError() throws TransactionBroadCastError {
         exceptionRule.expect(TransactionBroadCastError.class);
         exceptionRule.expectMessage(ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR);
-        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(TransactionPushTransactionError.class));
+        exceptionRule.expectCause(IsInstanceOf.<EosioError>instanceOf(
+                TransactionSendTransactionError.class));
 
         // Mock RpcProvider
         this.mockGetInfoPositively();
         this.mockGetBlockPositively();
         this.mockRequiredKeys(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class));
 
-        // Mock PushTransaction RPC to throw error
+        // Mock SendTransaction RPC to throw error
         try {
-            when(this.mockedRpcProvider.pushTransaction(any(PushTransactionRequest.class))).thenThrow(new PushTransactionRpcError());
-        } catch (PushTransactionRpcError pushTransactionRpcError) {
-            pushTransactionRpcError.printStackTrace();
-            fail("Exception should not be thrown here for mocking pushTransaction");
+            when(this.mockedRpcProvider.sendTransaction(any(SendTransactionRequest.class))).thenThrow(new SendTransactionRpcError());
+        } catch (SendTransactionRpcError sendTransactionRpcError) {
+            sendTransactionRpcError.printStackTrace();
+            fail("Exception should not be thrown here for mocking sendTransaction");
         }
 
         // Mock AbiProvider
@@ -530,11 +547,11 @@ public class NegativeTransactionProcessorTest {
 
     private void mockGetBlockPositively() {
         try {
-            when(this.mockedRpcProvider.getBlock(any(GetBlockRequest.class)))
-                    .thenReturn(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class));
-        } catch (GetBlockRpcError getBlockRpcError) {
-            getBlockRpcError.printStackTrace();
-            fail("Exception should not be thrown here for mocking getBlock");
+            when(this.mockedRpcProvider.getBlockInfo(any(GetBlockInfoRequest.class)))
+                    .thenReturn(Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class));
+        } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
+            getBlockInfoRpcError.printStackTrace();
+            fail("Exception should not be thrown here for mocking getBlockInfo");
         }
     }
 
@@ -593,7 +610,7 @@ public class NegativeTransactionProcessorTest {
             + "    \"server_version_string\": \"v1.3.0\"\n"
             + "}";
 
-    private static final String mockedGetBlockResponse = "{\n"
+    private static final String mockedGetBlockInfoResponse = "{\n"
             + "    \"timestamp\": \"2019-04-01T22:08:38.500\",\n"
             + "    \"producer\": \"bp\",\n"
             + "    \"confirmed\": 0,\n"
@@ -601,11 +618,7 @@ public class NegativeTransactionProcessorTest {
             + "    \"transaction_mroot\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n"
             + "    \"action_mroot\": \"1\",\n"
             + "    \"schedule_version\": 3,\n"
-            + "    \"new_producers\": null,\n"
-            + "    \"header_extensions\": [],\n"
             + "    \"producer_signature\": \"SIG\",\n"
-            + "    \"transactions\": [],\n"
-            + "    \"block_extensions\": [],\n"
             + "    \"id\": \"1\",\n"
             + "    \"block_num\": 31984399,\n"
             + "    \"ref_block_prefix\": " + refBlockPrefix + "\n"
@@ -643,12 +656,12 @@ public class NegativeTransactionProcessorTest {
     private static final String EOSIOTOKENABIJSON = "{\"version\":\"eosio::abi/1.0\",\"types\":[{\"new_type_name\":\"account_name\",\"type\":\"name\"}],\"structs\":[{\"name\":\"transfer\",\"base\":\"\",\"fields\":[{\"name\":\"from\",\"type\":\"account_name\"},{\"name\":\"to\",\"type\":\"account_name\"},{\"name\":\"quantity\",\"type\":\"asset\"},{\"name\":\"memo\",\"type\":\"string\"}]},{\"name\":\"create\",\"base\":\"\",\"fields\":[{\"name\":\"issuer\",\"type\":\"account_name\"},{\"name\":\"maximum_supply\",\"type\":\"asset\"}]},{\"name\":\"issue\",\"base\":\"\",\"fields\":[{\"name\":\"to\",\"type\":\"account_name\"},{\"name\":\"quantity\",\"type\":\"asset\"},{\"name\":\"memo\",\"type\":\"string\"}]},{\"name\":\"account\",\"base\":\"\",\"fields\":[{\"name\":\"balance\",\"type\":\"asset\"}]},{\"name\":\"currency_stats\",\"base\":\"\",\"fields\":[{\"name\":\"supply\",\"type\":\"asset\"},{\"name\":\"max_supply\",\"type\":\"asset\"},{\"name\":\"issuer\",\"type\":\"account_name\"}]}],\"actions\":[{\"name\":\"transfer\",\"type\":\"transfer\",\"ricardian_contract\":\"---\\ntitle: Token Transfer\\nsummary: Transfer tokens from one account to another.\\nicon: https://cdn.testnet.dev.b1ops.net/token-transfer.png#ce51ef9f9eeca3434e85507e0ed49e76fff1265422bded0255f3196ea59c8b0c\\n---\\n\\n## Transfer Terms & Conditions\\n\\nI, {{from}}, certify the following to be true to the best of my knowledge:\\n\\n1. I certify that {{quantity}} is not the proceeds of fraudulent or violent activities.\\n2. I certify that, to the best of my knowledge, {{to}} is not supporting initiation of violence against others.\\n3. I have disclosed any contractual terms & conditions with respect to {{quantity}} to {{to}}.\\n\\nI understand that funds transfers are not reversible after the {{$transaction.delay_sec}} seconds or other delay as configured by {{from}}'s permissions.\\n\\nIf this action fails to be irreversibly confirmed after receiving goods or services from '{{to}}', I agree to either return the goods or services or resend {{quantity}} in a timely manner.\"},{\"name\":\"issue\",\"type\":\"issue\",\"ricardian_contract\":\"\"},{\"name\":\"create\",\"type\":\"create\",\"ricardian_contract\":\"\"}],\"tables\":[{\"name\":\"accounts\",\"index_type\":\"i64\",\"key_names\":[\"currency\"],\"key_types\":[\"uint64\"],\"type\":\"account\"},{\"name\":\"stat\",\"index_type\":\"i64\",\"key_names\":[\"currency\"],\"key_types\":[\"uint64\"],\"type\":\"currency_stats\"}],\"ricardian_clauses\":[],\"error_messages\":[],\"abi_extensions\":[],\"variants\":[]}";
 
     private static final String mockedEosioTransactionSignatureResponseJSON = "{"
-            + "\"serializeTransaction\": \"" + MOCKED_TRANSACTION_HEX + "\","
+            + "\"serializedTransaction\": \"" + MOCKED_TRANSACTION_HEX + "\","
             + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
             + "}";
 
     private static final String mockedEosioTransactionSignatureResponseModifiedTransactionJSON = "{"
-            + "\"serializeTransaction\": \"" + MOCKED_TRANSACTION_HEX_MODIFIED + "\","
+            + "\"serializedTransaction\": \"" + MOCKED_TRANSACTION_HEX_MODIFIED + "\","
             + "\"signatures\": [\"" + MOCKED_SIGNATURE + "\"]"
             + "}";
 

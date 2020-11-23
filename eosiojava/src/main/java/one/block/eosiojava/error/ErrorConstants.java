@@ -10,6 +10,7 @@ import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.session.TransactionProcessor;
@@ -91,7 +92,7 @@ public class ErrorConstants {
     /**
      * Chain id or serialized transaction parameter was empty.
      */
-    public static final String EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING = "Chain id and serialized transaction can't be empty!";
+    public static final String EMPTY_INPUT_PREPARE_SERIALIZIED_TRANS_FOR_SIGNING = "Chain id, serialized transaction, and serialized context free data can't be empty!";
     /**
      * The signable transaction parameter was empty.
      */
@@ -101,10 +102,6 @@ public class ErrorConstants {
      * be extracted.
      */
     public static final String INVALID_INPUT_SIGNABLE_TRANS_LENGTH_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Length of the signable transaction must be larger than %s";
-    /**
-     * The signable transaction was improperly formatted.
-     */
-    public static final String INVALID_INPUT_SIGNABLE_TRANS_EXTRACT_SERIALIZIED_TRANS_FROM_SIGNABLE = "Signable transaction has to have this structure: chainId (64 characters) + serialized transaction + 32 bytes of 0!";
     /**
      * Unable to extract the serialized transaction from the signable transaction.
      */
@@ -165,9 +162,9 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_RPC_GET_INFO = "Error happened on calling GetInfo RPC.";
 
     /**
-     * Error message get thrown if {@link IRPCProvider#getBlock(GetBlockRequest)} thrown exception during process of {@link TransactionProcessor#prepare(List)}
+     * Error message get thrown if {@link IRPCProvider#getBlockInfo(GetBlockInfoRequest)} thrown exception during process of {@link TransactionProcessor#prepare(List)}
      */
-    public static final String TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK = "Error happened on calling GetBlock RPC.";
+    public static final String TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK_INFO = "Error happened on calling GetBlockInfo RPC.";
 
     /**
      * Error message get thrown if chain id from {@link GetInfoResponse#getChainId()} does not match with the input chain id
@@ -182,7 +179,7 @@ public class ErrorConstants {
     /**
      * Error message get thrown if parsing head block time from {@link GetInfoResponse#getHeadBlockTime()} get error
      */
-    public static final String TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR = "Failed to parse head block time";
+    public static final String TRANSACTION_PROCESSOR_TAPOS_BLOCK_TIME_PARSE_ERROR = "Failed to parse TAPOS block time";
 
     /**
      * Error message get thrown if making clone version of transaction is failed.
@@ -270,9 +267,9 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_ERROR = "Error happened on calling deserializeTransaction to refresh transaction object with new values";
 
     /**
-     * Error message get thrown if {@link IRPCProvider#pushTransaction(PushTransactionRequest)} returns error.
+     * Error message get thrown if {@link IRPCProvider#sendTransaction(SendTransactionRequest)} returns error.
      */
-    public static final String TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION = "Error happened on calling pushTransaction RPC call";
+    public static final String TRANSACTION_PROCESSOR_RPC_SEND_TRANSACTION = "Error happened on calling sendTransaction RPC call";
 
     /**
      * Error message get thrown if {@link TransactionProcessor#serialize()}
@@ -285,9 +282,9 @@ public class ErrorConstants {
     public static final String TRANSACTION_PROCESSOR_SIGN_CREATE_SIGN_REQUEST_ERROR = "Error happened on creating signature request for Signature Provider to sign!";
 
     /**
-     * Error message get thrown if error happens during pushing transaction to backend
+     * Error message get thrown if error happens during sending transaction to backend
      */
-    public static final String TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR = "Error happened on pushing transaction to chain!";
+    public static final String TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR = "Error happened on sending transaction to chain!";
 
     /**
      * Error message get thrown if required keys from {@link GetRequiredKeysResponse} is not subset of keys from {@link ISignatureProvider#getAvailableKeys()}

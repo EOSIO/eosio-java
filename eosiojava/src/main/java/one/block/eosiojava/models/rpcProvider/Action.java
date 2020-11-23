@@ -43,19 +43,39 @@ public class Action implements Serializable {
     private String data;
 
     /**
+     * Whether or not this action is a contextFree action.
+     */
+    @SerializedName("isContextFree")
+    @NotNull
+    private boolean isContextFree;
+
+    /**
+     * Action return value after transaction processing.
+     */
+    private transient Object returnValue;
+
+    /**
      * Instantiates a new action.
      *
      * @param account the Contract account name.
      * @param name the Contract action name.
      * @param authorization the Authorization (actor and permission) to make transaction
      * @param data the action data (arguments to the contract)
+     * @param isContextFree whether or not the action is context free
      */
     public Action(@NotNull String account, @NotNull String name,
-            @NotNull List<Authorization> authorization, @NotNull String data) {
+            @NotNull List<Authorization> authorization, @NotNull String data,
+            @NotNull boolean isContextFree) {
         this.account = account;
         this.name = name;
         this.authorization = authorization;
         this.data = data;
+        this.isContextFree = isContextFree;
+    }
+
+    public Action(@NotNull String account, @NotNull String name,
+            @NotNull List<Authorization> authorization, @NotNull String data) {
+        this(account, name, authorization, data, false);
     }
 
     /**
@@ -134,4 +154,44 @@ public class Action implements Serializable {
     public void setData(@NotNull String data) {
         this.data = data;
     }
+
+    /**
+     * Gets whether or not this action has data
+     *
+     * @return whether or not this action has data
+     */
+    public boolean hasData() { return !this.data.isEmpty(); }
+
+    /**
+     * Gets whether or not this action is context free.
+     *
+     * @return whether or not this action is context free.
+     */
+    @NotNull
+    public boolean getIsContextFree() { return this.isContextFree; }
+
+    /**
+     * Sets whether or not this action is context free.
+     *
+     * @param isContextFree whether or not this action is context free.
+     */
+    public void setIsContextFree(@NotNull boolean isContextFree) { this.isContextFree = isContextFree; }
+
+    /**
+     * Gets the action's return value after transaction processing.
+     * @return returnValue action return value after transaction processing.  If there wasn't one, returns null.
+     */
+    public Object getReturnValue() {
+        return returnValue;
+    }
+
+    /**
+     * Sets the action return value.
+     * @param returnValue return value of the action after transaction processing, if there is one.  If there is not,
+     *                    the value should be null.
+     */
+    public void setReturnValue(Object returnValue) {
+        this.returnValue = returnValue;
+    }
+
 }

@@ -4,14 +4,12 @@ import com.google.gson.annotations.SerializedName;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
-
-import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 
 /**
- * The response of getBlock() RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)}
+ * The response of getBlockInfo() RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)}
  */
-public class GetBlockResponse {
+public class GetBlockInfoResponse {
 
     /**
      * The timestamp for the block from blockchain.
@@ -42,20 +40,8 @@ public class GetBlockResponse {
     @SerializedName("schedule_version")
     private BigInteger  scheduleVersion;
 
-    @SerializedName("new_producers")
-    private String newProducers;
-
-    @SerializedName("header_extensions")
-    private List<String> headerExtensions;
-
     @SerializedName("producer_signature")
     private String producerSignature;
-
-    @SerializedName("transactions")
-    private List<Map> transactions;
-
-    @SerializedName("block_extensions")
-    private List<String> blockExtensions;
 
     /**
      * The block id
@@ -117,24 +103,8 @@ public class GetBlockResponse {
         return scheduleVersion;
     }
 
-    public Object getNewProducers() {
-        return newProducers;
-    }
-
-    public List<String> getHeaderExtensions() {
-        return headerExtensions;
-    }
-
     public String getProducerSignature() {
         return producerSignature;
-    }
-
-    public List<Map> getTransactions() {
-        return transactions;
-    }
-
-    public List<String> getBlockExtensions() {
-        return blockExtensions;
     }
 
     /**
@@ -166,3 +136,4 @@ public class GetBlockResponse {
         return refBlockPrefix;
     }
 }
+

@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
-import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
+import one.block.eosiojava.error.rpcProvider.GetBlockInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.PushTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
+import one.block.eosiojava.error.serializationProvider.SerializePackedTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
 import one.block.eosiojava.error.session.TransactionBroadCastEmptySignatureError;
 import one.block.eosiojava.error.session.TransactionBroadCastError;
@@ -33,7 +34,7 @@ import one.block.eosiojava.error.session.TransactionPrepareError;
 import one.block.eosiojava.error.session.TransactionPrepareInputError;
 import one.block.eosiojava.error.session.TransactionPrepareRpcError;
 import one.block.eosiojava.error.session.TransactionProcessorConstructorInputError;
-import one.block.eosiojava.error.session.TransactionPushTransactionError;
+import one.block.eosiojava.error.session.TransactionSendTransactionError;
 import one.block.eosiojava.error.session.TransactionSerializeError;
 import one.block.eosiojava.error.session.TransactionSignAndBroadCastError;
 import one.block.eosiojava.error.session.TransactionSignError;
@@ -47,14 +48,12 @@ import one.block.eosiojava.models.AbiEosSerializationObject;
 import one.block.eosiojava.models.EOSIOName;
 import one.block.eosiojava.models.rpcProvider.Action;
 import one.block.eosiojava.models.rpcProvider.Transaction;
+import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
-import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcProvider.request.PushTransactionRequest;
-import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
-import one.block.eosiojava.models.rpcProvider.response.PushTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
+import one.block.eosiojava.models.rpcProvider.response.*;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
@@ -124,6 +123,12 @@ public class TransactionProcessor {
     private Transaction originalTransaction;
 
     /**
+     * Context Free Data instance that holds all raw, serialized, and packed CFD.
+     */
+    @NotNull
+    private ContextFreeData contextFreeData;
+
+    /**
      * List of signatures used to sign the transaction.  This is populated after the transaction
      * has been signed and the signatures have been return by the signature provider.
      * <p>
@@ -172,7 +177,9 @@ public class TransactionProcessor {
      * <p>
      * - The expiration period for the transaction in seconds
      * <p>
-     * - How many blocks behind
+     * - Whether to use the last irreversible block or
+     * <p>
+     * - How many blocks behind the head block
      */
     @NotNull
     private TransactionConfig transactionConfig = new TransactionConfig();
@@ -190,6 +197,11 @@ public class TransactionProcessor {
      * Default is false.
      */
     private boolean isTransactionModificationAllowed;
+
+    /**
+     * Prefix for packed transaction v0
+     */
+    private static final String PACKED_TRANSACTION_V0_PREFIX = "00";
 
     /**
      * Constructor with all provider references from {@link TransactionSession}
@@ -238,10 +250,68 @@ public class TransactionProcessor {
     /**
      * Prepare action's data from input and create new instance of Transaction if it is not set.
      * <p>
+     *     Use this method if you don't want to provide context free actions or context free data.
+     * <p>
+     * Check prepare() flow in "Complete Workflow" doc for more detail.
+     *
+     * @param actions - List of actions with data. If the transaction is preset or has a value and it
+     * has its own actions, that list will be over-ridden by this input list.
+     * @throws TransactionPrepareError thrown if:
+     *          <br>
+     *              - chainId from {@link IRPCProvider#getInfo()} is blank
+     *          <br>
+     *              - chainId returned from the chain does not match with input chainId
+     *          <br>
+     *              - There is a problem with parsing head block time from {@link GetInfoResponse#getHeadBlockTime()}
+     *          <br>
+     *          It throws a base error class if:
+     *          <br>
+     *              {@link TransactionPrepareInputError} thrown if input is invalid
+     *              <br>
+     *              {@link TransactionPrepareRpcError} thrown if any RPC call ({@link IRPCProvider#getInfo()}
+     *              and {@link IRPCProvider#getBlockInfo(GetBlockInfoRequest)}) return or throw an error
+     */
+    public void prepare(@NotNull List<Action> actions) throws TransactionPrepareError {
+        this.prepare(actions, new ArrayList<Action>());
+    }
+
+    /**
+     * Prepare action's data from input and create new instance of Transaction if it is not set.
+     * <p>
+     *     Use this method if you don't want to provide context free data.
+     * <p>
+     * Check prepare() flow in "Complete Workflow" doc for more detail.
+     *
+     * @param actions - List of actions with data. If the transaction is preset or has a value and it
+     * has its own actions, that list will be over-ridden by this input list.
+     * @param contextFreeActions - List of context free actions with data.
+     * @throws TransactionPrepareError thrown if:
+     *          <br>
+     *              - chainId from {@link IRPCProvider#getInfo()} is blank
+     *          <br>
+     *              - chainId returned from the chain does not match with input chainId
+     *          <br>
+     *              - There is a problem with parsing head block time from {@link GetInfoResponse#getHeadBlockTime()}
+     *          <br>
+     *          It throws a base error class if:
+     *          <br>
+     *              {@link TransactionPrepareInputError} thrown if input is invalid
+     *              <br>
+     *              {@link TransactionPrepareRpcError} thrown if any RPC call ({@link IRPCProvider#getInfo()}
+     *              and {@link IRPCProvider#getBlockInfo(GetBlockInfoRequest)}) return or throw an error
+     */
+    public void prepare(@NotNull List<Action> actions, @NotNull List<Action> contextFreeActions) throws TransactionPrepareError {
+        prepare(actions, contextFreeActions, new ArrayList<String>());
+    }
+
+    /**
+     * Prepare action's data from input and create new instance of Transaction if it is not set.
+     * <p>
      * Check prepare() flow in "Complete Workflow" doc for more detail
      *
      * @param actions - List of actions with data. If the transaction is preset or has a value and it has its own actions, that list will be over-ridden by this input list.
      * @param contextFreeActions - List of context free actions with data.
+     * @param contextFreeData - List of context free data as raw strings.
      *
      * @throws TransactionPrepareError thrown if:
      *          <br>
@@ -256,9 +326,9 @@ public class TransactionProcessor {
      *              {@link TransactionPrepareInputError} thrown if inputs are invalid
      *              <br>
      *              {@link TransactionPrepareRpcError} thrown if any RPC call ({@link IRPCProvider#getInfo()}
-     *              and {@link IRPCProvider#getBlock(GetBlockRequest)}) return or throw an error
+     *              and {@link IRPCProvider#getBlockInfo(GetBlockInfoRequest)}) return or throw an error
      */
-    public void prepare(@NotNull List<Action> actions, @NotNull List<Action> contextFreeActions) throws TransactionPrepareError {
+    public void prepare(@NotNull List<Action> actions, @NotNull List<Action> contextFreeActions, @NotNull List<String> contextFreeData) throws TransactionPrepareError {
         if (actions.isEmpty()) {
             throw new TransactionPrepareInputError(
                     ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG);
@@ -273,6 +343,8 @@ public class TransactionProcessor {
         Transaction preparingTransaction = new Transaction("", BigInteger.ZERO, BigInteger.ZERO,
                 BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO, contextFreeActions, actions,
                 new ArrayList<String>());
+
+        ContextFreeData preparingContextFreeData = new ContextFreeData(contextFreeData);
 
         // Assigning values for transaction expiration, refBlockNum and refBlockPrefix
         GetInfoResponse getInfoResponse;
@@ -302,84 +374,63 @@ public class TransactionProcessor {
                             getInfoResponse.getChainId()));
         }
 
-        if (preparingTransaction.getExpiration().isEmpty()) {
-            String strHeadBlockTime = getInfoResponse.getHeadBlockTime();
+        // Assigning value to refBlockNum and refBlockPrefix
 
-            long headBlockTime;
+        BigInteger taposBlockNum;
+
+        boolean useLastIrreversibleConfig = this.transactionConfig.getUseLastIrreversible();
+        int blockBehindConfig = this.transactionConfig.getBlocksBehind();
+
+        if (useLastIrreversibleConfig) {
+            taposBlockNum = getInfoResponse.getLastIrreversibleBlockNum();
+        } else {
+            if (getInfoResponse.getHeadBlockNum().compareTo(BigInteger.valueOf(blockBehindConfig))
+                    > 0) {
+                taposBlockNum = getInfoResponse.getHeadBlockNum()
+                        .subtract(BigInteger.valueOf(blockBehindConfig));
+            } else {
+                taposBlockNum = BigInteger.valueOf(blockBehindConfig);
+            }
+        }
+
+        GetBlockInfoResponse getBlockInfoResponse;
+        try {
+            getBlockInfoResponse = this.rpcProvider
+                    .getBlockInfo(new GetBlockInfoRequest(taposBlockNum));
+        } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
+            throw new TransactionPrepareRpcError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK_INFO, getBlockInfoRpcError);
+        }
+
+        // Calculate the expiration based on the taposBlockNum expiration
+        if (preparingTransaction.getExpiration().isEmpty()) {
+
+            String strHeadBlockTime = getBlockInfoResponse.getTimestamp();
+
+            long taposBlockTime;
 
             try {
-                headBlockTime = DateFormatter.convertBackendTimeToMilli(strHeadBlockTime);
+                taposBlockTime = DateFormatter.convertBackendTimeToMilli(strHeadBlockTime);
             } catch (ParseException e) {
                 throw new TransactionPrepareError(
-                        ErrorConstants.TRANSACTION_PROCESSOR_HEAD_BLOCK_TIME_PARSE_ERROR, e);
+                        ErrorConstants.TRANSACTION_PROCESSOR_TAPOS_BLOCK_TIME_PARSE_ERROR, e);
             }
 
             int expiresSeconds = this.transactionConfig.getExpiresSeconds();
 
-            long expirationTimeInMilliseconds = headBlockTime + expiresSeconds * 1000;
+            long expirationTimeInMilliseconds = taposBlockTime + expiresSeconds * 1000;
             preparingTransaction.setExpiration(DateFormatter
                     .convertMilliSecondToBackendTimeString(expirationTimeInMilliseconds));
         }
 
-        // Assigning value to refBlockNum and refBlockPrefix
-
-        BigInteger headBlockNum;
-
-        int blockBehindConfig = this.transactionConfig.getBlocksBehind();
-
-        if (getInfoResponse.getHeadBlockNum().compareTo(BigInteger.valueOf(blockBehindConfig))
-                > 0) {
-            headBlockNum = getInfoResponse.getHeadBlockNum()
-                    .subtract(BigInteger.valueOf(blockBehindConfig));
-        } else {
-            headBlockNum = BigInteger.valueOf(blockBehindConfig);
-        }
-
-        GetBlockResponse getBlockResponse;
-        try {
-            getBlockResponse = this.rpcProvider
-                    .getBlock(new GetBlockRequest(headBlockNum.toString()));
-        } catch (GetBlockRpcError getBlockRpcError) {
-            throw new TransactionPrepareRpcError(
-                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK, getBlockRpcError);
-        }
-
         // Restrict the refBlockNum to 32 bit unsigned value
-        BigInteger refBlockNum = getBlockResponse.getBlockNum().and(BigInteger.valueOf(0xffff));
-        BigInteger refBlockPrefix = getBlockResponse.getRefBlockPrefix();
+        BigInteger refBlockNum = getBlockInfoResponse.getBlockNum().and(BigInteger.valueOf(0xffff));
+        BigInteger refBlockPrefix = getBlockInfoResponse.getRefBlockPrefix();
 
         preparingTransaction.setRefBlockNum(refBlockNum);
         preparingTransaction.setRefBlockPrefix(refBlockPrefix);
 
-        this.finishPreparing(preparingTransaction);
-    }
-
-    /**
-     * Prepare action's data from input and create new instance of Transaction if it is not set.
-     * <p>
-     *     Use this method if you don't want to provide context free actions.
-     * <p>
-     * Check prepare() flow in "Complete Workflow" doc for more detail.
-     *
-     * @param actions - List of actions with data. If the transaction is preset or has a value and it
-     * has its own actions, that list will be over-ridden by this input list.
-     * @throws TransactionPrepareError thrown if:
-     *          <br>
-     *              - chainId from {@link IRPCProvider#getInfo()} is blank
-     *          <br>
-     *              - chainId returned from the chain does not match with input chainId
-     *          <br>
-     *              - There is a problem with parsing head block time from {@link GetInfoResponse#getHeadBlockTime()}
-     *          <br>
-     *          It throws a base error class if:
-     *          <br>
-     *              {@link TransactionPrepareInputError} thrown if input is invalid
-     *              <br>
-     *              {@link TransactionPrepareRpcError} thrown if any RPC call ({@link IRPCProvider#getInfo()}
-     *              and {@link IRPCProvider#getBlock(GetBlockRequest)}) return or throw an error
-     */
-    public void prepare(@NotNull List<Action> actions) throws TransactionPrepareError {
-        this.prepare(actions, new ArrayList<Action>());
+        this.finishPreparing(preparingTransaction, preparingContextFreeData);
     }
 
     /**
@@ -433,10 +484,10 @@ public class TransactionProcessor {
      *      <br>
      *          - The transaction has not been signed yet (no signature).
      *      <br>
-     *          - An error has been returned from the blockchain. Cause: {@link TransactionPushTransactionError}
+     *          - An error has been returned from the blockchain. Cause: {@link TransactionSendTransactionError}
      */
     @NotNull
-    public PushTransactionResponse broadcast() throws TransactionBroadCastError {
+    public SendTransactionResponse broadcast() throws TransactionBroadCastError {
         if (this.serializedTransaction == null || this.serializedTransaction.isEmpty()) {
             throw new TransactionBroadCastError(
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY);
@@ -447,21 +498,21 @@ public class TransactionProcessor {
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY);
         }
 
-        PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
-                0, "", this.serializedTransaction);
+        SendTransactionRequest sendTransactionRequest = new SendTransactionRequest(this.signatures,
+                0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
-            return this.pushTransaction(pushTransactionRequest);
-        } catch (TransactionPushTransactionError transactionPushTransactionError) {
+            return this.sendTransaction(sendTransactionRequest);
+        } catch (TransactionSendTransactionError transactionSendTransactionError) {
             throw new TransactionBroadCastError(
                     ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR,
-                    transactionPushTransactionError);
+                    transactionSendTransactionError);
         }
     }
 
     /**
      * Sign and broadcast the transaction and signature/s to chain
      *
-     * @return PushTransactionResponse from blockchain.
+     * @return SendTransactionResponse from blockchain.
      * @throws TransactionSignAndBroadCastError thrown under the following conditions:
      *      <br>
      *          - Exception while creating signature. Cause: {@link TransactionCreateSignatureRequestError}
@@ -472,10 +523,10 @@ public class TransactionProcessor {
      *      <br>
      *          - The transaction has not been signed yet (no signature).
      *      <br>
-     *          - An error has been returned from the blockchain. Cause: {@link TransactionPushTransactionError}
+     *          - An error has been returned from the blockchain. Cause: {@link TransactionSendTransactionError}
      */
     @NotNull
-    public PushTransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
+    public SendTransactionResponse signAndBroadcast() throws TransactionSignAndBroadCastError {
         EosioTransactionSignatureRequest eosioTransactionSignatureRequest;
         try {
             eosioTransactionSignatureRequest = this.createSignatureRequest();
@@ -500,12 +551,12 @@ public class TransactionProcessor {
         }
 
         // Signatures and serializedTransaction are assigned and finalized in getSignature() method
-        PushTransactionRequest pushTransactionRequest = new PushTransactionRequest(this.signatures,
-                0, "", this.serializedTransaction);
+        SendTransactionRequest sendTransactionRequest = new SendTransactionRequest(this.signatures,
+                0, this.contextFreeData.getHexed(), this.serializedTransaction);
         try {
-            return this.pushTransaction(pushTransactionRequest);
-        } catch (TransactionPushTransactionError transactionPushTransactionError) {
-            throw new TransactionSignAndBroadCastError(transactionPushTransactionError);
+            return this.sendTransaction(sendTransactionRequest);
+        } catch (TransactionSendTransactionError transactionSendTransactionError) {
+            throw new TransactionSignAndBroadCastError(transactionSendTransactionError);
         }
     }
 
@@ -592,7 +643,8 @@ public class TransactionProcessor {
                 null,
                 this.chainId,
                 null,
-                this.isTransactionModificationAllowed);
+                this.isTransactionModificationAllowed,
+                this.contextFreeData.getSerialized());
 
         // Assign required keys to signing public keys if it was set.
         if (this.requiredKeys != null && !this.requiredKeys.isEmpty()) {
@@ -672,7 +724,7 @@ public class TransactionProcessor {
                     signatureProviderError);
         }
 
-        if (Strings.isNullOrEmpty(eosioTransactionSignatureResponse.getSerializeTransaction())) {
+        if (Strings.isNullOrEmpty(eosioTransactionSignatureResponse.getSerializedTransaction())) {
             throw new TransactionGetSignatureSigningError(
                     ErrorConstants.TRANSACTION_PROCESSOR_SIGN_TRANSACTION_TRANS_EMPTY_ERROR);
         }
@@ -687,7 +739,7 @@ public class TransactionProcessor {
 
         if (this.serializedTransaction != null
                 && !this.serializedTransaction
-                .equals(eosioTransactionSignatureResponse.getSerializeTransaction())) {
+                .equals(eosioTransactionSignatureResponse.getSerializedTransaction())) {
             // Throw error if an unmodifiable transaction is modified
             if (!this.isTransactionModificationAllowed) {
                 throw new TransactionGetSignatureNotAllowModifyTransactionError(
@@ -700,7 +752,7 @@ public class TransactionProcessor {
             try {
                 transactionJSON = this.serializationProvider
                         .deserializeTransaction(
-                                eosioTransactionSignatureResponse.getSerializeTransaction());
+                                eosioTransactionSignatureResponse.getSerializedTransaction());
                 if (transactionJSON == null || transactionJSON.isEmpty()) {
                     throw new DeserializeTransactionError(
                             ErrorConstants.TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_EMPTY_ERROR);
@@ -716,27 +768,27 @@ public class TransactionProcessor {
 
         this.signatures = new ArrayList<>();
         this.signatures.addAll(eosioTransactionSignatureResponse.getSignatures());
-        this.serializedTransaction = eosioTransactionSignatureResponse.getSerializeTransaction();
+        this.serializedTransaction = eosioTransactionSignatureResponse.getSerializedTransaction();
         return eosioTransactionSignatureResponse;
     }
 
     /**
-     * Push signed transaction to blockchain.
+     * Send signed transaction to blockchain.
      * <p>
-     * Check pushTransaction() flow in "Complete Workflow" document for more details.
+     * Check sendTransaction() flow in "Complete Workflow" document for more details.
      *
-     * @param pushTransactionRequest the request
+     * @param sendTransactionRequest the request
      * @return Response from chain
      */
     @NotNull
-    private PushTransactionResponse pushTransaction(PushTransactionRequest pushTransactionRequest)
-            throws TransactionPushTransactionError {
+    private SendTransactionResponse sendTransaction(SendTransactionRequest sendTransactionRequest)
+            throws TransactionSendTransactionError {
         try {
-            return this.rpcProvider.pushTransaction(pushTransactionRequest);
-        } catch (PushTransactionRpcError pushTransactionRpcError) {
-            throw new TransactionPushTransactionError(
-                    ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
-                    pushTransactionRpcError);
+            return this.rpcProvider.sendTransaction(sendTransactionRequest);
+        } catch (SendTransactionRpcError sendTransactionRpcError) {
+            throw new TransactionSendTransactionError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_RPC_SEND_TRANSACTION,
+                    sendTransactionRpcError);
         }
     }
 
@@ -803,7 +855,7 @@ public class TransactionProcessor {
         // Serialize each action of Transaction's context free actions if they exist.
         if (!clonedTransaction.getContextFreeActions().isEmpty()) {
             for (Action contextFreeAction : clonedTransaction.getContextFreeActions()) {
-                AbiEosSerializationObject actionAbiEosSerializationObject = this.serializeAction(contextFreeAction, this.chainId, this.abiProvider);
+                AbiEosSerializationObject actionAbiEosSerializationObject = this.serializeContextFreeAction(contextFreeAction, this.chainId, this.abiProvider);
                 // !!! Set serialization result to data field of the contextFreeAction
                 contextFreeAction.setData(actionAbiEosSerializationObject.getHex());
             }
@@ -817,8 +869,7 @@ public class TransactionProcessor {
         String _serializedTransaction;
         try {
             String clonedTransactionToJSON = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).toJson(clonedTransaction);
-            _serializedTransaction = this.serializationProvider
-                    .serializeTransaction(clonedTransactionToJSON);
+            _serializedTransaction = this.serializationProvider.serializeTransaction(clonedTransactionToJSON);
             if (_serializedTransaction == null || _serializedTransaction.isEmpty()) {
                 throw new TransactionCreateSignatureRequestSerializationError(
                         ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_WORKED_BUT_EMPTY_RESULT);
@@ -854,6 +905,66 @@ public class TransactionProcessor {
     @NotNull
     private AbiEosSerializationObject serializeAction(Action action, String chainId, IABIProvider abiProvider)
             throws TransactionCreateSignatureRequestError {
+        AbiEosSerializationObject actionAbiEosSerializationObject = setupAbiEosSerializationObject(action, chainId, abiProvider);
+
+        try {
+            this.serializationProvider.serialize(actionAbiEosSerializationObject);
+        } catch (SerializeError serializeError) {
+            throw new TransactionCreateSignatureRequestSerializationError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
+                            action.getAccount()), serializeError);
+        }
+
+        return actionAbiEosSerializationObject;
+    }
+
+    /**
+     * Serializing an action's JSON data to Hex format by using {@link IABIProvider} and {@link ISerializationProvider}
+     *
+     * @param action - input contextFreeAction to serialize.
+     * @param chainId - the chain id.
+     * @param abiProvider - an instance of ABI provider.
+     * @return A serialized object from {@link ISerializationProvider} which contains the hex format of the action's JSON data.
+     * @throws TransactionCreateSignatureRequestError thrown if there are any exceptions while serializing transaction:
+     *      <br>
+     *          - {@link TransactionCreateSignatureRequestAbiError}, which is thrown if any error
+     *          occurs while calling {@link IABIProvider#getAbi(String, EOSIOName)} to get the ABI
+     *          needed to serialize an action
+     */
+    @NotNull
+    private AbiEosSerializationObject serializeContextFreeAction(Action action, String chainId, IABIProvider abiProvider)
+            throws TransactionCreateSignatureRequestError {
+        AbiEosSerializationObject actionAbiEosSerializationObject = setupAbiEosSerializationObject(action, chainId, abiProvider);
+
+        try {
+            if (action.hasData()) {
+                this.serializationProvider.serialize(actionAbiEosSerializationObject);
+            }
+        } catch (SerializeError serializeError) {
+            throw new TransactionCreateSignatureRequestSerializationError(
+                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
+                            action.getAccount()), serializeError);
+        }
+
+        return actionAbiEosSerializationObject;
+    }
+
+    /**
+     * Sets up AbiEosSerializationObject for use in serializing actions' data
+     *
+     * @param action - input action/contextFreeAction to setup.
+     * @param chainId - the chain id.
+     * @param abiProvider - an instance of ABI provider.
+     * @return A new AbiEosSerializationObject that will be used in serializing actions' data.
+     * @throws TransactionCreateSignatureRequestError thrown if there are any exceptions while serializing transaction:
+     *      <br>
+     *          - {@link TransactionCreateSignatureRequestAbiError}, which is thrown if any error
+     *          occurs while calling {@link IABIProvider#getAbi(String, EOSIOName)} to get the ABI
+     *          needed to serialize an action
+     */
+    @NotNull
+    private AbiEosSerializationObject setupAbiEosSerializationObject(Action action, String chainId, IABIProvider abiProvider)
+            throws TransactionCreateSignatureRequestAbiError {
         String actionAbiJSON;
         try {
             actionAbiJSON = abiProvider
@@ -871,18 +982,6 @@ public class TransactionProcessor {
 
         // !!! At this step, the data field of the action is still in JSON format.
         actionAbiEosSerializationObject.setJson(action.getData());
-
-        try {
-            this.serializationProvider.serialize(actionAbiEosSerializationObject);
-            if (actionAbiEosSerializationObject.getHex().isEmpty()) {
-                throw new TransactionCreateSignatureRequestSerializationError(
-                        ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_WORKED_BUT_EMPTY_RESULT);
-            }
-        } catch (SerializeError | TransactionCreateSignatureRequestSerializationError serializeError) {
-            throw new TransactionCreateSignatureRequestSerializationError(
-                    String.format(ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
-                            action.getAccount()), serializeError);
-        }
 
         return actionAbiEosSerializationObject;
     }
@@ -903,8 +1002,9 @@ public class TransactionProcessor {
      *
      * @param preparingTransaction - prepared transaction
      */
-    private void finishPreparing(Transaction preparingTransaction) {
+    private void finishPreparing(Transaction preparingTransaction, ContextFreeData preparingContextFreeData) {
         this.transaction = preparingTransaction;
+        this.contextFreeData = preparingContextFreeData;
         // Clear serialized transaction if it was serialized.
         if (!Strings.isNullOrEmpty(this.serializedTransaction)) {
             this.serializedTransaction = "";
@@ -1049,5 +1149,25 @@ public class TransactionProcessor {
         this.isTransactionModificationAllowed = isTransactionModificationAllowed;
     }
 
+    /**
+     * Gets context free data instance.
+     * @return the context free data instance.
+     */
+    public ContextFreeData getContextFreeData() {
+        return this.contextFreeData;
+    }
+
+    /**
+     * Return the current transaction serialized in packed V0 format.
+     * @return Hex string format for the serialized transaction.
+     * @throws SerializePackedTransactionError Thrown if error occurs during the serialization of the packed transaction by the provider.
+     */
+    public String getPackedTransactionV0()
+            throws SerializePackedTransactionError {
+        String json = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).toJson(this.toJSON());
+        String packedTransactionV0 = this.serializationProvider.serializePackedTransaction(json);
+
+        return PACKED_TRANSACTION_V0_PREFIX + packedTransactionV0;
+    }
     //endregion
 }

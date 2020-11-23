@@ -5,12 +5,39 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The request of PushTransactionRequest RPC call.
+ * The request of SendTransactionRequest RPC call {@link one.block.eosiojava.interfaces.IRPCProvider#sendTransaction(SendTransactionRequest)}
  */
-public class PushTransactionRequest extends SendTransactionRequest {
+public class SendTransactionRequest {
 
     /**
-     * Instantiates a new PushTransactionRequest.
+     * List of signatures required to authorize transaction
+     */
+    @SerializedName("signatures")
+    @NotNull
+    private List<String> signatures;
+
+    /**
+     * The compression used, usually 0.
+     */
+    @SerializedName("compression")
+    private int compression;
+
+    /**
+     * Context free data in hex
+     */
+    @SerializedName("packed_context_free_data")
+    private String packagedContextFreeData;
+
+    /**
+     * The Pack Transaction (Serialized Transaction).
+     * <br> It is serialized version of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
+     */
+    @SerializedName("packed_trx")
+    @NotNull
+    private String packTrx;
+
+    /**
+     * Instantiates a new SendTransactionRequest.
      *
      * @param signatures the list of signatures required to authorize transaction
      * @param compression the compression used, usually 0.
@@ -18,9 +45,12 @@ public class PushTransactionRequest extends SendTransactionRequest {
      * @param packTrx the packed Transaction (serialized transaction). It is serialized version
      * of {@link one.block.eosiojava.models.rpcProvider.Transaction}.
      */
-    public PushTransactionRequest(@NotNull List<String> signatures, int compression,
-            String packagedContextFreeData, @NotNull String packTrx) {
-        super(signatures, compression, packagedContextFreeData, packTrx);
+    public SendTransactionRequest(@NotNull List<String> signatures, int compression,
+                                  String packagedContextFreeData, @NotNull String packTrx) {
+        this.signatures = signatures;
+        this.compression = compression;
+        this.packagedContextFreeData = packagedContextFreeData;
+        this.packTrx = packTrx;
     }
 
     /**
@@ -30,7 +60,7 @@ public class PushTransactionRequest extends SendTransactionRequest {
      */
     @NotNull
     public List<String> getSignatures() {
-        return super.getSignatures();
+        return signatures;
     }
 
     /**
@@ -39,7 +69,7 @@ public class PushTransactionRequest extends SendTransactionRequest {
      * @param signatures the list of signatures.
      */
     public void setSignatures(@NotNull List<String> signatures) {
-        super.setSignatures(signatures);
+        this.signatures = signatures;
     }
 
     /**
@@ -48,7 +78,7 @@ public class PushTransactionRequest extends SendTransactionRequest {
      * @return the compression.
      */
     public int getCompression() {
-        return super.getCompression();
+        return compression;
     }
 
     /**
@@ -57,7 +87,7 @@ public class PushTransactionRequest extends SendTransactionRequest {
      * @param compression the compression.
      */
     public void setCompression(int compression) {
-        super.setCompression(compression);
+        this.compression = compression;
     }
 
     /**
@@ -66,7 +96,7 @@ public class PushTransactionRequest extends SendTransactionRequest {
      * @return the packaged context free data in hex.
      */
     public String getPackagedContextFreeData() {
-        return super.getPackagedContextFreeData();
+        return packagedContextFreeData;
     }
 
     /**
@@ -75,7 +105,7 @@ public class PushTransactionRequest extends SendTransactionRequest {
      * @param packagedContextFreeData the packaged context free data in hex.
      */
     public void setPackagedContextFreeData(String packagedContextFreeData) {
-        super.setPackagedContextFreeData(packagedContextFreeData);
+        this.packagedContextFreeData = packagedContextFreeData;
     }
 
     /**
@@ -86,7 +116,7 @@ public class PushTransactionRequest extends SendTransactionRequest {
      */
     @NotNull
     public String getPackTrx() {
-        return super.getPackTrx();
+        return packTrx;
     }
 
     /**
@@ -96,6 +126,6 @@ public class PushTransactionRequest extends SendTransactionRequest {
      * @param packTrx the packed transaction (serialized transaction).
      */
     public void setPackTrx(@NotNull String packTrx) {
-        super.setPackTrx(packTrx);
+        this.packTrx = packTrx;
     }
 }
