@@ -12,12 +12,10 @@ import static org.mockito.Mockito.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
-import one.block.eosiojava.error.rpcProvider.GetBlockInfoRpcError;
-import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
-import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
+import one.block.eosiojava.error.rpcProvider.*;
 import one.block.eosiojava.error.serializationProvider.DeserializeTransactionError;
 import one.block.eosiojava.error.serializationProvider.SerializeError;
 import one.block.eosiojava.error.serializationProvider.SerializeTransactionError;
@@ -42,6 +40,7 @@ import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
 import one.block.eosiojava.models.rpcProvider.response.*;
@@ -54,10 +53,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.junit.runners.Parameterized;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-@RunWith(JUnit4.class)
+@RunWith(Parameterized.class)
 public class TransactionProcessorTest {
 
     private IRPCProvider mockedRpcProvider = mock(IRPCProvider.class);
@@ -65,6 +65,16 @@ public class TransactionProcessorTest {
     private IABIProvider mockedABIProvider = mock(IABIProvider.class);
     private ISerializationProvider mockedSerializationProvider = mock(ISerializationProvider.class);
     private TransactionSession session;
+
+    @Parameterized.Parameter(0)
+    public boolean runWithGetBlockInfo;
+
+    // creates the test data
+    @Parameterized.Parameters(name = "{index}: Test with runWithGetBlockInfo={0} ")
+    public static Collection<Object[]> data() {
+        Object[][] data = new Object[][]{{true}, {false}};
+        return Arrays.asList(data);
+    }
 
     @Before
     public void setUp() {
@@ -81,7 +91,7 @@ public class TransactionProcessorTest {
         this.mockRPC(
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class),
-                null, null);
+                null, null, null);
 
         // Apply
         List<Action> actions = this.defaultActions();
@@ -389,7 +399,8 @@ public class TransactionProcessorTest {
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class),
                 Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_SENDTRANSACTION_RESPONE_JSON, SendTransactionResponse.class));
+                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_SENDTRANSACTION_RESPONE_JSON, SendTransactionResponse.class),
+                null);
 
         this.mockAbiProvider(EOSIOTOKENABIJSON);
         this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction);
@@ -582,11 +593,21 @@ public class TransactionProcessorTest {
     }
 
     private void mockDefaultSuccessData() {
-        this.mockRPC(
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
-                Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_SENDTRANSACTION_RESPONE_JSON, SendTransactionResponse.class));
+        if (runWithGetBlockInfo) {
+            this.mockRPC(
+                    Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetInfoResponse, GetInfoResponse.class),
+                    Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockInfoResponse, GetBlockInfoResponse.class),
+                    Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
+                    Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_SENDTRANSACTION_RESPONE_JSON, SendTransactionResponse.class),
+                    null);
+        } else {
+            this.mockRPC(
+                    Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedOlderGetInfoResponse, GetInfoResponse.class),
+                    null,
+                    Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetRequiredKeysResponse, GetRequiredKeysResponse.class),
+                    Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(MOCKED_SENDTRANSACTION_RESPONE_JSON, SendTransactionResponse.class),
+                    Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).fromJson(mockedGetBlockResponse, GetBlockResponse.class));
+        }
 
         this.mockAbiProvider(EOSIOTOKENABIJSON);
         this.mockSerializationProvider(MOCKED_ACTION_HEX, MOCKED_TRANSACTION_HEX, mockedDeserilizedTransaction);
@@ -661,7 +682,8 @@ public class TransactionProcessorTest {
             @Nullable GetInfoResponse getInfoResponse,
             @Nullable GetBlockInfoResponse getBlockInfoResponse,
             @Nullable GetRequiredKeysResponse getRequiredKeysResponse,
-            @Nullable SendTransactionResponse sendTransactionResponse) {
+            @Nullable SendTransactionResponse sendTransactionResponse,
+            @Nullable GetBlockResponse getBlockResponse) {
 
         if (getInfoResponse != null) {
             try {
@@ -669,6 +691,15 @@ public class TransactionProcessorTest {
             } catch (GetInfoRpcError getInfoRpcError) {
                 getInfoRpcError.printStackTrace();
                 fail("Exception should not be thrown here for mocking getInfo");
+            }
+        }
+
+        if (getBlockResponse != null) {
+            try {
+                when(mockedRpcProvider.getBlock(any(GetBlockRequest.class))).thenReturn(getBlockResponse);
+            } catch (GetBlockRpcError getBlockRpcError) {
+                getBlockRpcError.printStackTrace();
+                fail("Exception should not be thrown here for mocking getBlock");
             }
         }
 
@@ -792,7 +823,7 @@ public class TransactionProcessorTest {
 
     // Mock data for prepare
     private static final String mockedGetInfoResponse = "{\n"
-            + "    \"server_version\": \"1\",\n"
+            + "    \"server_version\": \"2\",\n"
             + "    \"chain_id\": \"sample chain id\",\n"
             + "    \"head_block_num\": " + headBlockNum + ",\n"
             + "    \"last_irreversible_block_num\": 1,\n"
@@ -804,10 +835,40 @@ public class TransactionProcessorTest {
             + "    \"virtual_block_net_limit\": 1,\n"
             + "    \"block_cpu_limit\": 1,\n"
             + "    \"block_net_limit\": 1,\n"
-            + "    \"server_version_string\": \"v1.3.0\"\n"
+            + "    \"server_version_string\": \"v2.1.0\"\n"
+            + "}";
+
+    private static final String mockedOlderGetInfoResponse = "{\n"
+            + "    \"server_version\": \"2\",\n"
+            + "    \"chain_id\": \"sample chain id\",\n"
+            + "    \"head_block_num\": " + headBlockNum + ",\n"
+            + "    \"last_irreversible_block_num\": 1,\n"
+            + "    \"last_irreversible_block_id\": \"1\",\n"
+            + "    \"head_block_id\": \"1\",\n"
+            + "    \"head_block_time\": \"" + headBlockTime + "\",\n"
+            + "    \"head_block_producer\": \"bp\",\n"
+            + "    \"virtual_block_cpu_limit\": 1,\n"
+            + "    \"virtual_block_net_limit\": 1,\n"
+            + "    \"block_cpu_limit\": 1,\n"
+            + "    \"block_net_limit\": 1,\n"
+            + "    \"server_version_string\": \"v2.0.0\"\n"
             + "}";
 
     private static final String mockedGetBlockInfoResponse = "{\n"
+            + "    \"timestamp\": \"2019-04-01T22:08:38.500\",\n"
+            + "    \"producer\": \"bp\",\n"
+            + "    \"confirmed\": 0,\n"
+            + "    \"previous\": \"1\",\n"
+            + "    \"transaction_mroot\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n"
+            + "    \"action_mroot\": \"1\",\n"
+            + "    \"schedule_version\": 3,\n"
+            + "    \"producer_signature\": \"SIG\",\n"
+            + "    \"id\": \"1\",\n"
+            + "    \"block_num\": 31984399,\n"
+            + "    \"ref_block_prefix\": " + refBlockPrefix + "\n"
+            + "}";
+
+    private static final String mockedGetBlockResponse = "{\n"
             + "    \"timestamp\": \"2019-04-01T22:08:38.500\",\n"
             + "    \"producer\": \"bp\",\n"
             + "    \"confirmed\": 0,\n"

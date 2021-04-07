@@ -30,6 +30,18 @@ public class TransactionConfig {
     private static final boolean DEFAULT_USE_LAST_IRREVERSIBLE = true;
 
     /**
+     * Default chain version string to use if none is specified and we cannot get the server version from
+     * the chain itself.
+     */
+    private static final String DEFAULT_CHAIN_VERSION_STRING = "2.0.0";
+
+    /**
+     * Chain version at which {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)}
+     * became available.
+     */
+    private static final String GET_BLOCK_INFO_AVAILABLE_STRING = "2.1.0";
+
+    /**
      * The Expires seconds.
      * <br>
      * Append this value to {@link GetInfoResponse#getHeadBlockTime()} in second then assign it to
@@ -54,6 +66,15 @@ public class TransactionConfig {
      * will be set {@link TransactionConfig#setExpiresSeconds(int)} after that block's time.
      */
     private boolean useLastIrreversible = DEFAULT_USE_LAST_IRREVERSIBLE;
+
+    /**
+     * Version of nodeos that the transaction is targeting.  This will allow the library to work with 2.1+ version
+     * chains using {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)} for
+     * calculating TAPOS rather than {@link one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockInfoRequest)}.
+     * If the value is left unset, the transaction will determine the chain version from the {@link IRPCProvider#getInfo()} call
+     * and use that as the chain version string.
+     */
+    private String chainVersionString = null;
 
     /**
      * Gets the expiration time for the transaction.
@@ -117,4 +138,41 @@ public class TransactionConfig {
     public void setUseLastIrreversible(boolean useLastIrreversible) {
         this.useLastIrreversible = useLastIrreversible;
     }
+
+    /**
+     * Gets the current chain version that the transaction is targeting.
+     * <br>
+     * 2.1+ version chains will use {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)} for
+     * calculating TAPOS rather than {@link one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockRequest)}.  If
+     * the value is left unset, the transaction will determine the chain version from the {@link IRPCProvider#getInfo()} call
+     * and use that as the chain version string.
+     * @return chainVersionString current nodeos version that we are targeting for this transaction
+     */
+    public String getChainVersionString() { return chainVersionString; }
+
+    /**
+     * Sets the current chain version that the transaction is targeting.
+     * <br>
+     * 2.1+ version chains will use {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)} for
+     * calculating TAPOS rather than {@link one.block.eosiojava.interfaces.IRPCProvider#getBlock(GetBlockRequest)}.  If
+     * the value is left unset, the transaction will determine the chain version from the {@link IRPCProvider#getInfo()} call
+     * and use that as the chain version string.
+     * @param chainVersionString set the target nodeos version that this transaction is for
+     */
+    public void setChainVersionString(String chainVersionString) { this.chainVersionString = chainVersionString; }
+
+    /**
+     * Get the default chain version string to use for transactions if one is not specified and the version cannot
+     * be read from the chain itself.
+     * @return defaultChainVersionString the version of nodeos if one is not set and the version cannot be read from the chain itself.
+     */
+    public String getDefaultChainVersionString() { return DEFAULT_CHAIN_VERSION_STRING; }
+
+    /**
+     * Chain version at which {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)}
+     * became available.
+     * @return getBlockInfoAvailableString the version of nodeos where {@link one.block.eosiojava.interfaces.IRPCProvider#getBlockInfo(GetBlockInfoRequest)}
+     * became available.
+     */
+    public String getGetBlockInfoAvailableString() { return GET_BLOCK_INFO_AVAILABLE_STRING; }
 }

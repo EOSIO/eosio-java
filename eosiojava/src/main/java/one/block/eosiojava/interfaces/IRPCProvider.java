@@ -1,20 +1,9 @@
 package one.block.eosiojava.interfaces;
 
-import one.block.eosiojava.error.rpcProvider.GetBlockInfoRpcError;
-import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
-import one.block.eosiojava.error.rpcProvider.GetRawAbiRpcError;
-import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
-import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
-import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
-import one.block.eosiojava.models.rpcProvider.request.GetRawAbiRequest;
-import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
-import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
+import one.block.eosiojava.error.rpcProvider.*;
+import one.block.eosiojava.models.rpcProvider.request.*;
 
-import one.block.eosiojava.models.rpcProvider.response.GetBlockInfoResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetRawAbiResponse;
-import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
-import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
+import one.block.eosiojava.models.rpcProvider.response.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -42,6 +31,17 @@ public interface IRPCProvider {
      */
     @NotNull
     GetBlockInfoResponse getBlockInfo(GetBlockInfoRequest getBlockInfoRequest) throws GetBlockInfoRpcError;
+
+    /**
+     * Returns an object containing various details about a specific block on the blockchain.
+     *
+     * @param getBlockRequest Info of a specific block.
+     * @return the info/status of a specific block in the request
+     * @throws GetBlockRpcError thrown if there are any exceptions/backend error during the
+     * getBlockInfo() process.
+     */
+    @NotNull
+    GetBlockResponse getBlock(GetBlockRequest getBlockRequest) throws GetBlockRpcError;
 
     /**
      * Gets raw abi for a given contract.
