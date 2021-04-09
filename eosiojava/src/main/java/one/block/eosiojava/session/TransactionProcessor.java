@@ -7,9 +7,13 @@ import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.vdurmont.semver4j.Semver;
+import com.vdurmont.semver4j.SemverException;
 import one.block.eosiojava.error.ErrorConstants;
 import one.block.eosiojava.error.abiProvider.GetAbiError;
 import one.block.eosiojava.error.rpcProvider.GetBlockInfoRpcError;
+import one.block.eosiojava.error.rpcProvider.GetBlockRpcError;
 import one.block.eosiojava.error.rpcProvider.GetInfoRpcError;
 import one.block.eosiojava.error.rpcProvider.GetRequiredKeysRpcError;
 import one.block.eosiojava.error.rpcProvider.SendTransactionRpcError;
@@ -51,9 +55,15 @@ import one.block.eosiojava.models.rpcProvider.Transaction;
 import one.block.eosiojava.models.rpcProvider.ContextFreeData;
 import one.block.eosiojava.models.rpcProvider.TransactionConfig;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
+import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
-import one.block.eosiojava.models.rpcProvider.response.*;
+
+import one.block.eosiojava.models.rpcProvider.response.GetBlockInfoResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
+import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
@@ -202,6 +212,13 @@ public class TransactionProcessor {
      * Prefix for packed transaction v0
      */
     private static final String PACKED_TRANSACTION_V0_PREFIX = "00";
+
+    /**
+     * Index for the first character of a string, which in a version returned from
+     * the blockchain may contain a 'v'.  If it does we will remove it before comparing
+     * versions against the transaction targeted version.
+     */
+    private static final int CHAR_INDEX_V_PREFIX = 0;
 
     /**
      * Constructor with all provider references from {@link TransactionSession}
@@ -374,6 +391,15 @@ public class TransactionProcessor {
                             getInfoResponse.getChainId()));
         }
 
+        String chainVersionString = this.transactionConfig.getChainVersionString();
+        if (Strings.isNullOrEmpty(chainVersionString)) {
+            if (Strings.isNullOrEmpty(getInfoResponse.getServerVersion())) {
+                chainVersionString = this.transactionConfig.getDefaultChainVersionString();
+            } else {
+                chainVersionString = getInfoResponse.getServerVersionString();
+            }
+        }
+
         // Assigning value to refBlockNum and refBlockPrefix
 
         BigInteger taposBlockNum;
@@ -393,19 +419,54 @@ public class TransactionProcessor {
             }
         }
 
-        GetBlockInfoResponse getBlockInfoResponse;
+
+        boolean useGetBlockInfo = false;
+        // Remove any leading non-digit character.
+        if (!Character.isDigit(chainVersionString.charAt(CHAR_INDEX_V_PREFIX))) {
+            chainVersionString = chainVersionString.substring(1);
+        }
         try {
-            getBlockInfoResponse = this.rpcProvider
-                    .getBlockInfo(new GetBlockInfoRequest(taposBlockNum));
-        } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
-            throw new TransactionPrepareRpcError(
-                    ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK_INFO, getBlockInfoRpcError);
+            // Strip any kind of beta or rc suffix.
+            Semver chainVersion = new Semver(chainVersionString).withClearedSuffix();
+            Semver getBlockInfoAvailableVersion = new Semver(this.transactionConfig.getGetBlockInfoAvailableString());
+            useGetBlockInfo = chainVersion.isGreaterThanOrEqualTo(getBlockInfoAvailableVersion);
+        } catch (SemverException semverException) {
+            // Default back to getBlock as the safer alternative for now.
+            useGetBlockInfo = false;
+        }
+
+        String strHeadBlockTime;
+        BigInteger blockNum;
+        BigInteger refBlockPrefix;
+
+        if (useGetBlockInfo) {
+            GetBlockInfoResponse getBlockInfoResponse;
+            try {
+                getBlockInfoResponse = this.rpcProvider
+                        .getBlockInfo(new GetBlockInfoRequest(taposBlockNum));
+                strHeadBlockTime = getBlockInfoResponse.getTimestamp();
+                blockNum = getBlockInfoResponse.getBlockNum();
+                refBlockPrefix = getBlockInfoResponse.getRefBlockPrefix();
+            } catch (GetBlockInfoRpcError getBlockInfoRpcError) {
+                throw new TransactionPrepareRpcError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK_INFO, getBlockInfoRpcError);
+            }
+        } else {
+            GetBlockResponse getBlockResponse;
+            try {
+                getBlockResponse = this.rpcProvider
+                        .getBlock(new GetBlockRequest(taposBlockNum.toString()));
+                strHeadBlockTime = getBlockResponse.getTimestamp();
+                blockNum = getBlockResponse.getBlockNum();
+                refBlockPrefix = getBlockResponse.getRefBlockPrefix();
+            } catch (GetBlockRpcError getBlockRpcError) {
+                throw new TransactionPrepareRpcError(
+                        ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_RPC_GET_BLOCK, getBlockRpcError);
+            }
         }
 
         // Calculate the expiration based on the taposBlockNum expiration
         if (preparingTransaction.getExpiration().isEmpty()) {
-
-            String strHeadBlockTime = getBlockInfoResponse.getTimestamp();
 
             long taposBlockTime;
 
@@ -424,8 +485,7 @@ public class TransactionProcessor {
         }
 
         // Restrict the refBlockNum to 32 bit unsigned value
-        BigInteger refBlockNum = getBlockInfoResponse.getBlockNum().and(BigInteger.valueOf(0xffff));
-        BigInteger refBlockPrefix = getBlockInfoResponse.getRefBlockPrefix();
+        BigInteger refBlockNum = blockNum.and(BigInteger.valueOf(0xffff));
 
         preparingTransaction.setRefBlockNum(refBlockNum);
         preparingTransaction.setRefBlockPrefix(refBlockPrefix);

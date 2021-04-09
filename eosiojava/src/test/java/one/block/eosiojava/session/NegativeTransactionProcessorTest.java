@@ -137,7 +137,7 @@ public class NegativeTransactionProcessorTest {
 
         String weirdHeadBlockTime = "2019-04-01TGM22:08:40.000";
         String mockedGetInfoResponseWithWeirdDateFormat = "{\n"
-                + "    \"server_version\": \"1\",\n"
+                + "    \"server_version\": \"2\",\n"
                 + "    \"chain_id\": \"sample chain id\",\n"
                 + "    \"head_block_num\": " + headBlockNum + ",\n"
                 + "    \"last_irreversible_block_num\": 1,\n"
@@ -149,7 +149,7 @@ public class NegativeTransactionProcessorTest {
                 + "    \"virtual_block_net_limit\": 1,\n"
                 + "    \"block_cpu_limit\": 1,\n"
                 + "    \"block_net_limit\": 1,\n"
-                + "    \"server_version_string\": \"v1.3.0\"\n"
+                + "    \"server_version_string\": \"v2.1.0\"\n"
                 + "}";
 
         String mockedGetBlockInfoResponseWithWeirdDateFormat = "{\n"
@@ -595,7 +595,7 @@ public class NegativeTransactionProcessorTest {
             .and(BigInteger.valueOf(0xffff));
 
     private static final String mockedGetInfoResponse = "{\n"
-            + "    \"server_version\": \"1\",\n"
+            + "    \"server_version\": \"2\",\n"
             + "    \"chain_id\": \"sample chain id\",\n"
             + "    \"head_block_num\": " + headBlockNum + ",\n"
             + "    \"last_irreversible_block_num\": 1,\n"
@@ -607,7 +607,7 @@ public class NegativeTransactionProcessorTest {
             + "    \"virtual_block_net_limit\": 1,\n"
             + "    \"block_cpu_limit\": 1,\n"
             + "    \"block_net_limit\": 1,\n"
-            + "    \"server_version_string\": \"v1.3.0\"\n"
+            + "    \"server_version_string\": \"v2.1.0\"\n"
             + "}";
 
     private static final String mockedGetBlockInfoResponse = "{\n"
