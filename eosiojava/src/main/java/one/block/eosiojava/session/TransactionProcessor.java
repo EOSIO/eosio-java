@@ -54,7 +54,12 @@ import one.block.eosiojava.models.rpcProvider.request.GetBlockInfoRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetBlockRequest;
 import one.block.eosiojava.models.rpcProvider.request.GetRequiredKeysRequest;
 import one.block.eosiojava.models.rpcProvider.request.SendTransactionRequest;
-import one.block.eosiojava.models.rpcProvider.response.*;
+
+import one.block.eosiojava.models.rpcProvider.response.GetBlockInfoResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetBlockResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetInfoResponse;
+import one.block.eosiojava.models.rpcProvider.response.GetRequiredKeysResponse;
+import one.block.eosiojava.models.rpcProvider.response.SendTransactionResponse;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureRequest;
 import one.block.eosiojava.models.signatureProvider.EosioTransactionSignatureResponse;
 import one.block.eosiojava.utilities.DateFormatter;
@@ -203,6 +208,13 @@ public class TransactionProcessor {
      * Prefix for packed transaction v0
      */
     private static final String PACKED_TRANSACTION_V0_PREFIX = "00";
+
+    /**
+     * Index for the first character of a string, which in a version returned from
+     * the blockchain may contain a 'v'.  If it does we will remove it before comparing
+     * versions against the transaction targeted version.
+     */
+    private static final int CHAR_INDEX_V_PREFIX = 0;
 
     /**
      * Constructor with all provider references from {@link TransactionSession}
@@ -406,7 +418,7 @@ public class TransactionProcessor {
 
         boolean useGetBlockInfo = false;
         // Remove any leading non-digit character.
-        if (!Character.isDigit(chainVersionString.charAt(0))) {
+        if (!Character.isDigit(chainVersionString.charAt(CHAR_INDEX_V_PREFIX))) {
             chainVersionString = chainVersionString.substring(1);
         }
         try {
