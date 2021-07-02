@@ -56,7 +56,7 @@ packagingOptions {
 }
 ```
 
-The `build.gradle` files for the project currently include configurations for publishing the project to Artifactory and Bintray. These should be removed if you are not planning to use Artifactory and Bintray or you will encounter build errors. To do so, make the changes marked by comments throughout the files.
+The `build.gradle` files for the project currently include configurations for publishing the project to Artifactory. These should be removed if you are not planning to use Artifactory or you will encounter build errors. To do so, make the changes marked by comments throughout the files.
 
 Then refresh your gradle project. Then you're all set for the [Basic Usage](#basic-usage) example!
 

@@ -3,10 +3,7 @@ plugins {
     id 'java-library'
     //Remove 'com.jfrog.artifactory' plugin if you are not using Artifactory
     id 'com.jfrog.artifactory' version '4.9.5'
-    //Remove 'com.jfrog.bintray' plugin if you are not using Bintray
-    id 'com.jfrog.bintray' version '1.7.3'
     id 'maven-publish'
-
 }
 
 group 'one.block'
